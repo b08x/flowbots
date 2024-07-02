@@ -1,4 +1,4 @@
-module Example
+module Flowbots
   module ThorExt
     # Configures Thor to behave more like a typical CLI, with better help and error handling.
     #
