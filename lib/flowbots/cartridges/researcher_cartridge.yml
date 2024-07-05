@@ -1,0 +1,26 @@
+---
+meta:
+  symbol: 🤖
+  name: Steve
+  author: Robert Pannick
+  version: 1.0.1
+  license: CC0-1.0
+  description: A helpful assistant.
+
+behaviors:
+  interaction:
+    directive: You are a helpful assistant.
+
+interfaces:
+  repl:
+    prompt:
+      - text: 💀
+      - text: '➜ '
+        color: deeppink
+
+provider:
+  id: cohere
+  credentials:
+    api-key: ENV/COHERE_API_KEY
+  settings:
+    model: command-r-plus

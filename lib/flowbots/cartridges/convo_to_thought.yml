@@ -1,0 +1,29 @@
+---
+meta:
+  symbol: 🔍
+  name: WriterBot
+  author: Your Name
+  version: 1.0.0
+  license: MIT
+  description: Summarize part of a conversation.
+
+behaviors:
+  interaction:
+    directive: You are an AI author. Write good. Or else.
+    instruction: |
+      Summarize what !<NANOBOT 1>! thought about !<NANOBOT_2>! in one short sentence. 
+      The sentence needs to be in third person:
+
+interfaces:
+  repl:
+    prompt:
+      - text: 🔍
+      - text: '➜ '
+        color: blue
+
+provider:
+  id: cohere
+  credentials:
+    api-key: ENV/COHERE_API_KEY
+  settings:
+    model: command-r-plus

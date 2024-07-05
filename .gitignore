@@ -8,3 +8,11 @@
 /spec/reports/
 /tmp/
 /Gemfile.lock
+/characters/
+/docker/data/
+/docs/agenta/
+/docs/FlowiseDocs/
+/docs/inspect_ai/
+/docs/Jongleur/
+/docs/langfuse-docs/
+/docs/NanoBotsSpecification.pdf
