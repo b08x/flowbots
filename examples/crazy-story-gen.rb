@@ -22,8 +22,77 @@ include Logging
 
 CARTRIDGE_DIR = File.expand_path("cartridges", __dir__)
 
-require_relative "components/orchestrator"
-require_relative "components/agent"
+# require_relative "components/orchestrator"
+# require_relative "components/agent"
+
+class WorkflowOrchestrator
+  def initialize
+    @agents = {}
+  end
+
+  def add_agent(role, cartridge_file)
+    @agents[role] = WorkflowAgent.new(role, cartridge_file)
+  end
+
+  def define_workflow(workflow_definition)
+    Jongleur::API.add_task_graph(workflow_definition)
+  end
+
+  def run_workflow
+    Jongleur::API.print_graph('/tmp')
+
+    Jongleur::API.run do |on|
+      on.completed do |task_matrix|
+        puts "Workflow completed"
+        puts task_matrix
+      end
+    end
+  end
+end
+
+class WorkflowAgent
+  def initialize(role, cartridge_file)
+    @role = role
+    @state = {}
+    @bot = NanoBot.new(
+      cartridge: cartridge_file
+    )
+  end
+
+  def process(input)
+
+    @bot.eval(input) do |content, fragment, finished, meta|
+      @response = content unless content.nil?
+      # print fragment unless fragment.nil?
+    end
+
+    update_state(@response)
+    @response
+  end
+
+  def save_state
+    Jongleur::WorkerTask.class_variable_get(:@@redis).hset(
+      Process.pid.to_s,
+      "agent:#{@role}",
+      @state.to_json
+    )
+  end
+
+  def load_state
+    state_json = Jongleur::WorkerTask.class_variable_get(:@@redis).hget(
+      Process.pid.to_s,
+      "agent:#{@role}"
+    )
+    @state = JSON.parse(state_json) if state_json
+  end
+
+  private
+
+  def update_state(response)
+    @state[:last_response] = response
+  end
+end
+
 
 class Jongleur::WorkerTask
   @@redis = Redis.new(host: "localhost", port: 6379, db: 15)
@@ -121,18 +190,18 @@ class WorkflowOrchestrator
   end
 end
 
-# # Example usage
-# orchestrator = WorkflowOrchestrator.new
-# orchestrator.add_agent('researcher', 'researcher_cartridge.yml')
-# orchestrator.add_agent('writer1', 'writer_cartridge.yml')
-# orchestrator.add_agent('writer2', 'writer_cartridge.yml')
-# orchestrator.add_agent('finalizer', 'finalizer_cartridge.yml')
+# Example usage
+orchestrator = WorkflowOrchestrator.new
+orchestrator.add_agent('researcher', 'researcher_cartridge.yml')
+orchestrator.add_agent('writer1', 'writer_cartridge.yml')
+orchestrator.add_agent('writer2', 'writer_cartridge.yml')
+orchestrator.add_agent('finalizer', 'finalizer_cartridge.yml')
 
-# workflow_graph = {
-#   ResearcherTask: [:WriterTask1, :WriterTask2],
-#   WriterTask1: [:FinalizeTask],
-#   WriterTask2: [:FinalizeTask]
-# }
+workflow_graph = {
+  ResearcherTask: [:WriterTask1, :WriterTask2],
+  WriterTask1: [:FinalizeTask],
+  WriterTask2: [:FinalizeTask]
+}
 
-# orchestrator.define_workflow(workflow_graph)
-# orchestrator.run_workflow
+orchestrator.define_workflow(workflow_graph)
+orchestrator.run_workflow

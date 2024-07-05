@@ -1,0 +1,23 @@
+---
+meta:
+  symbol: 📦
+  name: Cartridge Generator
+  author: AI Assistant
+  version: 1.0.0
+  license: CC0-1.0
+  description: Generates cartridge files for specific tasks.
+
+behaviors:
+  interaction:
+    directive: |
+      You are a cartridge file generator. Given a task name and description, create a YAML cartridge file
+      with appropriate meta information and behavior directives for that specific task.
+
+provider:
+  id: openai
+  credentials:
+    address: ENV/OPENAI_API_ADDRESS
+    access-token: ENV/OPENAI_API_KEY
+  settings:
+    user: ENV/NANO_BOTS_END_USER
+    model: gpt-4
