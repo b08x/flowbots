@@ -2,9 +2,9 @@
 # frozen_string_literal: true
 
 module Flowbots
-  autoload :CLI, "flowbots/cli"
-  autoload :VERSION, "flowbots/version"
-  autoload :ThorExt, "flowbots/thor_ext"
+  autoload :CLI, "cli"
+  autoload :VERSION, "version"
+  autoload :ThorExt, "thor_ext"
 end
 
 require 'jongleur'
@@ -20,18 +20,19 @@ require "logging"
 
 include Logging
 
-require_relative "flowbots/orchestrator"
-require_relative "flowbots/agent"
+CARTRIDGE_DIR = File.expand_path("cartridges", __dir__)
+
+require_relative "components/orchestrator"
+require_relative "components/agent"
 
 class Jongleur::WorkerTask
   @@redis = Redis.new(host: "localhost", port: 6379, db: 15)
-  @@cartridges = File.join("flowbots", "cartridges")
 end
 
 class ResearcherTask < Jongleur::WorkerTask
   def execute
     begin
-      agent = WorkflowAgent.new("researcher", "#{@@cartridges}/researcher_cartridge.yml")
+      agent = WorkflowAgent.new("researcher", "#{CARTRIDGE_DIR}/researcher_cartridge.yml")
       agent.load_state
       result = agent.process("Research on Advancements in Garden Gnome Technology")
       agent.save_state
@@ -46,7 +47,7 @@ end
 class WriterTask1 < Jongleur::WorkerTask
   def execute
     begin
-      agent = WorkflowAgent.new("writer1", "#{@@cartridges}/writer_cartridge.yml")
+      agent = WorkflowAgent.new("writer1", "#{CARTRIDGE_DIR}/writer_cartridge.yml")
       agent.load_state
       research_result = JSON.parse(@@redis.get("research_result"))
       article = agent.process("Write an article based on: #{research_result}")
@@ -62,7 +63,7 @@ end
 class WriterTask2 < Jongleur::WorkerTask
   def execute
     begin
-      agent = WorkflowAgent.new("writer2", "#{@@cartridges}/writer_cartridge.yml")
+      agent = WorkflowAgent.new("writer2", "#{CARTRIDGE_DIR}/writer_cartridge.yml")
       agent.load_state
       research_result = JSON.parse(@@redis.get("research_result"))
       article = agent.process("Write a fantasy-horror narrative based on: #{research_result}")
@@ -78,7 +79,7 @@ end
 class FinalizeTask < Jongleur::WorkerTask
   def execute
     begin
-      agent = WorkflowAgent.new("finalizer", "#{@@cartridges}/finalizer_cartridge.yml")
+      agent = WorkflowAgent.new("finalizer", "#{CARTRIDGE_DIR}/finalizer_cartridge.yml")
       articles = @@redis.lrange("articles", 0, -1)
       final_result = agent.process("Summarize and finalize these articles: #{articles.join('\n\n')}")
       puts "Final Result:"
@@ -91,12 +92,17 @@ class FinalizeTask < Jongleur::WorkerTask
 end
 
 class WorkflowOrchestrator
+
   def initialize
     @agents = {}
   end
 
   def add_agent(role, cartridge_file)
-    @agents[role] = WorkflowAgent.new(role, cartridge_file)
+    cartridge_path = File.join(CARTRIDGE_DIR, cartridge_file)
+
+    raise "Cartridge file not found: \"#{cartridge_path}\"" unless File.exist?(cartridge_path)
+
+    @agents[role] = WorkflowAgent.new(role, cartridge_path)
   end
 
   def define_workflow(workflow_definition)
@@ -117,10 +123,10 @@ end
 
 # Example usage
 orchestrator = WorkflowOrchestrator.new
-orchestrator.add_agent('researcher', 'flowise/cartridges/researcher_cartridge.yml')
-orchestrator.add_agent('writer1', 'flowise/cartridges/writer_cartridge.yml')
-orchestrator.add_agent('writer2', 'flowise/cartridges/writer_cartridge.yml')
-orchestrator.add_agent('finalizer', 'flowise/cartridges/finalizer_cartridge.yml')
+orchestrator.add_agent('researcher', 'researcher_cartridge.yml')
+orchestrator.add_agent('writer1', 'writer_cartridge.yml')
+orchestrator.add_agent('writer2', 'writer_cartridge.yml')
+orchestrator.add_agent('finalizer', 'finalizer_cartridge.yml')
 
 workflow_graph = {
   ResearcherTask: [:WriterTask1, :WriterTask2],

@@ -16,3 +16,6 @@
 /docs/Jongleur/
 /docs/langfuse-docs/
 /docs/NanoBotsSpecification.pdf
+.env
+/docker/.env/
+/log/

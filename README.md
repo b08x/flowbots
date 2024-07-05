@@ -109,4 +109,6 @@ Flowbots is released under the [MIT License](LICENSE).
 
 ---
 
-Flowbots: Orchestrating the future of AI workflows, one task at a time.
+[perplexity thread](https://www.perplexity.ai/search/compile-a-list-of-ruby-librari-TqN2sMgDQpSSrufPc1O6_Q)
+
+
