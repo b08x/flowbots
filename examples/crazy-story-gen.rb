@@ -20,7 +20,7 @@ require "logging"
 
 include Logging
 
-CARTRIDGE_DIR = File.expand_path("cartridges", __dir__)
+CARTRIDGE_DIR = File.expand_path("../lib/cartridges", __dir__)
 
 # require_relative "components/orchestrator"
 # require_relative "components/agent"
@@ -63,7 +63,7 @@ class WorkflowAgent
 
     @bot.eval(input) do |content, fragment, finished, meta|
       @response = content unless content.nil?
-      # print fragment unless fragment.nil?
+      print fragment unless fragment.nil?
     end
 
     update_state(@response)
@@ -101,7 +101,7 @@ end
 class ResearcherTask < Jongleur::WorkerTask
   def execute
     begin
-      agent = WorkflowAgent.new("researcher", "#{CARTRIDGE_DIR}/researcher_cartridge.yml")
+      agent = WorkflowAgent.new("researcher", "#{CARTRIDGE_DIR}/researcher.yml")
       agent.load_state
       result = agent.process("Research on Advancements in Garden Gnome Technology")
       agent.save_state
@@ -116,7 +116,7 @@ end
 class WriterTask1 < Jongleur::WorkerTask
   def execute
     begin
-      agent = WorkflowAgent.new("writer1", "#{CARTRIDGE_DIR}/writer_cartridge.yml")
+      agent = WorkflowAgent.new("writer1", "#{CARTRIDGE_DIR}/writer.yml")
       agent.load_state
       research_result = JSON.parse(@@redis.get("research_result"))
       article = agent.process("Write an article based on: #{research_result}")
@@ -132,7 +132,7 @@ end
 class WriterTask2 < Jongleur::WorkerTask
   def execute
     begin
-      agent = WorkflowAgent.new("writer2", "#{CARTRIDGE_DIR}/writer_cartridge.yml")
+      agent = WorkflowAgent.new("writer2", "#{CARTRIDGE_DIR}/writer.yml")
       agent.load_state
       research_result = JSON.parse(@@redis.get("research_result"))
       article = agent.process("Write a fantasy-horror narrative based on: #{research_result}")
@@ -145,16 +145,16 @@ class WriterTask2 < Jongleur::WorkerTask
   end
 end
 
-class FinalizeTask < Jongleur::WorkerTask
+class EditorTask < Jongleur::WorkerTask
   def execute
     begin
-      agent = WorkflowAgent.new("finalizer", "#{CARTRIDGE_DIR}/finalizer_cartridge.yml")
+      agent = WorkflowAgent.new("editor", "#{CARTRIDGE_DIR}/editor.yml")
       articles = @@redis.lrange("articles", 0, -1)
-      final_result = agent.process("Summarize and finalize these articles: #{articles.join('\n\n')}")
+      final_result = agent.process("Summarize and Editor these articles: #{articles.join('\n\n')}")
       puts "Final Result:"
       puts final_result
     rescue => e
-      logger.error "Error in FinalizeTask: #{e.message}"
+      logger.error "Error in EditorTask: #{e.message}"
       raise
     end
   end
@@ -192,15 +192,15 @@ end
 
 # Example usage
 orchestrator = WorkflowOrchestrator.new
-orchestrator.add_agent('researcher', 'researcher_cartridge.yml')
-orchestrator.add_agent('writer1', 'writer_cartridge.yml')
-orchestrator.add_agent('writer2', 'writer_cartridge.yml')
-orchestrator.add_agent('finalizer', 'finalizer_cartridge.yml')
+orchestrator.add_agent('researcher', 'researcher.yml')
+orchestrator.add_agent('writer1', 'writer.yml')
+orchestrator.add_agent('writer2', 'writer.yml')
+orchestrator.add_agent('editor', 'editor.yml')
 
 workflow_graph = {
   ResearcherTask: [:WriterTask1, :WriterTask2],
-  WriterTask1: [:FinalizeTask],
-  WriterTask2: [:FinalizeTask]
+  WriterTask1: [:EditorTask],
+  WriterTask2: [:EditorTask]
 }
 
 orchestrator.define_workflow(workflow_graph)

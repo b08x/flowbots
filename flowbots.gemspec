@@ -1,4 +1,4 @@
-require_relative "lib/flowbots/version"
+require_relative "lib/version"
 
 Gem::Specification.new do |spec|
   spec.name = "flowbots"
@@ -33,5 +33,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency "redis", "~> 5.2"
   spec.add_dependency "rubocop", "~> 1.64"
   spec.add_dependency "thor", "~> 1.2"
+  spec.add_dependency "tty-prompt"
   spec.add_dependency "yaml", "~> 0.3.0"
 end

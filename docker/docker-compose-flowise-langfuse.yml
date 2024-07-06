@@ -1,4 +1,19 @@
 services:
+  nginx:
+    image: nginx
+    container_name: flowbots-nginx
+    restart: unless-stopped
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./key.pem:/root/ssl/key.pem
+      - ./cert.pem:/root/ssl/cert.pem
+    ports:
+      - "443:443"
+    depends_on:
+      - flowise
+      - langfuse
+    networks:
+      - flowbots
   flowise:
     image: flowiseai/flowise
     container_name: flowise
@@ -11,52 +26,18 @@ services:
       - LOG_PATH=/root/.flowise/logs
       - DEBUG=True
       - LOG_LEVEL=debug
-    ports:
-      - "3002:3002"
     volumes:
       - ./data/flowise:/root/.flowise
       - ./data/flowise/output:/data/output
+    ports:
+      - "3002:3002"
     entrypoint: /bin/sh -c "sleep 3; flowise start"
     networks:
       - flowbots
-  redis:
-    image: redis/redis-stack:latest
-    container_name: redis
-    restart: unless-stopped
-    environment:
-      PUID: 1000
-      PGID: 1000
-    volumes:
-      - ./data/redis/data:/data
-    ports:
-      - "6379:6379"
-      - "8081:8081"
-      - "8001:8001"
-    networks:
-      - flowbots
-  pgvector:
-    image: ankane/pgvector
-    container_name: pgvector
-    restart: unless-stopped
-    environment:
-      PUID: 1000
-      PGID: 1000
-      POSTGRES_HOST_AUTH_METHOD: "trust"
-      POSTGRES_DB: flowbots
-      POSTGRES_USER: postgres
-    ports:
-      - "5432:5432"
-    volumes:
-      - ./data/pgvector/local-data:/data
-      - ./data/pgvector/pgdata:/var/lib/postgresql/data
-    networks:
-      - flowbots
-  langfuse-server:
+  langfuse:
     image: ghcr.io/langfuse/langfuse:latest
+    container_name: langfuse
     restart: unless-stopped
-    depends_on:
-      - flowise
-      - pgvector
     ports:
       - "3000:3000"
     environment:
@@ -70,6 +51,53 @@ services:
       - LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES=${LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES:-false}
     networks:
       - flowbots
+  redis:
+    image: redis/redis-stack:latest
+    container_name: flowbots-redis
+    restart: unless-stopped
+    environment:
+      PUID: 1000
+      PGID: 1000
+    volumes:
+      - ./data/redis/data:/data
+    ports:
+      - "6379:6379"
+      - "8081:8081"
+      - "8001:8001"
+    networks:
+      - flowbots
+  chroma:
+    image: ghcr.io/chroma-core/chroma:latest
+    container_name: flowbots-chromadb
+    restart: unless-stopped
+    volumes:
+      - ./data/chroma:/chroma/chroma/
+    environment:
+      PUID: 1000
+      PGID: 1000
+      IS_PERSISTENT: TRUE
+    ports:
+      - "8020:8000"
+    networks:
+      - flowbots
+  # pgvector:
+  #   image: ankane/pgvector
+  #   container_name: pgvector
+  #   restart: unless-stopped
+  #   environment:
+  #     PUID: 1000
+  #     PGID: 1000
+  #     POSTGRES_HOST_AUTH_METHOD: "trust"
+  #     POSTGRES_DB: flowbots
+  #     POSTGRES_USER: postgres
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - ./data/pgvector/local-data:/data
+  #     - ./data/pgvector/pgdata:/var/lib/postgresql/data
+  #   networks:
+  #     - flowbots
+
 
 networks:
   flowbots:
