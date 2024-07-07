@@ -7,8 +7,13 @@ class WorkflowOrchestrator
   end
 
   def add_agent(role, cartridge_file)
-    @agents[role] = WorkflowAgent.new(role, cartridge_file)
+    cartridge_path = File.join(CARTRIDGE_DIR, cartridge_file)
+
+    raise "Cartridge file not found: \"#{cartridge_path}\"" unless File.exist?(cartridge_path)
+
+    @agents[role] = WorkflowAgent.new(role, cartridge_path)
   end
+
 
   def define_workflow(workflow_definition)
     Jongleur::API.add_task_graph(workflow_definition)

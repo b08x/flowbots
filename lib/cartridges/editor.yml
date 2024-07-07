@@ -16,11 +16,17 @@ behaviors:
       Your edits should make the article more engaging and professional while maintaining its original voice and content.
 
 interfaces:
+  output:
+    stream: true
+    prefix: "\n"
+    suffix: "\n"
+    color: yellow
+
   repl:
     prompt:
       - text: 🔍
       - text: '➜ '
-        color: red
+        color: blue
 
 provider:
   id: cohere
@@ -28,3 +34,18 @@ provider:
     api-key: ENV/COHERE_API_KEY
   settings:
     model: command-r-plus
+    stream: true
+    prompt_truncation: 'OFF'
+    connectors:
+      - id: web-search
+    search_queries_only: false
+    citation_quality: accurate
+    temperature: 0.3
+    max_tokens: null
+    max_input_tokens: null
+    k: 200
+    p: 0.75
+    seed: null
+    frequency_penalty: 0.6
+    presence_penalty: 0.0
+    force_single_step: false

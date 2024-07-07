@@ -14,7 +14,8 @@ class WorkflowAgent
 
     @bot.eval(input) do |content, fragment, finished, meta|
       @response = content unless content.nil?
-      # print fragment unless fragment.nil?
+      print fragment unless fragment.nil?
+      sleep 0.325
     end
 
     update_state(@response)
