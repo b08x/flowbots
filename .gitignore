@@ -21,3 +21,4 @@
 /docker/.env/
 /log/
 /vendor/
+/docker/*.pem

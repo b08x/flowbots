@@ -27,3 +27,7 @@ gem "stream_lines", "~> 0.4.1"
 gem "cli-ui", "~> 2.2"
 
 gem "tty-spinner", "~> 0.9.3"
+
+gem "langchainrb", "~> 0.13.5"
+
+gem "pdf-reader", "~> 2.12"
