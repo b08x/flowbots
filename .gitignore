@@ -15,7 +15,9 @@
 /docs/inspect_ai/
 /docs/Jongleur/
 /docs/langfuse-docs/
-/docs/NanoBotsSpecification.pdf
+/docs/dify-docs/
+/docs/ruby-nano-bots/
 .env
 /docker/.env/
 /log/
+/vendor/
