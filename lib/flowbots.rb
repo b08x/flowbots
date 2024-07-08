@@ -7,6 +7,7 @@ module Flowbots
   autoload :ThorExt, "thor_ext"
 end
 
+require "helper"
 
 require "cogger"
 require "jongleur"

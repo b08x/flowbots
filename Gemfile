@@ -31,3 +31,5 @@ gem "tty-spinner", "~> 0.9.3"
 gem "langchainrb", "~> 0.13.5"
 
 gem "pdf-reader", "~> 2.12"
+
+gem "kramdown", "~> 2.4"
