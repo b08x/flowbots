@@ -28,6 +28,34 @@ interfaces:
       - text: '➜ '
         color: blue
 
+# provider:
+#   id: google
+#   credentials:
+#     service: generative-language-api
+#     api-key: ENV/GOOGLE_API_KEY
+#   options:
+#     model: gemini-1.5-pro
+#     stream: true
+#   settings:
+#     safetySettings:
+#       - category: HARM_CATEGORY_DANGEROUS_CONTENT
+#         threshold: BLOCK_NONE
+#     generationConfig:
+#       temperature: 0.9
+#       maxOutputTokens: null
+#       candidateCount: 1
+#       presencePenalty: null
+#       frequencyPenalty: null
+#       topK: null
+#       topP: 1.0
+#       stopSequences:
+#         - .
+#       responseMimeType: application/json
+#       responseSchema:
+#         type: object
+#         properties:
+#           name:
+#             type: string
 provider:
   id: cohere
   credentials:
