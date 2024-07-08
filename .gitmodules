@@ -1,0 +1,3 @@
+[submodule "nano-bots"]
+	path = nano-bots
+	url = git@github.com:b08x/nano-bots.git
