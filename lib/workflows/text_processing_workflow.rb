@@ -14,7 +14,7 @@ require "pry-stack_explorer"
 class TextProcessingWorkflow
   def initialize(input_file_path)
     @logger = Logger.new(STDOUT)
-    @logger.level = Logger::DEBUG
+    @logger.level = Logger::INFO
     @orchestrator = WorkflowOrchestrator.new
     @text_processor = TextProcessor.instance
     @topic_modeler = TopicModelManager.new(
@@ -56,7 +56,7 @@ class TextProcessingWorkflow
     @logger.debug "Processing input file: #{@input_file_path}"
     text = File.read(@input_file_path)
     processed_text = @text_processor.process(text)
-    binding.pry # Breakpoint 1: After text processing
+    # binding.pry # Breakpoint 1: After text processing
     Jongleur::WorkerTask.class_variable_get(:@@redis).set("processed_text", processed_text.to_json)
     @logger.debug "Input processing completed"
   end
@@ -78,7 +78,7 @@ class TopicModelingTask < Jongleur::WorkerTask
       logger.debug "Retrieved processed text from Redis (length): #{raw_text.length}"
 
       processed_text = JSON.parse(raw_text)
-      binding.pry # Breakpoint 2: After retrieving and parsing text from Redis
+      # binding.pry # Breakpoint 2: After retrieving and parsing text from Redis
       logger.debug "Parsed processed text (length): #{processed_text.length}"
 
       topic_modeler = TopicModelManager.new(
@@ -102,7 +102,7 @@ class TopicModelingTask < Jongleur::WorkerTask
           logger.info "Model training completed"
         rescue StandardError => e
           logger.error "Error during model training: #{e.message}"
-          binding.pry # Breakpoint: When an error occurs during training
+          # binding.pry # Breakpoint: When an error occurs during training
           raise
         end
       end
@@ -110,14 +110,14 @@ class TopicModelingTask < Jongleur::WorkerTask
       logger.debug "Inferring topics"
       begin
         topics = topic_modeler.infer_topics(processed_text.join(" "), 5)
-        binding.pry # Breakpoint 3: After inferring topics
+        # binding.pry # Breakpoint 3: After inferring topics
         logger.debug "Topics inferred: #{topics}"
 
         @@redis.set("topics", topics.to_json)
         logger.debug "Stored topics in Redis"
       rescue StandardError => e
         logger.error "Error during topic inference: #{e.message}"
-        binding.pry # Breakpoint: When an error occurs during inference
+        # binding.pry # Breakpoint: When an error occurs during inference
         raise
       end
 
@@ -125,7 +125,7 @@ class TopicModelingTask < Jongleur::WorkerTask
     rescue StandardError => e
       logger.error "Error in TopicModelingTask: #{e.message}"
       logger.error e.backtrace.join("\n")
-      binding.pry # Breakpoint 4: If an error occurs
+      # binding.pry # Breakpoint 4: If an error occurs
       raise
     end
   end
@@ -138,7 +138,8 @@ class AdvancedAnalysisTask < Jongleur::WorkerTask
     logger.info "Starting AdvancedAnalysisTask"
 
     begin
-      agent = WorkflowAgent.new("advanced_analysis", "agents/advanced_analysis_cartridge.yml")
+      agent = WorkflowAgent.new("advanced_analysis", File.join(CARTRIDGE_DIR, "@b08x", "cartridges", "agents/advanced_analysis_cartridge.yml"))
+
       logger.debug "Created WorkflowAgent instance"
 
       agent.load_state
@@ -146,12 +147,12 @@ class AdvancedAnalysisTask < Jongleur::WorkerTask
 
       processed_text = JSON.parse(@@redis.get("processed_text"))
       topics = JSON.parse(@@redis.get("topics"))
-      binding.pry # Breakpoint 5: After retrieving processed text and topics
+      # binding.pry # Breakpoint 5: After retrieving processed text and topics
       logger.debug "Retrieved processed text and topics from Redis"
 
       logger.debug "Processing with agent"
-      analysis_result = agent.process("Analyze the following text and topics: #{processed_text.join(' ')}. Topics: #{topics}")
-      binding.pry # Breakpoint 6: After agent processing
+      analysis_result = agent.process("Given the following text and topics: #{processed_text.join(' ')}. Topics: #{topics}\ngenerate a short narrative")
+      # binding.pry # Breakpoint 6: After agent processing
       logger.debug "Agent processing completed"
 
       agent.save_state
@@ -164,7 +165,7 @@ class AdvancedAnalysisTask < Jongleur::WorkerTask
     rescue StandardError => e
       logger.error "Error in AdvancedAnalysisTask: #{e.message}"
       logger.error e.backtrace.join("\n")
-      binding.pry # Breakpoint 7: If an error occurs
+      # binding.pry # Breakpoint 7: If an error occurs
       raise
     end
   end
