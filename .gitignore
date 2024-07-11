@@ -27,3 +27,5 @@
 /docker/data.tar.gz
 flowbots.json
 /docker/docker-compose.yml
+/models/
+/examples/test/

@@ -41,7 +41,7 @@ class TextProcessingWorkflow
 
   def setup_workflow
     @logger.debug "Setting up workflow"
-    @orchestrator.add_agent("advanced_analysis", "agents/advanced_analysis_cartridge.yml", author: "@b08x")
+    @orchestrator.add_agent("advanced_analysis", "assistants/agileBloomMini.yml", author: "@b08x")
 
     workflow_graph = {
       TopicModelingTask: [:AdvancedAnalysisTask],
@@ -70,7 +70,7 @@ end
 class TopicModelingTask < Jongleur::WorkerTask
   def execute
     logger = Logger.new(STDOUT)
-    logger.level = Logger::DEBUG
+    logger.level = Logger::INFO
     logger.info "Starting TopicModelingTask"
 
     begin
@@ -78,46 +78,36 @@ class TopicModelingTask < Jongleur::WorkerTask
       logger.debug "Retrieved processed text from Redis (length): #{raw_text.length}"
 
       processed_text = JSON.parse(raw_text)
-      # binding.pry # Breakpoint 2: After retrieving and parsing text from Redis
       logger.debug "Parsed processed text (length): #{processed_text.length}"
 
-      topic_modeler = TopicModelManager.new(
-        File.join(
-          ENV.fetch("HOME", nil),
-          "Workspace",
-          "flowbots",
-          "models",
-          "topic_model.lda.bin"
-        )
-      )
+      topic_modeler = TopicModelManager.new(File.join(ENV["HOME"], "Workspace", "flowbots", "models", "topic_model.lda.bin"))
       logger.debug "Created TopicModelManager instance"
 
       # Train the model if it's not already trained
-      if topic_modeler.model_trained?
-        logger.info "Model is already trained"
-      else
+      unless topic_modeler.model_trained?
         logger.info "Model is not trained. Training now..."
         begin
           topic_modeler.train_model(processed_text)
           logger.info "Model training completed"
         rescue StandardError => e
           logger.error "Error during model training: #{e.message}"
-          # binding.pry # Breakpoint: When an error occurs during training
           raise
         end
+      else
+        logger.info "Model is already trained"
       end
 
       logger.debug "Inferring topics"
       begin
-        topics = topic_modeler.infer_topics(processed_text.join(" "), 5)
-        # binding.pry # Breakpoint 3: After inferring topics
-        logger.debug "Topics inferred: #{topics}"
+        topics_info = topic_modeler.infer_topics(processed_text.join(" "), 5)
+        logger.info "Most probable topic: #{topics_info[:most_probable_topic]}"
+        logger.info "Top words: #{topics_info[:top_words].map { |word, prob| word }.join(', ')}"
+        logger.debug "Full topic distribution: #{topics_info[:topic_distribution]}"
 
-        @@redis.set("topics", topics.to_json)
-        logger.debug "Stored topics in Redis"
+        @@redis.set("topics_info", topics_info.to_json)
+        logger.debug "Stored topics info in Redis"
       rescue StandardError => e
         logger.error "Error during topic inference: #{e.message}"
-        # binding.pry # Breakpoint: When an error occurs during inference
         raise
       end
 
@@ -125,7 +115,6 @@ class TopicModelingTask < Jongleur::WorkerTask
     rescue StandardError => e
       logger.error "Error in TopicModelingTask: #{e.message}"
       logger.error e.backtrace.join("\n")
-      # binding.pry # Breakpoint 4: If an error occurs
       raise
     end
   end
@@ -138,7 +127,7 @@ class AdvancedAnalysisTask < Jongleur::WorkerTask
     logger.info "Starting AdvancedAnalysisTask"
 
     begin
-      agent = WorkflowAgent.new("advanced_analysis", File.join(CARTRIDGE_DIR, "@b08x", "cartridges", "agents/advanced_analysis_cartridge.yml"))
+      agent = WorkflowAgent.new("advanced_analysis", File.join(CARTRIDGE_DIR, "@b08x", "cartridges", "assistants/agileBloomMini.yml"))
 
       logger.debug "Created WorkflowAgent instance"
 

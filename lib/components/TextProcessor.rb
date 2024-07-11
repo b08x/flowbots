@@ -1,10 +1,9 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require "ruby-spacy"
-require_relative "segmentation"
-require "logger"
 require "singleton"
+
+require_relative "segmentation"
 
 class TextProcessor
   include Singleton

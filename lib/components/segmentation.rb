@@ -3,7 +3,6 @@
 
 require "lingua"
 require "pragmatic_segmenter"
-require "logger"
 
 class TextSegmenter
   DEFAULT_OPTIONS = { language: "en", doc_type: "none", clean: false }

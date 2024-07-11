@@ -1,13 +1,14 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+require "pry"
 require "pry-stack_explorer"
 
+require "pastel"
+require "thor"
+require "tty-box"
 require "tty-prompt"
 require "tty-table"
-require "tty-box"
-require "thor"
-require "pastel"
 
 module Flowbots
   autoload :VERSION, "version"
@@ -16,12 +17,15 @@ end
 
 require "helper"
 require "cogger"
-require "jongleur"
+
 require "json"
-require "nano-bots"
 require "redis"
 require "yaml"
 require "dotenv"
+
+require "ruby-spacy"
+require "nano-bots"
+require "jongleur"
 
 begin
   Dotenv.load(File.join(__dir__, "..", ".env"))
