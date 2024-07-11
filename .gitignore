@@ -24,3 +24,6 @@
 /docker/*.pem
 /docs/agenta.json
 .venv/
+/docker/data.tar.gz
+flowbots.json
+/docker/docker-compose.yml
