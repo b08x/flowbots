@@ -3,8 +3,6 @@
 
 # text_processing_workflow.rb
 # Description: A text processing workflow that processes a text file, segments it, and performs topic modeling
-# text_processing_workflow.rb
-# Description: A text processing workflow that processes a text file, segments it, and performs topic modeling
 
 require_relative "../components/TextProcessor"
 require_relative "../components/TopicModelManager"
@@ -94,16 +92,34 @@ class TopicModelingTask < Jongleur::WorkerTask
       )
       logger.debug "Created TopicModelManager instance"
 
-      modeler = topic_modeler.load_or_create_model
-      logger.debug "Loaded or created topic model"
+      # Train the model if it's not already trained
+      if topic_modeler.model_trained?
+        logger.info "Model is already trained"
+      else
+        logger.info "Model is not trained. Training now..."
+        begin
+          topic_modeler.train_model(processed_text)
+          logger.info "Model training completed"
+        rescue StandardError => e
+          logger.error "Error during model training: #{e.message}"
+          binding.pry # Breakpoint: When an error occurs during training
+          raise
+        end
+      end
 
       logger.debug "Inferring topics"
-      topics = topic_modeler.infer_topics(processed_text.join(" "), 5)
-      binding.pry # Breakpoint 3: After inferring topics
-      logger.debug "Topics inferred: #{topics}"
+      begin
+        topics = topic_modeler.infer_topics(processed_text.join(" "), 5)
+        binding.pry # Breakpoint 3: After inferring topics
+        logger.debug "Topics inferred: #{topics}"
 
-      @@redis.set("topics", topics.to_json)
-      logger.debug "Stored topics in Redis"
+        @@redis.set("topics", topics.to_json)
+        logger.debug "Stored topics in Redis"
+      rescue StandardError => e
+        logger.error "Error during topic inference: #{e.message}"
+        binding.pry # Breakpoint: When an error occurs during inference
+        raise
+      end
 
       logger.info "TopicModelingTask completed"
     rescue StandardError => e
