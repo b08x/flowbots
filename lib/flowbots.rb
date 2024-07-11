@@ -1,6 +1,8 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+require "pry-stack_explorer"
+
 require "tty-prompt"
 require "tty-table"
 require "tty-box"
@@ -20,6 +22,7 @@ require "nano-bots"
 require "redis"
 require "yaml"
 require "dotenv"
+require_relative "workflows/text_processing_workflow"
 
 begin
   Dotenv.load(File.join(__dir__, "..", ".env"))
@@ -90,6 +93,27 @@ module Flowbots
       selected = prompt.select("Choose a workflow to run:", workflow_names)
 
       run_workflow(selected)
+    end
+
+    desc "process_text FILE", "Process a text file using the text processing workflow"
+    def process_text(file)
+      pastel = Pastel.new
+
+      unless File.exist?(file)
+        say pastel.red("File not found: #{file}")
+        exit
+      end
+
+      say pastel.green("Processing file: #{file}")
+
+      begin
+        workflow = TextProcessingWorkflow.new(file)
+        workflow.run
+        say pastel.green("Text processing completed successfully")
+      rescue StandardError => e
+        say pastel.red("Error processing text: #{e.message}")
+        say pastel.red(e.backtrace.join("\n"))
+      end
     end
 
     private

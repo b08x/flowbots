@@ -37,3 +37,7 @@ gem "kramdown", "~> 2.4"
 gem "tty-table", "~> 0.12.0"
 
 gem "tty-box", "~> 0.7.0"
+
+gem "timeout", "~> 0.4.1"
+
+gem "pry-stack_explorer", "~> 0.6.1"
