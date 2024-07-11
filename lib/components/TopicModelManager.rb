@@ -49,8 +49,26 @@ class TopicModelManager
         @logger.warn "Skipping empty document"
         next
       end
+      @logger.debug "#{doc}"
       @model.add_doc(doc)
     end
+
+    @model.burn_in = iterations
+    @logger.debug "Burn-in set to #{iterations}"
+
+    @model.train(0)
+    @logger.info "Model training completed"
+
+    puts "Num docs: #{@model.num_docs}, Vocab size: #{@model.used_vocabs.length}, Num words: #{@model.num_words}"
+    puts "Removed top words: #{@model.removed_top_words}"
+    puts "Training..."
+
+    100.times do |i|
+      @model.train(10)
+      puts "Iteration: #{i * 10}\tLog-likelihood: #{@model.ll_per_word}"
+    end
+
+    puts @model.summary
 
     if @model.num_words == 0
       @logger.error "No valid words found in the provided documents"
@@ -58,12 +76,6 @@ class TopicModelManager
     end
 
     @logger.debug "Documents added to model. Vocab size: #{@model.used_vocabs.length}, Total words: #{@model.num_words}"
-
-    @model.burn_in = iterations
-    @logger.debug "Burn-in set to #{iterations}"
-
-    @model.train(iterations)
-    @logger.info "Model training completed"
 
     save_model
   end
@@ -87,8 +99,28 @@ class TopicModelManager
     end
 
     @logger.debug "Inferring topics for text: #{text[0..100]}..." # Log only first 100 chars
-    doc_vec = @model.infer(text.split)
-    result = doc_vec.sort_by { |_, v| -v }.take(num_topics).to_h
+
+    doc = @model.make_doc(text)
+    topic_dist, ll = @model.infer(doc)
+
+    # Check if topic_dist is nil before processing
+    if topic_dist.nil?
+      @logger.error "Topic inference failed. Returning empty topics."
+      return {}
+    end
+
+    most_probable_topic = topic_dist.each_with_index.max_by { |prob, _| prob }[1]
+
+    puts "The most probable topic for this document is Topic #{most_probable_topic}"
+
+    # Print the full topic distribution
+    topic_dist.each_with_index do |prob, topic_id|
+      @logger.debug "Topic #{topic_id}: #{prob}"
+    end
+
+    result = @model.topic_words(most_probable_topic, top_n: 10)
+
+
     @logger.debug "Inferred topics: #{result}"
     result
   end

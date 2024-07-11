@@ -11,7 +11,7 @@ class TextProcessor
 
   def initialize
     @logger = Logger.new(STDOUT)
-    @logger.level = Logger::DEBUG
+    @logger.level = Logger::INFO
     @logger.info "Initializing TextProcessor"
 
     load_nlp_model
