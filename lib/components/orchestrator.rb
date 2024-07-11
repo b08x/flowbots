@@ -14,13 +14,12 @@ class WorkflowOrchestrator
     @agents[role] = WorkflowAgent.new(role, cartridge_path)
   end
 
-
   def define_workflow(workflow_definition)
     Jongleur::API.add_task_graph(workflow_definition)
   end
 
   def run_workflow
-    Jongleur::API.print_graph('/tmp')
+    Jongleur::API.print_graph("/tmp")
 
     Jongleur::API.run do |on|
       on.completed do |task_matrix|

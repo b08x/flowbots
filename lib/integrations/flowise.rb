@@ -1,9 +1,9 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require 'faraday'
-require 'faraday/multipart'
-require 'json'
+require "faraday"
+require "faraday/multipart"
+require "json"
 
 class FlowiseApiClient
   def initialize(base_url)
@@ -15,7 +15,7 @@ class FlowiseApiClient
     end
   end
 
-  def predict(chatflow_id, options = {})
+  def predict(chatflow_id, options={})
     endpoint = "/api/v1/prediction/#{chatflow_id}"
 
     if options[:file_path]
@@ -23,7 +23,7 @@ class FlowiseApiClient
       payload = {
         files: Faraday::Multipart::FilePart.new(
           options[:file_path],
-          'application/octet-stream',
+          "application/octet-stream",
           File.basename(options[:file_path])
         )
       }
@@ -32,7 +32,7 @@ class FlowiseApiClient
       payload[:promptValues] = options[:prompt_values].to_json if options[:prompt_values]
 
       response = @conn.post(endpoint) do |req|
-        req.headers['Content-Type'] = 'multipart/form-data'
+        req.headers["Content-Type"] = "multipart/form-data"
         req.body = payload
       end
     else
@@ -40,7 +40,7 @@ class FlowiseApiClient
       payload = options.slice(:question, :history, :overrideConfig, :socketIOClientId)
 
       response = @conn.post(endpoint) do |req|
-        req.headers['Content-Type'] = 'application/json'
+        req.headers["Content-Type"] = "application/json"
         req.body = payload.to_json
       end
     end
@@ -48,13 +48,13 @@ class FlowiseApiClient
     handle_response(response)
   end
 
-  def upsert_document(chatflow_id, file_path, local_ai_config = {})
+  def upsert_document(chatflow_id, file_path, local_ai_config={})
     endpoint = "/api/v1/vector/upsert/#{chatflow_id}"
 
     payload = {
       files: Faraday::Multipart::FilePart.new(
         file_path,
-        'application/octet-stream',
+        "application/octet-stream",
         File.basename(file_path)
       ),
       localAIApiKey: local_ai_config[:api_key],
@@ -63,7 +63,7 @@ class FlowiseApiClient
     }
 
     response = @conn.post(endpoint) do |req|
-      req.headers['Content-Type'] = 'multipart/form-data'
+      req.headers["Content-Type"] = "multipart/form-data"
       req.body = payload
     end
 
@@ -82,11 +82,10 @@ class FlowiseApiClient
   end
 end
 
-#TODO: assign chatflow_ids to names
+# TODO: assign chatflow_ids to names
 
 # Example usage:
-client = FlowiseApiClient.new('http://tinybot.syncopated.net:3002')
-
+client = FlowiseApiClient.new("http://tinybot.syncopated.net:3002")
 
 # # For prediction with file upload
 # result = client.predict('6aeba7f6-cefa-4fa2-9e8a-00c38094e4d5',
@@ -98,11 +97,11 @@ client = FlowiseApiClient.new('http://tinybot.syncopated.net:3002')
 # puts result
 
 # For prediction with simple query
-query_result = client.predict('6aeba7f6-cefa-4fa2-9e8a-00c38094e4d5',
+query_result = client.predict(
+  "6aeba7f6-cefa-4fa2-9e8a-00c38094e4d5",
   question: "How to connect subjects to objects?"
 )
 puts query_result
-
 
 # # For document upsert
 # upsert_result = client.upsert_document('73406ff6-bf12-4c09-bd43-485ceb30b8ca',
