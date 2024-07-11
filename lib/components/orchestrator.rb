@@ -2,14 +2,18 @@
 # frozen_string_literal: true
 
 class WorkflowOrchestrator
+  CARTRIDGE_BASE_DIR = File.expand_path("../../nano-bots/cartridges", __dir__)
+
   def initialize
     @agents = {}
   end
 
-  def add_agent(role, cartridge_file)
-    cartridge_path = File.join(CARTRIDGE_DIR, cartridge_file)
+  def add_agent(role, cartridge_file, author: "@b08x")
+    cartridge_path = File.join(CARTRIDGE_BASE_DIR, author, "cartridges", cartridge_file)
 
-    raise "Cartridge file not found: \"#{cartridge_path}\"" unless File.exist?(cartridge_path)
+    unless File.exist?(cartridge_path)
+      raise "Cartridge file not found: \"#{cartridge_path}\""
+    end
 
     @agents[role] = WorkflowAgent.new(role, cartridge_path)
   end

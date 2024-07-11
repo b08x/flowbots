@@ -33,3 +33,7 @@ gem "langchainrb", "~> 0.13.5"
 gem "pdf-reader", "~> 2.12"
 
 gem "kramdown", "~> 2.4"
+
+gem "tty-table", "~> 0.12.0"
+
+gem "tty-box", "~> 0.7.0"

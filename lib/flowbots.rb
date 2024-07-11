@@ -2,7 +2,10 @@
 # frozen_string_literal: true
 
 require "tty-prompt"
+require "tty-table"
+require "tty-box"
 require "thor"
+require "pastel"
 
 module Flowbots
   autoload :VERSION, "version"
@@ -10,51 +13,48 @@ module Flowbots
 end
 
 require "helper"
-
 require "cogger"
 require "jongleur"
 require "json"
 require "nano-bots"
 require "redis"
 require "yaml"
-
 require "dotenv"
 
 begin
   Dotenv.load(File.join(__dir__, "..", ".env"))
 rescue StandardError => e
-  puts "hey"
+  puts "Error loading .env file: #{e.message}"
 end
 
 require "logging"
-
 include Logging
 
 CARTRIDGE_DIR = File.expand_path("../nano-bots/cartridges/", __dir__)
-
-p Dir.new(CARTRIDGE_DIR).entries
+WORKFLOW_DIR = File.expand_path("../lib/workflows/", __dir__)
 
 require_relative "components/orchestrator"
 require_relative "components/agent"
-
 require "ui"
 
 class Jongleur::WorkerTask
   begin
     @@redis = Redis.new(host: "localhost", port: 6379, db: 15)
-    # @@redis.flushall
-    # exit
   rescue Redis::CannotConnectError => e
     handle_error(self.class.name, e)
     exit
   end
 end
 
-Flowbots::UI.say(:ok, "hey")
+Flowbots::UI.say(:ok, "Flowbots initialized")
 
 module Flowbots
   class CLI < Thor
     extend ThorExt::Start
+
+    def self.exit_on_failure?
+      true
+    end
 
     map %w[-v --version] => "version"
 
@@ -63,30 +63,61 @@ module Flowbots
       say "flowbots/#{VERSION} #{RUBY_DESCRIPTION}"
     end
 
-    desc "select WORKFLOW", "Select a workflow to run"
-    def select(workflow_name)
-      # TODO: Implement logic to select a workflow by name
-      # This might involve:
-      #   - Listing available workflows
-      #   - Validating the provided workflow name
-      #   - Storing the selected workflow for later use
-      say "Selected workflow: #{workflow_name}"
-    end
-
-    desc "examples", "Select an example to run"
-    def examples
-      # TODO: Implement logic to select an example by name
-      # This might involve:
-      #   - Listing available examples
-      #   - Validating the provided example name
-      #   - Constructing the full path to the example file
-      #   - Potentially, executing the example (e.g., if it's a script)
-      # Use tty-prompt for example selection
+    desc "workflows", "List and select a workflow to run"
+    def workflows
       prompt = TTY::Prompt.new
-      example_choice = prompt.select("Choose an example to run:", %w[crazy-story-gen.rb audio-workstation-config.rb multi-agent-workflow-gen.rb tree-of-thoughts.rb])
-      puts "You selected: #{example_choice}"
-      say "Selected example: #{example_choice}"
+      pastel = Pastel.new
+
+      workflows = Dir.glob(File.join(WORKFLOW_DIR, "*.rb")).map do |file|
+        name = File.basename(file, ".rb")
+        description = extract_workflow_description(file)
+        [name, description]
+      end
+
+      if workflows.empty?
+        say pastel.red("No workflows found in #{WORKFLOW_DIR}")
+        exit
+      end
+
+      table = TTY::Table.new(
+        header: [pastel.cyan("Workflow"), pastel.cyan("Description")],
+        rows: workflows
+      )
+
+      puts table.render(:unicode, padding: [0, 1])
+
+      workflow_names = workflows.map { |w| w[0] }
+      selected = prompt.select("Choose a workflow to run:", workflow_names)
+
+      run_workflow(selected)
     end
 
+    private
+
+    def extract_workflow_description(file)
+      first_line = File.open(file, &:readline).strip
+      first_line.start_with?("# Description:") ? first_line[14..-1] : "No description available"
+    end
+
+    def run_workflow(workflow_name)
+      pastel = Pastel.new
+      workflow_file = File.join(WORKFLOW_DIR, "#{workflow_name}.rb")
+
+      unless File.exist?(workflow_file)
+        say pastel.red("Workflow file not found: #{workflow_file}")
+        exit
+      end
+
+      say pastel.green("Running workflow: #{workflow_name}")
+      load workflow_file
+
+      # Assume the workflow file defines a class named after the file
+      workflow_class = Object.const_get(workflow_name.split("_").map(&:capitalize).join)
+      workflow = workflow_class.new
+      workflow.run
+    rescue StandardError => e
+      say pastel.red("Error running workflow: #{e.message}")
+      say pastel.red(e.backtrace.join("\n"))
+    end
   end
 end
