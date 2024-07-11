@@ -22,7 +22,6 @@ require "nano-bots"
 require "redis"
 require "yaml"
 require "dotenv"
-require_relative "workflows/text_processing_workflow"
 
 begin
   Dotenv.load(File.join(__dir__, "..", ".env"))
@@ -38,6 +37,9 @@ WORKFLOW_DIR = File.expand_path("../lib/workflows/", __dir__)
 
 require_relative "components/orchestrator"
 require_relative "components/agent"
+
+require_relative "workflows/text_processing_workflow"
+
 require "ui"
 
 class Jongleur::WorkerTask
