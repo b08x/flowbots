@@ -14,7 +14,7 @@ class WorkflowAgent
     pastel = Pastel.new
     @bot.eval(input) do |content, fragment, finished, meta|
       @response = content unless content.nil?
-      print pastel.magenta(fragment) unless fragment.nil?
+      print pastel.blue(fragment) unless fragment.nil?
       # print fragment unless fragment.nil?
       sleep 0.025
     end

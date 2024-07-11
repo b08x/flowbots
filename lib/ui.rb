@@ -1,12 +1,12 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: false
 
-require "os"
+require "cli/ui"
 require "highline/import"
+require "os"
+require "pastel"
 require "tty-prompt"
 require "tty-spinner"
-require "pastel"
-require "cli/ui"
 
 module Flowbots
   module UI

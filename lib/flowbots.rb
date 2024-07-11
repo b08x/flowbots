@@ -21,20 +21,10 @@ require "cogger"
 require "json"
 require "redis"
 require "yaml"
-require "dotenv"
 
 require "ruby-spacy"
 require "nano-bots"
 require "jongleur"
-
-begin
-  Dotenv.load(File.join(__dir__, "..", ".env"))
-rescue StandardError => e
-  puts "Error loading .env file: #{e.message}"
-end
-
-require "logging"
-include Logging
 
 CARTRIDGE_DIR = File.expand_path("../nano-bots/cartridges/", __dir__)
 WORKFLOW_DIR = File.expand_path("../lib/workflows/", __dir__)
