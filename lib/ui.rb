@@ -5,8 +5,10 @@ require "cli/ui"
 require "highline/import"
 require "os"
 require "pastel"
+require "tty-box"
 require "tty-prompt"
 require "tty-spinner"
+require "tty-table"
 
 module Flowbots
   module UI
@@ -40,6 +42,49 @@ module Flowbots
       else
         @pastel.say(statement)
       end
+    end
+  end
+end
+
+module UIBox
+  class << self
+    def comparison_box(text1, text2, title1: "Text 1", title2: "Text 2")
+      width = [text1.length, text2.length, 40].max + 4
+      box1 = TTY::Box.frame(width: width, title: {top_left: title1}, padding: 1) { text1 }
+      box2 = TTY::Box.frame(width: width, title: {top_left: title2}, padding: 1) { text2 }
+      box1 + "\n" + box2
+    end
+
+    def eval_result_box(result, title: "Evaluation Result")
+      TTY::Box.success(result, title: {top_left: title}, width: 50, padding: 1)
+    end
+
+    def error_box(message)
+      TTY::Box.error(message, title: {top_left: "Error"}, width: 50, padding: 1)
+    end
+
+    def info_box(message, title: "Info")
+      TTY::Box.info(message, title: {top_left: title}, width: 50, padding: 1)
+    end
+
+    def multi_column_box(data, titles)
+      max_widths = data.transpose.map { |col| col.map(&:to_s).map(&:length).max }
+      total_width = max_widths.sum + (3 * (max_widths.size - 1)) + 4
+
+      rows = data.map do |row|
+        row.zip(max_widths).map { |cell, width| cell.to_s.ljust(width) }.join(" | ")
+      end
+
+      header = titles.zip(max_widths).map { |title, width| title.to_s.ljust(width) }.join(" | ")
+      separator = max_widths.map { |w| "-" * w }.join("-+-")
+
+      content = [
+        header,
+        separator,
+        rows.join("\n")
+      ].join("\n")
+
+      TTY::Box.frame(content, width: total_width, padding: 1)
     end
   end
 end

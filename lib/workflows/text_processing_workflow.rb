@@ -31,6 +31,7 @@ class TextProcessingWorkflow
     process_input
     run_topic_modeling
     run_workflow
+    display_results
     logger.info "Text Processing Workflow completed"
   end
 
@@ -65,6 +66,15 @@ class TextProcessingWorkflow
   def run_workflow
     logger.info "Running LLM Analysis workflow"
     @orchestrator.run_workflow
+  end
+
+  def display_results
+    raw_text = File.read(@input_file_path)
+    processed_text = JSON.parse(Jongleur::WorkerTask.class_variable_get(:@@redis).get("processed_text"))
+    analysis_result = JSON.parse(Jongleur::WorkerTask.class_variable_get(:@@redis).get("analysis_result"))
+
+    puts UIBox.comparison_box(raw_text[0..100], processed_text[0..100], title1: "Raw Text", title2: "Processed Text")
+    puts UIBox.eval_result_box(analysis_result, title: "LLM Analysis Result")
   end
 end
 

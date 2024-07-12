@@ -4,11 +4,7 @@
 require "pry"
 require "pry-stack_explorer"
 
-require "pastel"
 require "thor"
-require "tty-box"
-require "tty-prompt"
-require "tty-table"
 
 module Flowbots
   autoload :VERSION, "version"
@@ -46,6 +42,9 @@ class Jongleur::WorkerTask
 end
 
 Flowbots::UI.say(:ok, "Flowbots initialized")
+
+puts UIBox.info_box("Hey! It's FlowBots!")
+sleep 1
 
 module Flowbots
   class CLI < Thor
