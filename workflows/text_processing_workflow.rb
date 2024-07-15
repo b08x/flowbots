@@ -4,18 +4,24 @@
 # text_processing_workflow.rb
 # Description: A text processing workflow that processes a text file, segments it, and performs topic modeling
 
-require_relative "../modules/Segmentation"
-require_relative "../modules/TopicModeling"
+require_relative "../lib/modules/Segmentation"
+require_relative "../lib/modules/TopicModeling"
+require_relative "../lib/modules/TextProcessor"
 
+require_relative "../lib/components/TopicModelManager"
 
-require_relative "../components/TextProcessor"
-require_relative "../components/TopicModelManager"
 
 
 class TextProcessingWorkflow
+
+  def self.description
+    description = "This is a test."
+  end
+
+
   def initialize(input_file_path)
-    # logger = Logger.new(STDOUT)
-    # logger.level = Logger::INFO
+    logger = Logger.new(STDOUT)
+    logger.level = Logger::INFO
     @orchestrator = WorkflowOrchestrator.new
     @text_processor = TextProcessor.instance
     @input_file_path = input_file_path
@@ -73,7 +79,7 @@ class TextProcessingWorkflow
     processed_text = JSON.parse(Jongleur::WorkerTask.class_variable_get(:@@redis).get("processed_text"))
     analysis_result = JSON.parse(Jongleur::WorkerTask.class_variable_get(:@@redis).get("analysis_result"))
 
-    puts UIBox.comparison_box(raw_text[0..100], processed_text[0..100], title1: "Raw Text", title2: "Processed Text")
+    puts UIBox.comparison_box("yer mother was a whore", "But she had a sense of humor about it at least", title1: "Raw Text", title2: "Processed Text")
     puts UIBox.eval_result_box(analysis_result, title: "LLM Analysis Result")
   end
 end
@@ -121,7 +127,7 @@ class LLMAnalysisTask < Jongleur::WorkerTask
     rescue StandardError => e
       logger.error "Error in LLMAnalysisTask: #{e.message}"
       logger.error e.backtrace.join("\n")
-      # binding.pry # Breakpoint 7: If an error occurs
+      # binding.pry if PRYDEBUG # Breakpoint 7: If an error occurs
       raise
     end
   end
