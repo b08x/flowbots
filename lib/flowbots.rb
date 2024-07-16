@@ -3,47 +3,49 @@
 
 require "pry"
 require "pry-stack_explorer"
-
-# Thor is a library for creating command-line interfaces.
 require "thor"
-
-# The Flowbots module encapsulates the core functionality of the application.
-module Flowbots
-  # The VERSION constant holds the current version of Flowbots.
-  autoload :VERSION, "version"
-  # The ThorExt module provides extensions to the Thor library.
-  autoload :ThorExt, "thor_ext"
-end
-
-# Helper functions and utilities.
-require "helper"
-
-# Cogger is a logging library.
-require "cogger"
-
-# JSON, Redis, and YAML are used for data serialization and storage.
 require "json"
 require "redis"
 require "yaml"
-
-# Ruby-Spacy is a library for natural language processing.
 require "ruby-spacy"
-# Nano-bots is a library for building workflow components.
 require "nano-bots"
-# Jongleur is a library for managing asynchronous tasks.
 require "jongleur"
 
-# The CARTRIDGE_DIR constant defines the path to the directory containing workflow cartridges.
+module Flowbots
+  autoload :VERSION, "version"
+  autoload :ThorExt, "thor_ext"
+end
+
+require "helper"
+require "ui"
+
 CARTRIDGE_DIR = File.expand_path("../nano-bots/cartridges/", __dir__)
-# The WORKFLOW_DIR constant defines the path to the directory containing workflow definitions.
 WORKFLOW_DIR = File.expand_path("../workflows/", __dir__)
+
+# Configuration for Redis connection
+REDIS_CONFIG = {
+  host: "localhost",
+  port: 6377,
+  db: 15
+}
+
+# Define a class to manage Redis connection
+class RedisConnection
+  def initialize
+    @redis = Redis.new(REDIS_CONFIG)
+  end
+
+  def redis
+    @redis
+  end
+end
 
 # Orchestrator and Agent are core components of the Flowbots architecture.
 require_relative "components/WorkflowOrchestrator"
 require_relative "components/WorkflowAgent"
 
-require_relative "components/ErrorHandlerAgent"
-require_relative "components/ErrorHandlerManager"
+# require_relative "components/ExceptionAgent"
+require_relative "components/ExceptionHandler"
 
 module Flowbots
   class FlowBotError < StandardError
@@ -106,9 +108,10 @@ require "ui"
 class Jongleur::WorkerTask
   # Initialize a Redis connection.
   begin
-    @@redis = Redis.new(host: "localhost", port: 6379, db: 15)
+    redis_connection = RedisConnection.new
+    @@redis = redis_connection.redis
   rescue Redis::CannotConnectError => e
-    ErrorManager.handle_error(self.class.name, e)
+    puts "heeeey! Unable to connect to redis\n"
     exit
   end
 end

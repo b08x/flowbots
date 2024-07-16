@@ -6,8 +6,8 @@ class WorkflowOrchestrator
 
   def initialize
     @agents = {}
-    # logger = Logger.new(STDOUT)
-    # logger.level = Logger::DEBUG
+    logger = Logger.new(STDOUT)
+    logger.level = Logger::DEBUG
   end
 
   def add_agent(role, cartridge_file, author: "@b08x")

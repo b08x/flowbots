@@ -20,8 +20,8 @@ class TextProcessingWorkflow
 
 
   def initialize(input_file_path)
-    logger = Logger.new(STDOUT)
-    logger.level = Logger::INFO
+    # logger = Logger.new(STDOUT)
+    # logger.level = Logger::INFO
     @orchestrator = WorkflowOrchestrator.new
     @text_processor = TextProcessor.instance
     @input_file_path = input_file_path
@@ -32,7 +32,7 @@ class TextProcessingWorkflow
   end
 
   def run
-    logger.info "Starting Text Processing Workflow"
+    FlowBots::NattyUI.info "Starting Text Processing Workflow"
     setup_workflow
     process_input
     run_topic_modeling

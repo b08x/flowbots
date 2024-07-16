@@ -3,7 +3,6 @@ gemspec
 
 gem "ansi_palette", "~> 0.0.1"
 gem "cli-ui", "~> 2.2"
-gem "cogger", "~> 0.4.0"
 gem "groq", "~> 0.3.1"
 gem "highline", "~> 3.0"
 gem "kramdown", "~> 2.4"
@@ -32,3 +31,5 @@ gem "tty-spinner", "~> 0.9.3"
 gem "tty-table", "~> 0.12.0"
 
 gem "tty-screen", "~> 0.8.2"
+
+gem "tty-markdown", "~> 0.7.2"

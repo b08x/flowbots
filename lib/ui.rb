@@ -10,6 +10,7 @@ require "tty-prompt"
 require "tty-spinner"
 require "tty-table"
 require "tty-screen"
+require "natty-ui"
 
 TITLE_WIDTH = 80
 
@@ -47,16 +48,19 @@ module Flowbots
       end
     end
   end
+
+
+
 end
 
 module UIBox
   class << self
     def comparison_box(text1, text2, title1: "Text 1", title2: "Text 2")
-      
+
       screen_width = TTY::Screen.width - 2
 
       text_width = [text1.length, text2.length, 40].max + 4
-     
+
 
       width = text_width < screen_width ? screen_width : TITLE_WIDTH
 
@@ -97,4 +101,61 @@ module UIBox
       TTY::Box.frame(content, width: total_width, padding: 1)
     end
   end
+end
+
+
+module Flowbots
+  module NattyUI
+    module_function
+
+    IMPORTANT =
+      '[[red]]>>>[[/]] [[italic]]Here some important information[[/]] [[red]]<<<'
+
+    def info(text)
+      header
+      ui.framed do
+        ui.info 'Informative Message' do
+          ui.puts text, glyph: '💡'
+        end
+      end
+    end
+
+    def exception(text)
+      ui.framed do
+        ui.failed 'Informative Message' do
+          ui.puts text, glyph: '💡'
+        end
+      end
+    end
+
+    def header
+      ui.space
+      ui.h1 'NattyUI: Message Types'
+      ui.space
+    end
+    #
+    # TEXT = <<~TEXT.tr("\n", ' ')
+    #   Lorem [[yellow]]ipsum[[/]] dolor sit amet, consectetur adipisicing elit, sed
+    #   do eiusmod tempor incididunt ut labore et dolore [[red]]magna[[/]] aliqua.
+    #   Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+    #   aliquip ex ea commodo [[bold]]consequat[[/]].
+    # TEXT
+    #
+    #
+    #
+    # ui.framed do
+    #   ui.info 'Informative Message', TEXT
+    #   ui.warning 'Warning Message' do
+    #     ui.puts TEXT
+    #     ui.framed { ui.puts IMPORTANT }
+    #   end
+    #   ui.error 'Error Message', TEXT
+    #   ui.failed 'Fail Message', TEXT
+    #   ui.message '[[italic #fad]]Custom Message', TEXT, glyph: '💡'
+    # end
+    #
+    # ui.space
+
+  end
+
 end
