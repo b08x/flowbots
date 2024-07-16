@@ -13,7 +13,6 @@ module Flowbots
     def initialize
       logger.info "Initializing #{self.class.name}"
       Flowbots::UI.say(:ok, "Initializing #{self.class.name}")
-      load_model
       logger.info "#{self.class.name} initialization completed"
       Flowbots::UI.say(:ok, "#{self.class.name} initialization completed")
     end
@@ -32,10 +31,6 @@ module Flowbots
     end
 
     protected
-
-    def load_model
-      raise NotImplementedError, "#{self.class.name}#load_model must be implemented in subclass"
-    end
 
     def segment_text(text)
       logger.debug "Creating TextSegmenter"

@@ -38,13 +38,14 @@ class WorkflowOrchestrator
       logger.debug "Printing graph to /tmp"
       Jongleur::API.print_graph("/tmp")
 
-      logger.debug "Starting Jongleur::API.run"
+      Flowbots::UI.info "Starting Jongleur::API.run"
       Jongleur::API.run do |on|
         on.start do |task|
           Flowbots::UI.info "Starting task: #{task}"
         end
 
         on.finish do |task|
+          p Jongleur::API.get_predecessor_pids(task)
           Flowbots::UI.info "Finished task: #{task}"
         end
 
@@ -54,8 +55,11 @@ class WorkflowOrchestrator
         end
 
         on.completed do |task_matrix|
-          Flowbots::UI.info "Workflow completed"
-          logger.debug "Task matrix: #{task_matrix}"
+          ui.framed do
+            ui.puts "Workflow completed"
+            ui.space
+            ui.puts "Task matrix: #{task_matrix}"
+          end
         end
       end
     rescue StandardError => e

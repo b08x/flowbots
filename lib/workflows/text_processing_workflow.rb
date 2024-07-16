@@ -8,8 +8,10 @@ module Flowbots
   class TextProcessingWorkflow
     include Logging
 
-    def initialize(input_file_path)
-      @input_file_path = input_file_path
+    attr_accessor :input_file_path
+
+    def initialize(input_file_path = nil)
+      @input_file_path = input_file_path || prompt_for_file # Assign or prompt
       @orchestrator = WorkflowOrchestrator.new
       @nlp_processor = NLPProcessor.instance
       @topic_modeling_processor = TopicModelProcessor.instance
@@ -32,6 +34,15 @@ module Flowbots
 
     private
 
+    def prompt_for_file
+      get_file_path = `gum file`.chomp.strip
+      file_path = File.join(get_file_path)
+      unless File.exist?(file_path)
+        raise FlowbotError.new("File not found", "FILENOTFOUND")
+      end
+      file_path
+    end
+
     def setup_workflow
       logger.debug "Setting up workflow"
 
@@ -46,7 +57,7 @@ module Flowbots
     end
 
     def process_input
-      logger.debug "Processing input file: #{@input_file_path}"
+      Flowbots::UI.info "Processing input file: #{@input_file_path}"
       text = File.read(@input_file_path)
       processed_text = @nlp_processor.process(text)
       store_processed_text(processed_text)
@@ -67,7 +78,7 @@ module Flowbots
 
     def run_workflow
       Flowbots::UI.info "Running LLM Analysis workflow"
-      @orchestrator.add_agent("advanced_analysis", "assistants/agileBloomMini.yml", author: "@b08x")
+      # @orchestrator.add_agent("ironically_literal", "assistants/steve.yml", author: "@b08x")
       @orchestrator.run_workflow
     end
 

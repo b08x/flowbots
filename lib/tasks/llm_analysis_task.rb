@@ -9,8 +9,8 @@ class LlmAnalysisTask < Jongleur::WorkerTask
 
     begin
       agent = WorkflowAgent.new(
-        "advanced_analysis",
-        File.join(CARTRIDGE_DIR, "@b08x", "cartridges", "assistants/agileBloomMini.yml")
+        "ironically_literal",
+        File.join(CARTRIDGE_DIR, "@b08x", "cartridges", "assistants/steve.yml")
       )
 
       logger.debug "Created WorkflowAgent instance"

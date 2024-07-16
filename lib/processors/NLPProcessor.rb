@@ -3,6 +3,11 @@
 
 module Flowbots
   class NLPProcessor < TextProcessor
+
+    def initialize
+      load_model
+    end
+
     def process(text)
       logger.info "Starting NLP processing"
       Flowbots::UI.say(:ok, "Starting NLP processing")
@@ -16,7 +21,7 @@ module Flowbots
       result
     end
 
-    protected
+    private
 
     def load_model
       nlp_model = ENV['SPACY_MODEL']
@@ -32,8 +37,6 @@ module Flowbots
         raise
       end
     end
-
-    private
 
     def process_segments(segments)
       logger.debug "Processing #{segments.length} segments"

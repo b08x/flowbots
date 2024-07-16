@@ -39,7 +39,7 @@
 # class Chunk < Ohm::Model
 #   attribute :text
 #   attribute :tokenized_text
-#   attribute :sanitized_text
+#   attribute :tagged_text
 #   collection :words, :Word
 #   reference :document, :Document
 #   reference :topic, :Topic

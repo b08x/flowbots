@@ -19,6 +19,7 @@ module Flowbots
     desc "workflows", "List and select a workflow to run"
     def workflows
       workflows = Workflows.new
+
       selected_workflow = workflows.list_and_select
 
       if selected_workflow

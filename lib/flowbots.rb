@@ -19,14 +19,16 @@ end
 require "ohm"
 require "ohm/contrib"
 
-require "helper"
+# require "helper"
 require "ui"
 
+WORKFLOW_DIR = File.expand_path("../workflows/", __FILE__)
+TASK_DIR = File.expand_path("../tasks", __FILE__)
+
+require "workflows"
 require "tasks"
 
 CARTRIDGE_DIR = File.expand_path("../nano-bots/cartridges/", __dir__)
-WORKFLOW_DIR = File.expand_path("../workflows/", __dir__)
-TASK_DIR = File.expand_path("../tasks", __FILE__)
 
 # Configuration for Redis connection
 REDIS_CONFIG = {
@@ -55,7 +57,11 @@ require_relative "components/ExceptionHandler"
 
 require_relative "processors/TextProcessor"
 require_relative "processors/NLPProcessor"
+
 require_relative "processors/TopicModelProcessor"
+require_relative "processors/modeler/inference"
+require_relative "processors/modeler/train"
+require_relative "processors/modeler/save"
 
 begin
   Ohm.redis = Redic.new("redis://localhost:6379/0")
@@ -91,42 +97,8 @@ end
 
 IN_CONTAINER = in_container?
 
-# Load workflows
-def load_workflow_files
-  workflows_to_load = {}
-  base_workflow_dir = File.expand_path("../lib/workflows/", __dir__)
-  user_workflow_dir = if IN_CONTAINER
-                        "/data/app/lib/workflows"
-                      else
-                        File.expand_path("../workflows/custom", __dir__)
-                      end
-
-  Dir["#{File.join(base_workflow_dir, '**') + File::SEPARATOR}*.rb"].sort.each do |file|
-    workflows_to_load[File.basename(file)] = file
-  end
-
-  if Dir.exist?(user_workflow_dir)
-    Dir["#{File.join(user_workflow_dir, '**') + File::SEPARATOR}*.rb"].sort.each do |file|
-      workflows_to_load[File.basename(file)] = file
-    end
-  end
-
-  workflows_to_load.each do |_workflow_name, file|
-    require_relative file
-  end
-end
-
-load_workflow_files
-
-def load_tasks
-  Dir.glob(File.join(TASK_DIR, '*.rb')).each do |file|
-    require_relative file
-    logger.debug "Loaded task file: #{file}"
-  end
-end
-
-# Load tasks
-load_tasks
+Flowbots::Workflows.load_workflows
+Flowbots::Task.load_tasks
 
 # UI provides user interface elements.
 require "ui"

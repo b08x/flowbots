@@ -24,16 +24,53 @@ module Flowbots
         raise FileNotFoundError, "Workflow file not found: #{workflow_file}"
       end
 
-      logger.info "Running workflow: #{workflow_name}"
+      Flowbots::UI.info "Running workflow: #{workflow_name}"
 
-      workflow_class = Object.const_get(workflow_name.split("_").map(&:capitalize).join)
-      workflow = workflow_class.new(workflow_file)
+      workflow_class = workflow_name.split("_").map(&:capitalize).join
+      workflow = Flowbots.const_get(workflow_class).new
 
       logger.debug workflow
       workflow.run
     end
 
     private
+
+    # def load_workflows
+    #   Dir[File.join(WORKFLOW_DIR, '**', '*.rb')].each do |file|
+    #     require file  # Use 'require' instead of 'require_relative'
+    #     Flowbots::UI.info "Loaded workflow file: #{file}"
+    #     logger.debug "Loaded workflow file: #{file}"
+    #   end
+    # end
+    #
+    def self.load_workflows
+      workflows_to_load = {}
+      user_workflow_dir = if IN_CONTAINER
+                            "/data/app/lib/workflows"
+                          else
+                            File.expand_path("../workflows/custom", __dir__)
+                          end
+
+      Dir["#{File.join(WORKFLOW_DIR, '**') + File::SEPARATOR}*.rb"].sort.each do |file|
+        workflows_to_load[File.basename(file)] = file
+      end
+
+      if Dir.exist?(user_workflow_dir)
+        Dir["#{File.join(user_workflow_dir, '**') + File::SEPARATOR}*.rb"].sort.each do |file|
+          workflows_to_load[File.basename(file)] = file
+        end
+      end
+      workflows_to_load.each do |_workflow_name, file|
+        begin
+          require file
+        rescue StandardError => e
+          Flowbots::UI.error "Unable to load workflow #{e.message}"
+          logger.fatal "Unable to load workflow #{e.message}"
+        end
+        Flowbots::UI.info "Loaded workflow file: #{file}"
+        logger.debug "Loaded workflow file: #{file}"
+      end
+    end
 
     def get_workflows
       Dir.glob(File.join(WORKFLOW_DIR, "*.rb")).map do |file|
