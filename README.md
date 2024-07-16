@@ -1,18 +1,8 @@
----
-date created: "Thursday, July 4th 2024, 5:12:57 am"
-date modified: "Thursday, July 11th 2024, 7:47:28 pm"
-layout: page
-title: Flowbots
-toc: true
----
-
-
-
-# Text Processing Workflow Documentation
+# FlowBots
 
 This document outlines the architecture and workflow of our LLM text processing pipeline, which incorporates topic modeling and can handle both text documents and audio transcriptions.
 
-## System Overview
+## Text Processing Workflow
 
 Our system processes text through several phases, from initial input to LLM analysis. It uses a combination of custom Ruby classes, the Tomoto gem for topic modeling, and nano-bot cartridges for LLM analysis.
 
@@ -134,13 +124,13 @@ module TopicModeling
       begin
         raw_text = get_processed_text
         @logger.debug "Retrieved processed text from Redis (length): #{raw_text.length}"
-        
+
         processed_text = JSON.parse(raw_text)
         @logger.debug "Parsed processed text (length): #{processed_text.length}"
-        
+
         topic_modeler = TopicModelManager.new(@model_path)
         @logger.debug "Created TopicModelManager instance"
-        
+
         # Train the model if it's not already trained
         unless topic_modeler.model_trained?
           @logger.info "Model is not trained. Training now..."
@@ -154,21 +144,21 @@ module TopicModeling
         else
           @logger.info "Model is already trained"
         end
-        
+
         @logger.debug "Inferring topics"
         begin
           topics_info = topic_modeler.infer_topics(processed_text.join(" "), 5)
           @logger.info "Most probable topic: #{topics_info[:most_probable_topic]}"
           @logger.info "Top words: #{topics_info[:top_words].map { |word, prob| word }.join(', ')}"
           @logger.debug "Full topic distribution: #{topics_info[:topic_distribution]}"
-        
+
           store_topics_info(topics_info)
           @logger.debug "Stored topics info in Redis"
         rescue StandardError => e
           @logger.error "Error during topic inference: #{e.message}"
           raise
         end
-        
+
         @logger.info "TopicModelingTask completed"
       rescue StandardError => e
         @logger.error "Error in TopicModelingTask: #{e.message}"
