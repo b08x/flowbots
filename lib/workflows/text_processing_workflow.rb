@@ -20,9 +20,9 @@ module Flowbots
       Flowbots::UI.say(:ok, "Starting Text Processing Workflow")
 
       setup_workflow
-      process_input
-      run_nlp_analysis
-      run_topic_modeling
+      # process_input
+      # run_nlp_analysis
+      # run_topic_modeling
       run_workflow
       display_results
 
@@ -67,7 +67,7 @@ module Flowbots
     end
 
     def run_workflow
-      logger.info "Running LLM Analysis workflow"
+      Flowbots::UI.info "Running LLM Analysis workflow"
       @orchestrator.run_workflow
     end
 

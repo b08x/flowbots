@@ -97,10 +97,6 @@ module Flowbots
         #{exception_details[:backtrace]}
         ```
 
-        ### Relevant Files
-
-        #{exception_details[:relevant_files].map { |name, content| "#### #{name}\n\n```ruby\n#{content}\n```\n" }.join("\n")}
-
         If you need more information, please check the logs or contact the development team.
       REPORT
     end
@@ -121,10 +117,6 @@ module Flowbots
         ```
         #{exception_details[:backtrace]}
         ```
-
-        ### Relevant Files
-
-        #{exception_details[:relevant_files].keys.map { |name| "- #{name}" }.join("\n")}
 
         We're working on resolving this issue. In the meantime, you might want to:
 

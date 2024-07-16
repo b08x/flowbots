@@ -12,7 +12,7 @@ class Task < Ohm::Model
 end
 
 module Flowbots
-  class Task < Jongleur::WorkerTask
+  class Task
     include Logging
 
     def initialize(options={})
@@ -25,7 +25,7 @@ module Flowbots
 
     def self.get_task(task_name)
       task_class_name = task_name.split("_").map(&:capitalize).join
-      task_class = Flowbots.const_get(task_class_name)
+      task_class = Object.const_get(task_class_name)
       task_class.new
     rescue NameError
       logger.error "Task not found: #{task_name}"

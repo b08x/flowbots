@@ -44,9 +44,7 @@ module Flowbots
     def info(text)
       header
       ui.framed do
-        ui.info "Agent Response" do
           ui.puts text, glyph: "💡"
-        end
       end
     end
 

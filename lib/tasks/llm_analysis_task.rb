@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-class LLMAnalysisTask < Flowbots::Task
+class LlmAnalysisTask < Jongleur::WorkerTask
   include Logging
 
   def execute
