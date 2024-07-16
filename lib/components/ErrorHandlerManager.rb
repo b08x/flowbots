@@ -11,7 +11,7 @@ module Flowbots
         begin
           report = error_handler.process_error(error)
         rescue APIError => api_error
-          Flowbots.logger.error("API Error in ErrorHandlerAgent: #{api_error.message}")
+          logger.error("API Error in ErrorHandlerAgent: #{api_error.message}")
           report = error_handler.fallback_error_report(error)
         end
 
@@ -22,15 +22,15 @@ module Flowbots
       end
 
       def log_error(error)
-        Flowbots.logger.error("FlowBot Error: #{error.message}")
-        Flowbots.logger.error(error.backtrace.join("\n")) if error.backtrace
+        logger.error("FlowBot Error: #{error.message}")
+        logger.error(error.backtrace.join("\n")) if error.backtrace
       end
 
       def notify_error(report)
         # Implement notification logic here
         # This could be sending an email, posting to a Slack channel, etc.
-        Flowbots.logger.warn "Error Notification:"
-        Flowbots.logger.warn report
+        logger.warn "Error Notification:"
+        logger.warn report
       end
     end
   end

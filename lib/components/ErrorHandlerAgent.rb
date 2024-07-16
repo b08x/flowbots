@@ -5,6 +5,7 @@ module Flowbots
   class ErrorHandlerAgent < WorkflowAgent
     def initialize
       super("error_handler", File.join(CARTRIDGE_DIR, "@b08x", "cartridges", "error_handler.yml"))
+      logger.debug "Initialized ErrorHandlerAgent"
     end
 
     def process_error(error)
@@ -21,12 +22,19 @@ module Flowbots
         response = process(prompt)
         format_error_report(response, error_details)
       rescue StandardError => e
-        Flowbots.logger.error("Error in ErrorHandlerAgent: #{e.message}")
+        logger.error("Error in ErrorHandlerAgent: #{e.message}")
         fallback_error_report(error_details)
       end
     end
 
     private
+
+    def process(prompt)
+      logger.debug("Processing error prompt: #{prompt}")
+      result = @bot.eval(prompt)
+      logger.debug("LLM response: #{result}")
+      result
+    end
 
     def generate_error_prompt(error_details)
       <<~PROMPT

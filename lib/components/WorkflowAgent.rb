@@ -8,9 +8,11 @@ class WorkflowAgent
     @bot = NanoBot.new(
       cartridge: cartridge_file
     )
+    logger.debug "Initialized WorkflowAgent with role: #{role}, cartridge: #{cartridge_file}"
   end
 
   def process(input)
+    logger.debug "Processing input for #{@role}: #{input}"
     pastel = Pastel.new
     @bot.eval(input) do |content, fragment, finished, meta|
       @response = content unless content.nil?

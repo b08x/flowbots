@@ -4,139 +4,120 @@
 require "pry"
 require "pry-stack_explorer"
 
+# Thor is a library for creating command-line interfaces.
 require "thor"
 
+# The Flowbots module encapsulates the core functionality of the application.
 module Flowbots
+  # The VERSION constant holds the current version of Flowbots.
   autoload :VERSION, "version"
+  # The ThorExt module provides extensions to the Thor library.
   autoload :ThorExt, "thor_ext"
 end
 
+# Helper functions and utilities.
 require "helper"
+
+# Cogger is a logging library.
 require "cogger"
 
+# JSON, Redis, and YAML are used for data serialization and storage.
 require "json"
 require "redis"
 require "yaml"
 
+# Ruby-Spacy is a library for natural language processing.
 require "ruby-spacy"
+# Nano-bots is a library for building workflow components.
 require "nano-bots"
+# Jongleur is a library for managing asynchronous tasks.
 require "jongleur"
 
+# The CARTRIDGE_DIR constant defines the path to the directory containing workflow cartridges.
 CARTRIDGE_DIR = File.expand_path("../nano-bots/cartridges/", __dir__)
-WORKFLOW_DIR = File.expand_path("../lib/workflows/", __dir__)
+# The WORKFLOW_DIR constant defines the path to the directory containing workflow definitions.
+WORKFLOW_DIR = File.expand_path("../workflows/", __dir__)
 
-require_relative "components/orchestrator"
-require_relative "components/agent"
+# Orchestrator and Agent are core components of the Flowbots architecture.
+require_relative "components/WorkflowOrchestrator"
+require_relative "components/WorkflowAgent"
 
-require_relative "workflows/text_processing_workflow"
+require_relative "components/ErrorHandlerAgent"
+require_relative "components/ErrorHandlerManager"
 
+module Flowbots
+  class FlowBotError < StandardError
+    attr_reader :error_code, :details
+
+    def initialize(message, error_code, details = {})
+      super(message)
+      @error_code = error_code
+      @details = details
+    end
+  end
+
+  class WorkflowError < FlowBotError; end
+  class AgentError < FlowBotError; end
+  class ConfigurationError < FlowBotError; end
+  class APIError < FlowBotError; end
+  # Add more specific error classes as needed
+end
+
+
+# from Monadic-Chat, MonadicApp class:
+# return true if we are inside a docker container
+def in_container?
+  File.file?("/.dockerenv")
+end
+
+IN_CONTAINER = in_container?
+
+# Load workflows
+def load_workflow_files
+  workflows_to_load = {}
+  base_workflow_dir = File.expand_path("../workflows/", __dir__)
+  user_workflow_dir = if IN_CONTAINER
+                        "/data/app/workflows"
+                      else
+                        File.expand_path("../workflows/custom", __dir__)
+                      end
+
+  Dir["#{File.join(base_workflow_dir, '**') + File::SEPARATOR}*.rb"].sort.each do |file|
+    workflows_to_load[File.basename(file)] = file
+  end
+
+  if Dir.exist?(user_workflow_dir)
+    Dir["#{File.join(user_workflow_dir, '**') + File::SEPARATOR}*.rb"].sort.each do |file|
+      workflows_to_load[File.basename(file)] = file
+    end
+  end
+
+  workflows_to_load.each do |_workflow_name, file|
+    require_relative file
+  end
+end
+
+load_workflow_files
+
+# UI provides user interface elements.
 require "ui"
 
+# Jongleur::WorkerTask is a class that defines a task to be executed by Jongleur.
 class Jongleur::WorkerTask
+  # Initialize a Redis connection.
   begin
     @@redis = Redis.new(host: "localhost", port: 6379, db: 15)
   rescue Redis::CannotConnectError => e
-    handle_error(self.class.name, e)
+    ErrorManager.handle_error(self.class.name, e)
     exit
   end
 end
 
+# Display a message indicating that Flowbots has been initialized.
 Flowbots::UI.say(:ok, "Flowbots initialized")
 
+# Display a welcome message.
 puts UIBox.info_box("Hey! It's FlowBots!")
 sleep 1
 
-module Flowbots
-  class CLI < Thor
-    extend ThorExt::Start
-
-    def self.exit_on_failure?
-      true
-    end
-
-    map %w[-v --version] => "version"
-
-    desc "version", "Display flowbots version", hide: true
-    def version
-      say "flowbots/#{VERSION} #{RUBY_DESCRIPTION}"
-    end
-
-    desc "workflows", "List and select a workflow to run"
-    def workflows
-      prompt = TTY::Prompt.new
-      pastel = Pastel.new
-
-      workflows = Dir.glob(File.join(WORKFLOW_DIR, "*.rb")).map do |file|
-        name = File.basename(file, ".rb")
-        description = extract_workflow_description(file)
-        [name, description]
-      end
-
-      if workflows.empty?
-        say pastel.red("No workflows found in #{WORKFLOW_DIR}")
-        exit
-      end
-
-      table = TTY::Table.new(
-        header: [pastel.cyan("Workflow"), pastel.cyan("Description")],
-        rows: workflows
-      )
-
-      puts table.render(:unicode, padding: [0, 1])
-
-      workflow_names = workflows.map { |w| w[0] }
-      selected = prompt.select("Choose a workflow to run:", workflow_names)
-
-      run_workflow(selected)
-    end
-
-    desc "process_text FILE", "Process a text file using the text processing workflow"
-    def process_text(file)
-      pastel = Pastel.new
-
-      unless File.exist?(file)
-        say pastel.red("File not found: #{file}")
-        exit
-      end
-
-      say pastel.green("Processing file: #{file}")
-
-      begin
-        workflow = TextProcessingWorkflow.new(file)
-        workflow.run
-        say pastel.green("Text processing completed successfully")
-      rescue StandardError => e
-        say pastel.red("Error processing text: #{e.message}")
-        say pastel.red(e.backtrace.join("\n"))
-      end
-    end
-
-    private
-
-    def extract_workflow_description(file)
-      first_line = File.open(file, &:readline).strip
-      first_line.start_with?("# Description:") ? first_line[14..-1] : "No description available"
-    end
-
-    def run_workflow(workflow_name)
-      pastel = Pastel.new
-      workflow_file = File.join(WORKFLOW_DIR, "#{workflow_name}.rb")
-
-      unless File.exist?(workflow_file)
-        say pastel.red("Workflow file not found: #{workflow_file}")
-        exit
-      end
-
-      say pastel.green("Running workflow: #{workflow_name}")
-      load workflow_file
-
-      # Assume the workflow file defines a class named after the file
-      workflow_class = Object.const_get(workflow_name.split("_").map(&:capitalize).join)
-      workflow = workflow_class.new
-      workflow.run
-    rescue StandardError => e
-      say pastel.red("Error running workflow: #{e.message}")
-      say pastel.red(e.backtrace.join("\n"))
-    end
-  end
-end
+require "cli"
