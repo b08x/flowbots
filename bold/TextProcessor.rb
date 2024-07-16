@@ -9,9 +9,9 @@ class TextProcessor
   def initialize
     # logger = Logger.new(STDOUT)
     # logger.level = Logger::INFO
-    Flowbots::NattyUI.info "Initializing TextProcessor"
+    Flowbots::UI.info "Initializing TextProcessor"
     load_nlp_model
-    Flowbots::NattyUI.info "TextProcessor initialization completed"
+    Flowbots::UI.info "TextProcessor initialization completed"
   end
 
   def process_file(file_path)
@@ -42,7 +42,7 @@ class TextProcessor
 
   private
 
-  def load_nlp_model(nlp_model="en_core_web_trf")
+  def load_nlp_model(nlp_model="#{ENV['SPACY_MODEL']}")
     logger.debug "Loading NLP model: #{nlp_model}"
     begin
       @nlp = Spacy::Language.new(nlp_model)

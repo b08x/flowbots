@@ -2,7 +2,7 @@
 FROM ruby:3.3-slim
 
 # Create a non-root user to run the app
-RUN useradd -m flowbots
+RUN useradd -s /bin/bash -m flowbots
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -75,16 +75,27 @@ RUN apt-get update && apt-get install -y \
 # Set the working directory in the container
 WORKDIR /app
 
+ARG USE_TRF=False
+ARG USE_BOOKNLP=False
+
 RUN python3 -m venv .venv && \
     . /app/.venv/bin/activate && \
-    echo "[[ -f /app/.venv ]] && . /app/.venv/bin/activate" >> /home/flowbots/.bashrc && \
+    echo "[[ -f /app/.venv ]] && cd /app && . /app/.venv/bin/activate" >> /home/flowbots/.bashrc && \
     echo "gem: --user-instal --no-document" >> /home/flowbots/.gemrc && \
     pip3 install -U setuptools wheel && \
-    # pip3 install -U spacy transformers booknlp && \
     pip3 install -U spacy && \
-    python3 -m spacy download en_core_web_trf && \
     python3 -m spacy download en_core_web_lg && \
     python -c "import sys, importlib.util as util; 1 if util.find_spec('nltk') else sys.exit(); import nltk; nltk.download('punkt')"
+
+RUN if [ "${USE_TRF}" = "True"]; then \
+        . /app/.venv/bin/activate && \
+        python3 -m spacy download en_core_web_trf \
+    ; fi
+
+RUN if [ "${USE_TRF}" = "True"]; then \
+        . /app/.venv/bin/activate && \
+        pip3 install -U transformers booknlp \
+    ; fi
 
 # Copy only the Gemfile and requirements.txt
 COPY Gemfile ./
@@ -109,7 +120,7 @@ RUN chown -R flowbots:flowbots /app
 
 USER flowbots
 
-ENV PATH $HOME/.local/share/gem/ruby/3.3.0/bin:$PATH
+ENV PATH="/home/flowbots/.local/share/gem/ruby/3.3.0/bin:$PATH"
 
 RUN bundle lock --add-platform x86_64-linux && \
     bundle config build.redic --with-cxx="clang++" --with-cflags="-std=c++0x" && \

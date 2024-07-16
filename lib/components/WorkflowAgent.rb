@@ -8,7 +8,7 @@ class WorkflowAgent
     @bot = NanoBot.new(
       cartridge: cartridge_file
     )
-    Flowbots::NattyUI.info "Initialized WorkflowAgent with role: #{role}, cartridge: #{cartridge_file}"
+    Flowbots::UI.info "Initialized WorkflowAgent with role: #{role}, cartridge: #{cartridge_file}"
   end
 
   def process(input)
@@ -24,7 +24,7 @@ class WorkflowAgent
       sleep 0.025
     end
 
-    Flowbots::NattyUI.response(@response)
+    Flowbots::UI.info(@response)
 
     update_state(@response)
     @response

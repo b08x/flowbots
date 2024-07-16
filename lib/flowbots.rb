@@ -19,12 +19,15 @@ end
 require "helper"
 require "ui"
 
+require "tasks"
+
 CARTRIDGE_DIR = File.expand_path("../nano-bots/cartridges/", __dir__)
 WORKFLOW_DIR = File.expand_path("../workflows/", __dir__)
+TASK_DIR = File.expand_path("../tasks", __FILE__)
 
 # Configuration for Redis connection
 REDIS_CONFIG = {
-  host: "localhost",
+  host: "#{ENV['REDIS_HOST']}",
   port: 6379,
   db: 15
 }
@@ -42,13 +45,18 @@ end
 
 # Orchestrator and Agent are core components of the Flowbots architecture.
 require_relative "components/WorkflowOrchestrator"
-require_relative "components/WorkflowAgent"
+# require_relative "components/WorkflowAgent"
 
 # require_relative "components/ExceptionAgent"
 require_relative "components/ExceptionHandler"
 
+require_relative "processors/TextProcessor"
+require_relative "processors/NLPProcessor"
+require_relative "processors/TopicModelProcessor"
+
+
 module Flowbots
-  class FlowBotError < StandardError
+  class FlowbotError < StandardError
     attr_reader :error_code, :details
 
     def initialize(message, error_code, details = {})
@@ -58,10 +66,10 @@ module Flowbots
     end
   end
 
-  class WorkflowError < FlowBotError; end
-  class AgentError < FlowBotError; end
-  class ConfigurationError < FlowBotError; end
-  class APIError < FlowBotError; end
+  class WorkflowError < FlowbotError; end
+  class AgentError < FlowbotError; end
+  class ConfigurationError < FlowbotError; end
+  class APIError < FlowbotError; end
   # Add more specific error classes as needed
 end
 
@@ -77,9 +85,9 @@ IN_CONTAINER = in_container?
 # Load workflows
 def load_workflow_files
   workflows_to_load = {}
-  base_workflow_dir = File.expand_path("../workflows/", __dir__)
+  base_workflow_dir = File.expand_path("../lib/workflows/", __dir__)
   user_workflow_dir = if IN_CONTAINER
-                        "/data/app/workflows"
+                        "/data/app/lib/workflows"
                       else
                         File.expand_path("../workflows/custom", __dir__)
                       end
@@ -101,6 +109,16 @@ end
 
 load_workflow_files
 
+def load_tasks
+  Dir.glob(File.join(TASK_DIR, '*.rb')).each do |file|
+    require_relative file
+    logger.debug "Loaded task file: #{file}"
+  end
+end
+
+# Load tasks
+load_tasks
+
 # UI provides user interface elements.
 require "ui"
 
@@ -120,7 +138,7 @@ end
 Flowbots::UI.say(:ok, "Flowbots initialized")
 
 # Display a welcome message.
-puts UIBox.info_box("Hey! It's FlowBots!")
+puts UIBox.info_box("Hey! It's Flowbots!")
 sleep 1
 
 require "cli"

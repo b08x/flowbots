@@ -1,6 +1,8 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+require_relative "WorkflowAgent"
+
 class WorkflowOrchestrator
   CARTRIDGE_BASE_DIR = File.expand_path("../../nano-bots/cartridges", __dir__)
 

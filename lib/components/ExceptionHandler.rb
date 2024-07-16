@@ -33,7 +33,7 @@ module Flowbots
       def notify_exception(report)
         # Implement notification logic here
         # This could be sending an email, posting to a Slack channel, etc.
-        Flowbots::NattyUI.exception report
+        Flowbots::UI.exception report
         logger.warn "exception Notification:"
         logger.warn report
       end

@@ -3,14 +3,14 @@
 
 require "cli/ui"
 require "highline/import"
+require "natty-ui"
 require "os"
 require "pastel"
 require "tty-box"
 require "tty-prompt"
+require "tty-screen"
 require "tty-spinner"
 require "tty-table"
-require "tty-screen"
-require "natty-ui"
 
 TITLE_WIDTH = 80
 
@@ -23,16 +23,9 @@ module Flowbots
       @pastel = Pastel.new
     end
 
-    def spinner(task)
-      spinner = TTY::Spinner.new("[:spinner] #{task}", format: :toggle)
-    end
-
-    def spinners(task)
-      spinners = TTY::Spinner::Multi.new "[:spinner] #{task}", format: :pulse
-    end
-
-    def say(type="", statement)
+    def say(type, statement)
       prompt
+      type = :ok if type.nil?
       case type
       when :ok
         @prompt.ok(statement)
@@ -47,20 +40,66 @@ module Flowbots
         @pastel.say(statement)
       end
     end
+
+    def info(text)
+      header
+      ui.framed do
+        ui.info "Agent Response" do
+          ui.puts text, glyph: "💡"
+        end
+      end
+    end
+
+    def exception(text)
+      ui.framed do
+        ui.failed "Exception Message" do
+          ui.puts text, glyph: "💡"
+        end
+      end
+    end
+
+    def response(response)
+      ui.space
+      ui.h1 "UI: Text Line Animation"
+      ui.space
+
+      response.each_line do |line|
+        input = line.chomp
+        unless input.nil?
+          input.each_char do |char|
+            print "\e[34m#{char}\e[0m"
+            ui.message char
+            sleep 0.02
+          end
+          puts "\n"
+        end
+        res = line.chomp
+        unless res.nil?
+          puts "\e[32m#{res.strip.chomp}\e[0m"
+          puts "\n"
+        end
+        cap = line.chomp
+        puts "\e[33m#{cap.strip.chomp}\e[0m\n" unless cap.nil?
+      end
+      puts "\n"
+      sleep 3
+      ui.space
+    end
+
+    def header
+      ui.space
+      ui.h1 "UI: Message Types"
+      ui.space
+    end
   end
-
-
-
 end
 
 module UIBox
   class << self
     def comparison_box(text1, text2, title1: "Text 1", title2: "Text 2")
-
       screen_width = TTY::Screen.width - 2
 
       text_width = [text1.length, text2.length, 40].max + 4
-
 
       width = text_width < screen_width ? screen_width : TITLE_WIDTH
 
@@ -73,8 +112,13 @@ module UIBox
       TTY::Box.success(result, title: { top_left: title }, width: 50, padding: 1)
     end
 
-    def error_box(message)
-      TTY::Box.error(message, title: { top_left: "Error" }, width: 50, padding: 1)
+    def exception(message)
+      screen_width = TTY::Screen.width - 2
+
+      text_width = [message.length, 40].max + 4
+
+      width = text_width < screen_width ? screen_width : TITLE_WIDTH
+      TTY::Box.error(message, title: { top_left: "Error" }, width: width, padding: 1)
     end
 
     def info_box(message, title: "Info")
@@ -103,98 +147,25 @@ module UIBox
   end
 end
 
-
-module Flowbots
-  module NattyUI
-    module_function
-
-    IMPORTANT =
-      '[[red]]>>>[[/]] [[italic]]Here some important information[[/]] [[red]]<<<'
-
-    def info(text)
-      header
-      ui.framed do
-        ui.info 'Informative Message' do
-          ui.puts text, glyph: '💡'
-        end
-      end
-    end
-
-    def exception(text)
-      ui.framed do
-        ui.failed 'Informative Message' do
-          ui.puts text, glyph: '💡'
-        end
-      end
-    end
-
-    def response(response)
-      ui.space
-      ui.h1 'NattyUI: Text Line Animation'
-      ui.space
-
-      response.each_line do |line|
-        input = line.chomp
-          unless input.nil?
-            input.each_char do |char|
-              print "\e[34m#{char}\e[0m"
-              ui.message char
-              sleep 0.02
-            end
-            puts "\n"
-          end
-        res = line.chomp
-        unless res.nil?
-          puts "\e[32m#{res.strip.chomp}\e[0m"
-          puts "\n"
-        end
-        cap = line.chomp
-        puts "\e[33m#{cap.strip.chomp}\e[0m\n" unless cap.nil?
-      end
-      puts "\n"
-      sleep 3
-
-
-      #
-      # {
-      #   default: 'Default Animation',
-      #   type_writer: 'Typewriter Like',
-      #   rainbow: 'Shiny Rainbow',
-      #   matrix: 'Matrix Style'
-      # }.each_pair do |type, title|
-      #   ui.message(title, glyph: '[[27]]◉') { ui.animate response, animation: type }
-        ui.space
-      # end
-    end
-
-    def header
-      ui.space
-      ui.h1 'NattyUI: Message Types'
-      ui.space
-    end
-    #
-    # TEXT = <<~TEXT.tr("\n", ' ')
-    #   Lorem [[yellow]]ipsum[[/]] dolor sit amet, consectetur adipisicing elit, sed
-    #   do eiusmod tempor incididunt ut labore et dolore [[red]]magna[[/]] aliqua.
-    #   Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-    #   aliquip ex ea commodo [[bold]]consequat[[/]].
-    # TEXT
-    #
-    #
-    #
-    # ui.framed do
-    #   ui.info 'Informative Message', TEXT
-    #   ui.warning 'Warning Message' do
-    #     ui.puts TEXT
-    #     ui.framed { ui.puts IMPORTANT }
-    #   end
-    #   ui.error 'Error Message', TEXT
-    #   ui.failed 'Fail Message', TEXT
-    #   ui.message '[[italic #fad]]Custom Message', TEXT, glyph: '💡'
-    # end
-    #
-    # ui.space
-
-  end
-
-end
+#
+# TEXT = <<~TEXT.tr("\n", ' ')
+#   Lorem [[yellow]]ipsum[[/]] dolor sit amet, consectetur adipisicing elit, sed
+#   do eiusmod tempor incididunt ut labore et dolore [[red]]magna[[/]] aliqua.
+#   Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+#   aliquip ex ea commodo [[bold]]consequat[[/]].
+# TEXT
+#
+#
+#
+# ui.framed do
+#   ui.info 'Informative Message', TEXT
+#   ui.warning 'Warning Message' do
+#     ui.puts TEXT
+#     ui.framed { ui.puts IMPORTANT }
+#   end
+#   ui.error 'Error Message', TEXT
+#   ui.failed 'Fail Message', TEXT
+#   ui.message '[[italic #fad]]Custom Message', TEXT, glyph: '💡'
+# end
+#
+# ui.space

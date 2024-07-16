@@ -10,7 +10,7 @@ module Flowbots
       rescue StandardError => e
         logger.error "#{e.message}"
       ensure
-        Flowbots::UI.say(:error, "#{e.message}")
+        Flowbots::UI.say(:error, "#{e}")
       end
     end
 
