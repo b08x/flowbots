@@ -57,3 +57,7 @@ gem "tty-table", "~> 0.12.0"
 gem "wordnet", "~> 1.2"
 gem "wordnet-defaultdb", "~> 2.0"
 gem "yaml", "~> 0.3.0"
+
+gem "ohm-contrib", "~> 3.0"
+
+gem "ohm", "~> 3.1"

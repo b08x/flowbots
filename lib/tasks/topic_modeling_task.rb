@@ -5,16 +5,16 @@ module Flowbots
   class TopicModelingTask < Flowbots::Task
     def execute
       logger.info "Starting TopicModelingTask"
-      processed_text = retrieve_processed_text
+      processed_documents = retrieve_processed_documents
       topic_processor = TopicModelProcessor.instance
-      result = topic_processor.process(processed_text)
+      result = topic_processor.process(processed_documents)
       store_topic_result(result)
       logger.info "TopicModelingTask completed"
     end
 
     private
 
-    def retrieve_processed_text
+    def retrieve_processed_documents
       JSON.parse(Jongleur::WorkerTask.class_variable_get(:@@redis).get("processed_text"))
     end
 

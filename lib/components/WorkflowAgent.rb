@@ -1,6 +1,29 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+class Agent < Ohm::Model
+  include Ohm::DataTypes
+  include Ohm::Callbacks
+  attribute :name
+  attribute :role
+  attribute :state
+  collection :responses, :AgentResponse
+  index :name
+  index :role
+end
+
+class AgentResponse < Ohm::Model
+  include Ohm::DataTypes
+  include Ohm::Callbacks
+  attribute :text
+  attribute :tagged, Type::Hash
+  reference :agent, :Agent
+  # set :subjects, :Subject
+  # set :actions, :Action
+  # set :objects, :Object
+  # set :locations, :Location
+end
+
 class WorkflowAgent
   def initialize(role, cartridge_file)
     @role = role

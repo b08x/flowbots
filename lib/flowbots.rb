@@ -16,6 +16,9 @@ module Flowbots
   autoload :ThorExt, "thor_ext"
 end
 
+require "ohm"
+require "ohm/contrib"
+
 require "helper"
 require "ui"
 
@@ -53,6 +56,12 @@ require_relative "components/ExceptionHandler"
 require_relative "processors/TextProcessor"
 require_relative "processors/NLPProcessor"
 require_relative "processors/TopicModelProcessor"
+
+begin
+  Ohm.redis = Redic.new("redis://localhost:6379/0")
+rescue Ohm::Error => e
+  Flowbots::ExceptionHandler.handle_exception(e)
+end
 
 
 module Flowbots

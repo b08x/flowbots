@@ -1,6 +1,16 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+class Task < Ohm::Model
+  attribute :name
+  attribute :status
+  attribute :result
+  attribute :start_time
+  attribute :end_time
+  index :name
+  index :status
+end
+
 module Flowbots
   class Task < Jongleur::WorkerTask
     include Logging

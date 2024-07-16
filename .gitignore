@@ -30,3 +30,7 @@ flowbots.json
 /models/
 /examples/test/
 /data/
+/.bold/
+/.examples/
+/.vendor/
+/.docs/

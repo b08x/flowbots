@@ -5,6 +5,17 @@ require "tomoto"
 
 TOPIC_MODEL_PATH = ENV.fetch("TOPIC_MODEL_PATH", nil)
 
+class Topic < Ohm::Model
+  attribute :name
+  attribute :description
+  attribute :vector
+  collection :documents, :Document
+  collection :chunks, :Chunk
+  reference :collection, :Collection # Reference to the parent collection
+  unique :name
+  index :name
+end
+
 module Flowbots
   class TopicModelProcessor < TextProcessor
     def initialize
@@ -21,9 +32,9 @@ module Flowbots
       }
     end
 
-    def process(text, num_topics=5)
-      logger.info "Inferring topics for document"
-      Flowbots::UI.say(:ok, "Inferring topics for document")
+    def process(documents, num_topics=5)
+      logger.info "Inferring topics for documents"
+      Flowbots::UI.say(:ok, "Inferring topics for documents")
 
       unless model_trained?
         raise FlowbotError.new(
@@ -31,29 +42,19 @@ module Flowbots
           "MODEL_NOT_TRAINED"
         )
       end
-      raise FlowbotError.new("Empty text provided for inference", "EMPTY_TEXT") if text.empty?
+      raise FlowbotError.new("Empty document set provided for inference", "EMPTY_DOCUMENT_SET") if documents.empty?
 
-      logger.debug "Inferring topics for text: #{text[0..100]}..." # Log only first 100 chars
+      train_model(documents) unless model_trained?
 
-      doc = @model.make_doc(text.split)
-      topic_dist, = @model.infer(doc)
+      results = documents.map do |doc|
+        infer_topics(doc) unless doc.empty?
+      end
 
-      return {} if topic_dist.nil?
+      store_topics(results)
 
-      most_probable_topic = topic_dist.each_with_index.max_by { |prob, _| prob }[1]
-      top_words = @model.topic_words(most_probable_topic, top_n: 10)
-
-      result = {
-        most_probable_topic:,
-        topic_distribution: topic_dist,
-        top_words:
-      }
-
-      store_topics(result)
-
-      logger.debug "Inferred topics: #{result}"
+      logger.debug "Inferred topics for #{results.size} documents"
       Flowbots::UI.say(:ok, "Topic inference completed")
-      result
+      results
     end
 
     def train_model(documents, iterations=100)
@@ -116,6 +117,22 @@ module Flowbots
       !@model.nil? && @model.num_words > 0
     end
 
+    def infer_topics(text)
+      doc = @model.make_doc(text.split)
+      topic_dist, ll = @model.infer(doc)
+
+      return {} if topic_dist.nil?
+
+      most_probable_topic = topic_dist.each_with_index.max_by { |prob, _| prob }[1]
+      top_words = @model.topic_words(most_probable_topic, top_n: 10)
+
+      {
+        most_probable_topic: most_probable_topic,
+        topic_distribution: topic_dist,
+        top_words: top_words
+      }
+    end
+
     def save_model
       logger.info "Saving model to #{@model_path}"
       @model.save(@model_path)
@@ -124,6 +141,8 @@ module Flowbots
     end
 
     def store_topics(result)
+      p result[1]
+      exit
       topic = Topic.find(name: result[:most_probable_topic].to_s).first || Topic.create(name: result[:most_probable_topic].to_s)
       topic.update(
         description: result[:top_words].to_json,

@@ -39,7 +39,7 @@ module Flowbots
 
     def generate_exception_prompt(exception_details)
       <<~PROMPT
-        Hey there! We've got a bit of a hiccup in our FlowBots system. Could you help me out by crafting a casual yet technically detailed exception report? Here's what we're dealing with:
+        Oh my stars!! Something terrible has happened!:
 
         Class: #{exception_details[:classnme]}
         exception Type: #{exception_details[:exception_code]}
