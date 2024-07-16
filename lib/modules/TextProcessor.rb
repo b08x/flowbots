@@ -9,9 +9,9 @@ class TextProcessor
   def initialize
     # logger = Logger.new(STDOUT)
     # logger.level = Logger::INFO
-    FlowBots::NattyUI.info "Initializing TextProcessor"
+    Flowbots::NattyUI.info "Initializing TextProcessor"
     load_nlp_model
-    FlowBots::NattyUI.info "TextProcessor initialization completed"
+    Flowbots::NattyUI.info "TextProcessor initialization completed"
   end
 
   def process_file(file_path)

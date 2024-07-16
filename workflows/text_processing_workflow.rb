@@ -32,13 +32,13 @@ class TextProcessingWorkflow
   end
 
   def run
-    FlowBots::NattyUI.info "Starting Text Processing Workflow"
+    Flowbots::NattyUI.info "Starting Text Processing Workflow"
     setup_workflow
     process_input
     run_topic_modeling
     run_workflow
     display_results
-    logger.info "Text Processing Workflow completed"
+    Flowbots::NattyUI.info "Text Processing Workflow completed"
   end
 
   private

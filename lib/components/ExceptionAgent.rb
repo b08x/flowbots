@@ -14,8 +14,9 @@ module Flowbots
       end
     end
 
-    def process_exception(exception)
+    def process_exception(classname, exception)
       exception_details = {
+        classnme: classname,
         message: exception.message,
         # exception_code: exception.exception_code,
         # details: exception.details,
@@ -40,6 +41,7 @@ module Flowbots
       <<~PROMPT
         Hey there! We've got a bit of a hiccup in our FlowBots system. Could you help me out by crafting a casual yet technically detailed exception report? Here's what we're dealing with:
 
+        Class: #{exception_details[:classnme]}
         exception Type: #{exception_details[:exception_code]}
         Message: #{exception_details[:message]}
         Details: #{exception_details[:details]}
@@ -68,6 +70,7 @@ module Flowbots
 
         Oops! We encountered an exception, and we're having trouble generating a detailed report right now. Here's what we know:
 
+        Class: #{exception_details[:classnme]}
         exception Type: #{exception_details[:exception_code]}
         Message: #{exception_details[:message]}
 

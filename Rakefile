@@ -1,107 +1,88 @@
-require "bundler/gem_tasks"
-require "rake/testtask"
-require "rubocop/rake_task"
+OWNER = 'b08x'.freeze
+ALL_IMAGES = %w[
+  flowbots
+].each(&:freeze).freeze
 
-Rake::TestTask.new(:test) do |t|
-  t.libs << "test"
-  t.libs << "lib"
-  t.test_files = FileList["test/**/*_test.rb"]
-end
 
-RuboCop::RakeTask.new
-
-task default: %i[test rubocop]
-
-# == "rake release" enhancements ==============================================
-
-Rake::Task["release"].enhance do
-  puts "Don't forget to publish the release on GitHub!"
-  system "open https://github.com/b08x/flowbots/releases"
-end
-
-task :disable_overcommit do
-  ENV["OVERCOMMIT_DISABLE"] = "1"
-end
-
-Rake::Task[:build].enhance [:disable_overcommit]
-
-task :verify_gemspec_files do
-  git_files = `git ls-files -z`.split("\x0")
-  gemspec_files = Gem::Specification.load("flowbots.gemspec").files.sort
-  ignored_by_git = gemspec_files - git_files
-  next if ignored_by_git.empty?
-
-  raise <<~ERROR
-
-    The `spec.files` specified in flowbots.gemspec include the following files
-    that are being ignored by git. Did you forget to add them to the repo? If
-    not, you may need to delete these files or modify the gemspec to ensure
-    that they are not included in the gem by mistake:
-
-    #{ignored_by_git.join("\n").gsub(/^/, '  ')}
-
-  ERROR
-end
-
-Rake::Task[:build].enhance [:verify_gemspec_files]
-
-# == "rake bump" tasks ========================================================
-
-task bump: %w[bump:bundler bump:ruby bump:year]
-
-namespace :bump do
-  task :bundler do
-    sh "bundle update --bundler"
-  end
-
-  task :ruby do
-    replace_in_file "flowbots.gemspec", /ruby_version = .*">= (.*)"/ => RubyVersions.lowest
-    replace_in_file ".rubocop.yml", /TargetRubyVersion: (.*)/ => RubyVersions.lowest
-    replace_in_file ".github/workflows/ci.yml", /ruby: (\[.+\])/ => RubyVersions.all.inspect
-  end
-
-  task :year do
-    replace_in_file "LICENSE.txt", /\(c\) (\d+)/ => Date.today.year.to_s
-  end
-end
-
-require "date"
-require "open-uri"
-require "yaml"
-
-def replace_in_file(path, replacements)
-  contents = File.read(path)
-  orig_contents = contents.dup
-  replacements.each do |regexp, text|
-    raise "Can't find #{regexp} in #{path}" unless regexp.match?(contents)
-
-    contents.gsub!(regexp) do |match|
-      match[regexp, 1] = text
-      match
+BASE_IMAGES = ALL_IMAGES.map do |name|
+  base_image_name, base_image_tag = nil
+  IO.foreach("Dockerfile") do |line|
+    break if base_image_name && base_image_tag
+    case line
+    when /BASE_IMAGE_TAG=(\h+)/
+      base_image_tag = Regexp.last_match(1)
+    when /BASE_IMAGE_TAG=latest/
+      base_image_tag = 'latest'
+    when /\AFROM\s+([^:]+)/
+      base_image_name = Regexp.last_match(1)
     end
   end
-  File.write(path, contents) if contents != orig_contents
+  [
+    name,
+    [base_image_name, base_image_tag].join(':')
+  ]
+end.to_h
+
+DOCKER_FLAGS = ENV['DOCKER_FLAGS']
+
+TAG_LENGTH = 12
+
+def git_revision
+  `git rev-parse HEAD`.chomp
 end
 
-module RubyVersions
-  class << self
-    def lowest
-      all.first
-    end
+def tag_from_commit_sha1
+  git_revision[...TAG_LENGTH]
+end
 
-    def all
-      patches = versions.values_at(:stable, :security_maintenance).compact.flatten
-      sorted_minor_versions = patches.map { |p| p[/\d+\.\d+/] }.sort_by(&:to_f)
-      [*sorted_minor_versions, "head"]
-    end
+ALL_IMAGES.each do |image|
+  revision_tag = tag_from_commit_sha1
 
-    private
+  desc "Pull the base image for #{OWNER}/#{image} image"
+  task "pull/base_image/#{image}" do
+    base_image = BASE_IMAGES[image]
+    sh "docker pull #{base_image}"
+  end
 
-    def versions
-      @_versions ||= begin
-        yaml = URI.open("https://raw.githubusercontent.com/ruby/www.ruby-lang.org/HEAD/_data/downloads.yml")
-        YAML.safe_load(yaml, symbolize_names: true)
-      end
-    end
+  desc "Build #{OWNER}/#{image} image"
+  task "build/#{image}" => "pull/base_image/#{image}" do
+    sh "docker build #{DOCKER_FLAGS} --rm --force-rm -t #{OWNER}/notebook-#{image}:latest ."
+  end
+
+  desc "Make #{OWNER}/#{image} image"
+  task "make/#{image}" do
+    sh "docker build #{DOCKER_FLAGS} --rm --force-rm -t #{OWNER}/notebook-#{image}:latest ."
+  end
+
+  desc "Tag #{OWNER}/#{image} image"
+  task "tag/#{image}" => "build/#{image}" do
+    sh "docker tag #{OWNER}/notebook-#{image}:latest #{OWNER}/notebook-#{image}:#{revision_tag}"
+  end
+
+  desc "Push #{OWNER}/#{image} image"
+  task "push/#{image}" => "tag/#{image}" do
+    sh "docker push #{OWNER}/notebook-#{image}:latest"
+    sh "docker push #{OWNER}/notebook-#{image}:#{revision_tag}"
+  end
+end
+
+desc 'Build all images'
+task 'build-all' do
+  ALL_IMAGES.each do |image|
+    Rake::Task["build/#{image}"].invoke
+  end
+end
+
+desc 'Tag all images'
+task 'tag-all' do
+  ALL_IMAGES.each do |image|
+    Rake::Task["tag/#{image}"].invoke
+  end
+end
+
+desc 'Push all images'
+task 'push-all' do
+  ALL_IMAGES.each do |image|
+    Rake::Task["push/#{image}"].invoke
   end
 end

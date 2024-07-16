@@ -13,10 +13,10 @@ module Flowbots
         exception_handler = ExceptionAgent.new
 
         begin
-          report = exception_handler.process_exception(exception)
+          report = exception_handler.process_exception(classname, exception)
         rescue APIError => api_exception
           logger.error("API exception in ExceptionAgent: #{api_exception.message}")
-          report = exception_handler.fallback_exception_report(exception)
+          report = exception_handler.fallback_exception_report(classname, exception)
         end
 
         log_exception(exception)

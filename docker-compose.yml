@@ -1,0 +1,20 @@
+---
+services:
+  flowbots:
+    image: b08x/flowbots
+    build:
+      context: .
+      dockerfile: Dockerfile
+      # args:
+    command:
+    env_file:
+      - .env
+    environment:
+      PUID: ${UID}
+      PGID: ${GID}
+      NANO_BOTS_ENCRYPTION_PASSWORD: UNSAFE
+      NANO_BOTS_END_USER: ${USER}
+    # ports:
+    #   - "3009:3000"
+    volumes:
+      - ./data/workspace:/home/flowbots/workspace

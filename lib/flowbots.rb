@@ -25,7 +25,7 @@ WORKFLOW_DIR = File.expand_path("../workflows/", __dir__)
 # Configuration for Redis connection
 REDIS_CONFIG = {
   host: "localhost",
-  port: 6377,
+  port: 6379,
   db: 15
 }
 

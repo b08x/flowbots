@@ -128,6 +128,45 @@ module Flowbots
       end
     end
 
+    def response(response)
+      ui.space
+      ui.h1 'NattyUI: Text Line Animation'
+      ui.space
+
+      response.each_line do |line|
+        input = line.chomp
+          unless input.nil?
+            input.each_char do |char|
+              print "\e[34m#{char}\e[0m"
+              ui.message char
+              sleep 0.02
+            end
+            puts "\n"
+          end
+        res = line.chomp
+        unless res.nil?
+          puts "\e[32m#{res.strip.chomp}\e[0m"
+          puts "\n"
+        end
+        cap = line.chomp
+        puts "\e[33m#{cap.strip.chomp}\e[0m\n" unless cap.nil?
+      end
+      puts "\n"
+      sleep 3
+
+
+      #
+      # {
+      #   default: 'Default Animation',
+      #   type_writer: 'Typewriter Like',
+      #   rainbow: 'Shiny Rainbow',
+      #   matrix: 'Matrix Style'
+      # }.each_pair do |type, title|
+      #   ui.message(title, glyph: '[[27]]◉') { ui.animate response, animation: type }
+        ui.space
+      # end
+    end
+
     def header
       ui.space
       ui.h1 'NattyUI: Message Types'
