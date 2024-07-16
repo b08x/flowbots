@@ -34,8 +34,9 @@ module Flowbots
         # Implement notification logic here
         # This could be sending an email, posting to a Slack channel, etc.
         Flowbots::UI.exception report
-        logger.warn "exception Notification:"
+        logger.warn "Exception Notification:"
         logger.warn report
+        logger.info "A detailed Markdown report has been generated in the exception_reports directory."
       end
     end
   end
