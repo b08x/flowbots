@@ -20,9 +20,10 @@ class LlmAnalysisTask < Jongleur::WorkerTask
 
       processed_text = retrieve_processed_text
       nlp_result = retrieve_nlp_result
-      topic_result = retrieve_topic_result
+      # topic_result = retrieve_topic_result
 
-      input = format_input(processed_text, nlp_result, topic_result)
+      # input = format_input(processed_text, nlp_result, topic_result)
+      input = format_input(processed_text, nlp_result)
       analysis_result = agent.process(input)
 
       logger.debug "Agent processing completed"
@@ -55,8 +56,9 @@ class LlmAnalysisTask < Jongleur::WorkerTask
     JSON.parse(@@redis.get("topic_result"))
   end
 
-  def format_input(processed_text, nlp_result, topic_result)
-    "Processed Text: #{processed_text}\n\nNLP Analysis: #{nlp_result}\n\nTopic Analysis: #{topic_result}"
+  def format_input(processed_text, nlp_result, topic_result="")
+    # "Processed Text: #{processed_text}\n\nNLP Analysis: #{nlp_result}\n\nTopic Analysis: #{topic_result}"
+    "Processed Text: #{processed_text}\n\nNLP Analysis: #{nlp_result}\n\n"
   end
 
   def store_analysis_result(result)

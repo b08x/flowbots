@@ -41,11 +41,11 @@ class WorkflowOrchestrator
       logger.debug "Starting Jongleur::API.run"
       Jongleur::API.run do |on|
         on.start do |task|
-          logger.info "Starting task: #{task}"
+          Flowbots::UI.info "Starting task: #{task}"
         end
 
         on.finish do |task|
-          logger.info "Finished task: #{task}"
+          Flowbots::UI.info "Finished task: #{task}"
         end
 
         on.error do |task, error|
@@ -54,7 +54,7 @@ class WorkflowOrchestrator
         end
 
         on.completed do |task_matrix|
-          logger.info "Workflow completed"
+          Flowbots::UI.info "Workflow completed"
           logger.debug "Task matrix: #{task_matrix}"
         end
       end

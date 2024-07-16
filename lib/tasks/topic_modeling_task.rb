@@ -3,7 +3,7 @@
 
 class TopicModelingTask < Jongleur::WorkerTask
   def execute
-    logger.info "Starting TopicModelingTask"
+    Flowbots::UI.info "Starting TopicModelingTask"
     processed_documents = retrieve_processed_documents
     topic_processor = Flowbots::TopicModelProcessor.instance
     result = topic_processor.process(processed_documents)

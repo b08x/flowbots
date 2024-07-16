@@ -20,9 +20,9 @@ module Flowbots
       Flowbots::UI.say(:ok, "Starting Text Processing Workflow")
 
       setup_workflow
-      # process_input
-      # run_nlp_analysis
-      # run_topic_modeling
+      process_input
+      run_nlp_analysis
+      run_topic_modeling
       run_workflow
       display_results
 
@@ -34,7 +34,6 @@ module Flowbots
 
     def setup_workflow
       logger.debug "Setting up workflow"
-      @orchestrator.add_agent("advanced_analysis", "assistants/agileBloomMini.yml", author: "@b08x")
 
       workflow_graph = {
         NlpAnalysisTask: [:TopicModelingTask],
@@ -68,6 +67,7 @@ module Flowbots
 
     def run_workflow
       Flowbots::UI.info "Running LLM Analysis workflow"
+      @orchestrator.add_agent("advanced_analysis", "assistants/agileBloomMini.yml", author: "@b08x")
       @orchestrator.run_workflow
     end
 

@@ -18,10 +18,6 @@ class AgentResponse < Ohm::Model
   attribute :text
   attribute :tagged, Type::Hash
   reference :agent, :Agent
-  # set :subjects, :Subject
-  # set :actions, :Action
-  # set :objects, :Object
-  # set :locations, :Location
 end
 
 class WorkflowAgent
@@ -41,17 +37,15 @@ class WorkflowAgent
 
     @bot.eval(input) do |content, fragment, finished, meta|
       @response = content unless content.nil?
-      # print pastel.blue(fragment) unless fragment.nil?
-      # print fragment unless fragment.nil?
-      # logger.debug fragment unless fragment.nil?
+      print pastel.blue(fragment) unless fragment.nil?
       sleep 0.025
     end
 
-    Flowbots::UI.info(@response)
-
+    #Flowbots::UI.info(@response)
     update_state(@response)
     @response
   end
+
 
   def save_state
     Jongleur::WorkerTask.class_variable_get(:@@redis).hset(
