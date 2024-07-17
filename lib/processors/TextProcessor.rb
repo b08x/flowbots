@@ -1,14 +1,13 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require 'mime/types'
+require 'mimemagic'
 
 require_relative "../modules/Segmentation"
 
 module Flowbots
   class TextProcessor
     include Singleton
-    include Logging
 
     def initialize
       logger.info "Initializing #{self.class.name}"

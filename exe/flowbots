@@ -4,15 +4,10 @@
 lib_dir = File.expand_path(File.join(__dir__, "..", "lib"))
 $LOAD_PATH.unshift lib_dir unless $LOAD_PATH.include?(lib_dir)
 
-require "logging"
-
-include Logging
-
 require "dotenv/load"
 
 begin
   Dotenv.load(".env", overwrite: true)
-  logger.debug "Load env vars"
 rescue StandardError => e
   puts "Error loading .env file: #{e.message}"
 end

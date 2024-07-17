@@ -19,6 +19,10 @@ end
 require "ohm"
 require "ohm/contrib"
 
+require "logging"
+
+include Logging
+
 # require "helper"
 require "ui"
 

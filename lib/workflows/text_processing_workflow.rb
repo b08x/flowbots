@@ -6,7 +6,6 @@
 
 module Flowbots
   class TextProcessingWorkflow
-    include Logging
 
     attr_accessor :input_file_path
 

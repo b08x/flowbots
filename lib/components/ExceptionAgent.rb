@@ -18,30 +18,30 @@ module Flowbots
       end
     end
 
-    # def process_exception(classname, exception)
-    #   exception_details = {
-    #     classname: classname,
-    #     message: exception.message,
-    #     backtrace: exception.backtrace&.join("\n")
-    #   }
-    #
-    #   relevant_files = extract_relevant_files(exception)
-    #   exception_details[:relevant_files] = relevant_files
-    #
-    #   prompt = generate_exception_prompt(exception_details)
-    #
-    #   begin
-    #     response = process(prompt)
-    #     report = format_exception_report(response, exception_details)
-    #     write_markdown_report(report, exception_details)
-    #     report
-    #   rescue StandardError => e
-    #     logger.error("Exception in ExceptionAgent: #{e.message}")
-    #     fallback_report = fallback_exception_report(exception_details)
-    #     write_markdown_report(fallback_report, exception_details)
-    #     fallback_report
-    #   end
-    # end
+    def process_exception(classname, exception)
+      exception_details = {
+        classname: classname,
+        message: exception.message,
+        backtrace: exception.backtrace&.join("\n")
+      }
+
+      relevant_files = extract_relevant_files(exception)
+      exception_details[:relevant_files] = relevant_files
+
+      prompt = generate_exception_prompt(exception_details)
+
+      begin
+        response = process(prompt)
+        report = format_exception_report(response, exception_details)
+        write_markdown_report(report, exception_details)
+        report
+      rescue StandardError => e
+        logger.error("Exception in ExceptionAgent: #{e.message}")
+        fallback_report = fallback_exception_report(exception_details)
+        write_markdown_report(fallback_report, exception_details)
+        fallback_report
+      end
+    end
 
     private
 

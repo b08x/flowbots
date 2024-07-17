@@ -3,7 +3,6 @@
 
 module Flowbots
   class Workflows
-    include Logging
 
     def initialize
       @prompt = TTY::Prompt.new
@@ -35,14 +34,6 @@ module Flowbots
 
     private
 
-    # def load_workflows
-    #   Dir[File.join(WORKFLOW_DIR, '**', '*.rb')].each do |file|
-    #     require file  # Use 'require' instead of 'require_relative'
-    #     Flowbots::UI.info "Loaded workflow file: #{file}"
-    #     logger.debug "Loaded workflow file: #{file}"
-    #   end
-    # end
-    #
     def self.load_workflows
       workflows_to_load = {}
       user_workflow_dir = if IN_CONTAINER
