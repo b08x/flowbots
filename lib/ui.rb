@@ -107,7 +107,7 @@ module UIBox
     end
 
     def eval_result_box(result, title: "Evaluation Result")
-      TTY::Box.success(result, title: { top_left: title }, width: 50, padding: 1)
+      TTY::Box.success(result, title: { top_left: title }, width: 80, height: (TTY::Screen.height / 1.25).round, padding: 1)
     end
 
     def exception(message)

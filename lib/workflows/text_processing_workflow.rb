@@ -18,18 +18,17 @@ module Flowbots
     end
 
     def run
-      logger.info "Starting Text Processing Workflow"
-      Flowbots::UI.say(:ok, "Starting Text Processing Workflow")
-
+      Flowbots::UI.say(:ok, "Setting Up Text Processing Workflow")
+      logger.info "Setting Up Text Processing Workflow"
       setup_workflow
       process_input
-      run_nlp_analysis
-      run_topic_modeling
-      run_workflow
-      display_results
 
-      logger.info "Text Processing Workflow completed"
+      Flowbots::UI.info "Running Text Processing Workflow"
+      @orchestrator.run_workflow
+
       Flowbots::UI.say(:ok, "Text Processing Workflow completed")
+      logger.info "Text Processing Workflow completed"
+
     end
 
     private
@@ -49,7 +48,8 @@ module Flowbots
       workflow_graph = {
         NlpAnalysisTask: [:TopicModelingTask],
         TopicModelingTask: [:LlmAnalysisTask],
-        LlmAnalysisTask: []
+        LlmAnalysisTask: [:DisplayResultsTask],
+        DisplayResultsTask: []
       }
 
       @orchestrator.define_workflow(workflow_graph)
@@ -62,33 +62,6 @@ module Flowbots
       processed_text = @nlp_processor.process(text)
       store_processed_text(processed_text)
       logger.debug "Input processing completed"
-    end
-
-    def run_nlp_analysis
-      logger.info "Running NLP Analysis"
-      Flowbots::Task.get_task("nlp_analysis_task").execute
-      logger.info "NLP Analysis completed"
-    end
-
-    def run_topic_modeling
-      logger.info "Running Topic Modeling"
-      Flowbots::Task.get_task("topic_modeling_task").execute
-      logger.info "Topic Modeling completed"
-    end
-
-    def run_workflow
-      Flowbots::UI.info "Running LLM Analysis workflow"
-      # @orchestrator.add_agent("ironically_literal", "assistants/steve.yml", author: "@b08x")
-      @orchestrator.run_workflow
-    end
-
-    def display_results
-      raw_text = File.read(@input_file_path)
-      processed_text = JSON.parse(Jongleur::WorkerTask.class_variable_get(:@@redis).get("processed_text"))
-      analysis_result = JSON.parse(Jongleur::WorkerTask.class_variable_get(:@@redis).get("analysis_result"))
-
-      puts UIBox.comparison_box(raw_text, processed_text, title1: "Raw Text", title2: "Processed Text")
-      puts UIBox.eval_result_box(analysis_result, title: "LLM Analysis Result")
     end
 
     def store_processed_text(text)
