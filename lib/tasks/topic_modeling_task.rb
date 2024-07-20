@@ -4,17 +4,17 @@
 class TopicModelingTask < Jongleur::WorkerTask
   def execute
     Flowbots::UI.info "Starting TopicModelingTask"
-    processed_documents = retrieve_processed_documents
+    segmented_text = retrieve_segmented_text
     topic_processor = Flowbots::TopicModelProcessor.instance
-    result = topic_processor.process(processed_documents)
+    result = topic_processor.process(segmented_text)
     store_topic_result(result)
     logger.info "TopicModelingTask completed"
   end
 
   private
 
-  def retrieve_processed_documents
-    JSON.parse(Jongleur::WorkerTask.class_variable_get(:@@redis).get("processed_text"))
+  def retrieve_segmented_text
+    JSON.parse(Jongleur::WorkerTask.class_variable_get(:@@redis).get("segmented_text"))
   end
 
   def store_topic_result(result)

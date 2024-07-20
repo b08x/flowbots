@@ -9,9 +9,9 @@ class Topic < Ohm::Model
   attribute :name
   attribute :description
   attribute :vector
-  collection :documents, :Document
-  collection :chunks, :Chunk
-  reference :collection, :Collection # Reference to the parent collection
+  collection :textfiles, :TextFile
+  collection :segments, :Segment
+  # reference :collection, :Collection # Reference to the parent collection
   unique :name
   index :name
 end
@@ -19,6 +19,7 @@ end
 module Flowbots
   class TopicModelProcessor < TextProcessor
     attr_accessor :model_path, :model, :model_params
+
     def initialize
       super
       model_params = {
@@ -37,7 +38,7 @@ module Flowbots
     end
 
     def process(documents, num_topics=5)
-      logger.info "Processing documents for topic modeling"
+      logger.info "Processing text for topic modeling"
       Flowbots::UI.say(:ok, "Processing documents for topic modeling")
 
       raise FlowbotError.new("Empty document set provided", "EMPTY_DOCUMENT_SET") if documents.empty?
@@ -94,8 +95,6 @@ module Flowbots
     end
 
     def model_trained?
-      p @model
-      exit
       !@model.nil? && @model.num_words > 0
     end
 

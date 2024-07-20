@@ -1,9 +1,30 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require 'mimemagic'
+require "mimemagic"
 
-require_relative "../modules/Segmentation"
+class TextFile < Ohm::Model
+  include Ohm::DataTypes
+  include Ohm::Callbacks
+
+  attribute :name
+  attribute :path
+  attribute :extension
+  attribute :title
+  attribute :content
+
+  set :topics, :Topic
+
+  list :segments, :Segment
+
+  unique :title
+  unique :path
+
+  index :title
+  index :path
+end
+
+# require_relative "../modules/Segmentation"
 
 module Flowbots
   class TextProcessor
@@ -29,14 +50,14 @@ module Flowbots
       raise NotImplementedError, "#{self.class.name}#process must be implemented in subclass"
     end
 
-    protected
+    # protected
 
-    def segment_text(text)
-      logger.debug "Creating TextSegmenter"
-      segmenter = TextSegmenter.new(text, { clean: true })
-      logger.debug "Executing segmentation"
-      segmenter.execute
-    end
+    # def segment_text(text)
+    #   logger.debug "Creating TextSegmenter"
+    #   segmenter = TextSegmenter.new(text, { clean: true })
+    #   logger.debug "Executing segmentation"
+    #   segmenter.execute
+    # end
 
     private
 
@@ -44,14 +65,13 @@ module Flowbots
       extension = File.extname(file_path).downcase
       mime_type = MIME::Types.type_for(file_path).first
 
-      case
-      when ['.txt', '.md', '.markdown'].include?(extension)
+      if [".txt", ".md", ".markdown"].include?(extension)
         :text
-      when extension == '.pdf'
+      elsif extension == ".pdf"
         :pdf
-      when ['.json', '.jsonl'].include?(extension)
+      elsif [".json", ".jsonl"].include?(extension)
         :json
-      when extension == '.html'
+      elsif extension == ".html"
         :html
       else
         logger.warn "Unknown file type for #{file_path}. Treating as plain text."

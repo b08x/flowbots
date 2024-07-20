@@ -26,8 +26,8 @@ include Logging
 # require "helper"
 require "ui"
 
-WORKFLOW_DIR = File.expand_path("../workflows/", __FILE__)
-TASK_DIR = File.expand_path("../tasks", __FILE__)
+WORKFLOW_DIR = File.expand_path("workflows", __dir__)
+TASK_DIR = File.expand_path("tasks", __dir__)
 
 require "workflows"
 require "tasks"
@@ -36,7 +36,7 @@ CARTRIDGE_DIR = File.expand_path("../nano-bots/cartridges/", __dir__)
 
 # Configuration for Redis connection
 REDIS_CONFIG = {
-  host: "#{ENV['REDIS_HOST']}",
+  host: "#{ENV.fetch('REDIS_HOST', nil)}",
   port: 6379,
   db: 15
 }
@@ -47,9 +47,7 @@ class RedisConnection
     @redis = Redis.new(REDIS_CONFIG)
   end
 
-  def redis
-    @redis
-  end
+  attr_reader :redis
 end
 
 # Orchestrator and Agent are core components of the Flowbots architecture.
@@ -60,6 +58,9 @@ require_relative "components/WorkflowOrchestrator"
 require_relative "components/ExceptionHandler"
 
 require_relative "processors/TextProcessor"
+
+require_relative "processors/TextSegmentProcessor"
+
 require_relative "processors/NLPProcessor"
 
 require_relative "processors/TopicModelProcessor"
@@ -73,12 +74,11 @@ rescue Ohm::Error => e
   Flowbots::ExceptionHandler.handle_exception(e)
 end
 
-
 module Flowbots
   class FlowbotError < StandardError
     attr_reader :error_code, :details
 
-    def initialize(message, error_code, details = {})
+    def initialize(message, error_code, details={})
       super(message)
       @error_code = error_code
       @details = details
@@ -91,7 +91,6 @@ module Flowbots
   class APIError < FlowbotError; end
   # Add more specific error classes as needed
 end
-
 
 # from Monadic-Chat, MonadicApp class:
 # return true if we are inside a docker container

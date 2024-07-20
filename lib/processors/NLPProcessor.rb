@@ -1,19 +1,31 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+class Word < Ohm::Model
+  include Ohm::DataTypes
+  include Ohm::Callbacks
+  attribute :word
+  attribute :synsets # TOOD: might be Hash type
+  attribute :pos
+  attribute :tag
+  attribute :dep
+  attribute :ner
+  reference :segment, :Segment
+  # collection :vector_data, :VectorData
+end
+
 module Flowbots
   class NLPProcessor < TextProcessor
-
     def initialize
       load_model
     end
 
-    def process(text)
+    def process(segments)
       logger.info "Starting NLP processing"
       Flowbots::UI.say(:ok, "Starting NLP processing")
 
-      segments = segment_text(text)
-      logger.debug "Number of segments: #{segments.length}"
+      # segments = segment_text(text)
+      # logger.debug "Number of segments: #{segments.length}"
 
       result = process_segments(segments)
       logger.info "NLP processing completed"
@@ -24,7 +36,7 @@ module Flowbots
     private
 
     def load_model
-      nlp_model = ENV['SPACY_MODEL']
+      nlp_model = ENV.fetch("SPACY_MODEL", nil)
       logger.debug "Loading NLP model: #{nlp_model}"
       begin
         @nlp = Spacy::Language.new(nlp_model)

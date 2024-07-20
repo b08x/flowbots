@@ -6,10 +6,9 @@
 
 module Flowbots
   class TextProcessingWorkflow
-
     attr_accessor :input_file_path
 
-    def initialize(input_file_path = nil)
+    def initialize(input_file_path=nil)
       @input_file_path = input_file_path || prompt_for_file # Assign or prompt
       @orchestrator = WorkflowOrchestrator.new
       @nlp_processor = NLPProcessor.instance
@@ -27,7 +26,6 @@ module Flowbots
 
       Flowbots::UI.say(:ok, "Text Processing Workflow completed")
       logger.info "Text Processing Workflow completed"
-
     end
 
     private
@@ -35,9 +33,8 @@ module Flowbots
     def prompt_for_file
       get_file_path = `gum file`.chomp.strip
       file_path = File.join(get_file_path)
-      unless File.exist?(file_path)
-        raise FlowbotError.new("File not found", "FILENOTFOUND")
-      end
+      raise FlowbotError.new("File not found", "FILENOTFOUND") unless File.exist?(file_path)
+
       file_path
     end
 
@@ -45,6 +42,7 @@ module Flowbots
       logger.debug "Setting up workflow"
 
       workflow_graph = {
+        TextSegmentTask: [:NlpAnalysisTask],
         NlpAnalysisTask: [:TopicModelingTask],
         TopicModelingTask: [:LlmAnalysisTask],
         LlmAnalysisTask: [:DisplayResultsTask],
@@ -58,9 +56,16 @@ module Flowbots
     def process_input
       Flowbots::UI.info "Processing input file: #{@input_file_path}"
       text = File.read(@input_file_path)
-      processed_text = @nlp_processor.process(text)
-      store_processed_text(processed_text)
+      store_textfile_text(text)
       logger.debug "Input processing completed"
+    end
+
+    def store_textfile_text(text)
+      Jongleur::WorkerTask.class_variable_get(:@@redis).set("textfile_text", text.to_json)
+    end
+
+    def retrieve_textfile_text
+      JSON.parse(Jongleur::WorkerTask.class_variable_get(:@@redis).get("textfile_text"))
     end
 
     def store_processed_text(text)

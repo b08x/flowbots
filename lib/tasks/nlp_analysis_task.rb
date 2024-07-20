@@ -3,18 +3,18 @@
 
 class NlpAnalysisTask < Jongleur::WorkerTask
   def execute
-    logger.info "Starting NLPAnalysisTask"
-    processed_text = retrieve_processed_text
+    Flowbots::UI.info "Starting NLPAnalysisTask"
+    segmented_text = retrieve_segmented_text
     nlp_processor = Flowbots::NLPProcessor.instance
-    result = nlp_processor.process(processed_text)
+    result = nlp_processor.process(segmented_text)
     store_nlp_result(result)
     logger.info "NLPAnalysisTask completed"
   end
 
   private
 
-  def retrieve_processed_text
-    JSON.parse(Jongleur::WorkerTask.class_variable_get(:@@redis).get("processed_text"))
+  def retrieve_segmented_text
+    JSON.parse(Jongleur::WorkerTask.class_variable_get(:@@redis).get("segmented_text"))
   end
 
   def store_nlp_result(result)

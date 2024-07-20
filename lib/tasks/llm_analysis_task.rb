@@ -5,7 +5,7 @@ class LlmAnalysisTask < Jongleur::WorkerTask
   include Logging
 
   def execute
-    logger.info "Starting LLMAnalysisTask"
+    Flowbots::UI.info "Starting LLMAnalysisTask"
 
     begin
       agent = WorkflowAgent.new(
