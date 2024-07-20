@@ -6,20 +6,19 @@
 
 module Flowbots
   class TextProcessingWorkflow
-    attr_accessor :input_file_path
+    attr_reader :input_file_path, :text_file_id
 
     def initialize(input_file_path=nil)
       @input_file_path = input_file_path || prompt_for_file # Assign or prompt
       @orchestrator = WorkflowOrchestrator.new
-      @nlp_processor = NLPProcessor.instance
-      @topic_modeling_processor = TopicModelProcessor.instance
     end
 
     def run
       Flowbots::UI.say(:ok, "Setting Up Text Processing Workflow")
       logger.info "Setting Up Text Processing Workflow"
+
       setup_workflow
-      process_input
+      store_input_file_path
 
       Flowbots::UI.info "Running Text Processing Workflow"
       @orchestrator.run_workflow
@@ -42,7 +41,9 @@ module Flowbots
       logger.debug "Setting up workflow"
 
       workflow_graph = {
-        TextSegmentTask: [:NlpAnalysisTask],
+        FileLoaderTask: [:TextSegmentTask],
+        TextSegmentTask: [:TextTokenizeTask],
+        TextTokenizeTask: [:NlpAnalysisTask],
         NlpAnalysisTask: [:TopicModelingTask],
         TopicModelingTask: [:LlmAnalysisTask],
         LlmAnalysisTask: [:DisplayResultsTask],
@@ -53,35 +54,9 @@ module Flowbots
       logger.debug "Workflow setup completed"
     end
 
-    def process_input
-      Flowbots::UI.info "Processing input file: #{@input_file_path}"
-      text = File.read(@input_file_path)
-      store_textfile_text(text)
-      logger.debug "Input processing completed"
+    def store_input_file_path
+      Jongleur::WorkerTask.class_variable_get(:@@redis).set("input_file_path", @input_file_path)
     end
 
-    def store_textfile_text(text)
-      Jongleur::WorkerTask.class_variable_get(:@@redis).set("textfile_text", text.to_json)
-    end
-
-    def retrieve_textfile_text
-      JSON.parse(Jongleur::WorkerTask.class_variable_get(:@@redis).get("textfile_text"))
-    end
-
-    def store_processed_text(text)
-      Jongleur::WorkerTask.class_variable_get(:@@redis).set("processed_text", text.to_json)
-    end
-
-    def retrieve_processed_text
-      JSON.parse(Jongleur::WorkerTask.class_variable_get(:@@redis).get("processed_text"))
-    end
-
-    def retrieve_analysis_result
-      JSON.parse(Jongleur::WorkerTask.class_variable_get(:@@redis).get("analysis_result"))
-    end
-
-    def retrieve_topics
-      @topic_modeling_processor.get_topics
-    end
   end
 end

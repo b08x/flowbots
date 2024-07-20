@@ -1,35 +1,14 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-class Word < Ohm::Model
-  include Ohm::DataTypes
-  include Ohm::Callbacks
-  attribute :word
-  attribute :synsets # TOOD: might be Hash type
-  attribute :pos
-  attribute :tag
-  attribute :dep
-  attribute :ner
-  reference :segment, :Segment
-  # collection :vector_data, :VectorData
-end
-
 module Flowbots
   class NLPProcessor < TextProcessor
     def initialize
       load_model
     end
 
-    def process(segments)
-      logger.info "Starting NLP processing"
-      Flowbots::UI.say(:ok, "Starting NLP processing")
-
-      # segments = segment_text(text)
-      # logger.debug "Number of segments: #{segments.length}"
-
-      result = process_segments(segments)
-      logger.info "NLP processing completed"
-      Flowbots::UI.say(:ok, "NLP processing completed")
+    def process(segment)
+      result = process_sentence(segment)
       result
     end
 
@@ -50,41 +29,23 @@ module Flowbots
       end
     end
 
-    def process_segments(segments)
-      logger.debug "Processing #{segments.length} segments"
-      segments.map { |segment| process_sentence(segment) }
-    end
-
-    def process_sentence(sentence)
-      logger.debug "Processing sentence of length: #{sentence.length}"
+    def process_sentence(segment)
+      logger.debug "Processing segment of length: #{segment.text.length}"
 
       logger.debug "Starting NLP processing"
-      doc = @nlp.read(sentence)
+      doc = @nlp.read(segment.tokens.join(" "))
       logger.debug "NLP processing completed"
 
-      relevant_tokens = doc.select do |token|
-        token.pos_ != "" || token.tag_ != "" || token.dep_ != "" || token.ent_type_ != ""
-      end
-      logger.debug "Number of relevant tokens: #{relevant_tokens.length}"
-
-      processed_tokens = relevant_tokens.map do |token|
+      processed_tokens = doc.map do |token|
         {
-          text: token.text,
+          word: token.text,
           pos: token.pos_,
           tag: token.tag_,
           dep: token.dep_,
-          ent_type: token.ent_type_
+          ner: token.ent_type_
         }
       end
 
-      filtered_tokens = processed_tokens.select do |token|
-        %w[NN JJ RB].include? token[:tag]
-      end.map { |token| token[:text] }
-      logger.debug "Number of filtered tokens: #{filtered_tokens.length}"
-
-      result = filtered_tokens.join(" ")
-      logger.debug "Processed sentence result length: #{result.length}"
-      result
     end
   end
 end

@@ -83,7 +83,7 @@ RUN python3 -m venv .venv && \
     echo "[[ -f /app/.venv ]] && cd /app && . /app/.venv/bin/activate" >> /home/flowbots/.bashrc && \
     echo "gem: --user-instal --no-document" >> /home/flowbots/.gemrc && \
     pip3 install -U setuptools wheel && \
-    pip3 install -U spacy && \
+    pip3 install -U spacy 'pdfminer.six[image]' && \
     python3 -m spacy download en_core_web_lg && \
     python -c "import sys, importlib.util as util; 1 if util.find_spec('nltk') else sys.exit(); import nltk; nltk.download('punkt')"
 

@@ -35,3 +35,4 @@ flowbots.json
 /.vendor/
 /.docs/
 /exception_reports/
+*.text.json

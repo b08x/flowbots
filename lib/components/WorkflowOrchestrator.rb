@@ -38,15 +38,20 @@ class WorkflowOrchestrator
       logger.debug "Printing graph to /tmp"
       Jongleur::API.print_graph("/tmp")
 
+
       Flowbots::UI.info "Starting Jongleur::API.run"
       Jongleur::API.run do |on|
         on.start do |task|
-          Flowbots::UI.info "Starting task: #{task}"
+          ui.framed do
+            ui.puts "Starting task: #{task}"
+          end
         end
 
         on.finish do |task|
-          p Jongleur::API.get_predecessor_pids(task)
-          Flowbots::UI.info "Finished task: #{task}"
+          ui.framed do
+            ui.puts "Finished task: #{task}"
+          end
+          ui.space
         end
 
         on.error do |task, error|

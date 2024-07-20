@@ -4,28 +4,11 @@
 require "lingua"
 require "pragmatic_segmenter"
 
-class Segment < Ohm::Model
-  include Ohm::DataTypes
-  include Ohm::Callbacks
-
-  attribute :text
-  list :words, :Word
-
-  reference :textfile, :TextFile
-  reference :topic, :Topic
-end
-
 module Flowbots
   class TextSegmentProcessor < TextProcessor
     DEFAULT_OPTIONS = { language: "en", doc_type: "none", clean: false }
 
     attr_accessor :text, :options
-
-    # def initialize(text, opts={})
-    #   @text = text
-    #   @options = DEFAULT_OPTIONS.merge(opts)
-    #   logger.debug "TextSegmenter initialized with options: #{@options}"
-    # end
 
     def process(text, opts={})
       @text = text
@@ -60,19 +43,3 @@ module Flowbots
     end
   end
 end
-#
-#
-# module Segmentation
-#   def segment(text)
-#     raise NotImplementedError
-#   end
-# end
-#
-# class Segmenter
-#   include Segmentation
-#
-#   def self.segment(text)
-#     content = Lingua::EN::Readability.new(text)
-#     content
-#   end
-# end

@@ -65,8 +65,5 @@ module Flowbots
       # store_all_topics
     end
 
-    def model_trained?
-      !@model.nil? && @model.num_words > 0
-    end
   end
 end
