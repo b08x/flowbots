@@ -23,9 +23,9 @@ class Textfile < Ohm::Model
   attribute :extension
   attribute :title
   attribute :content
+  attribute :batch
 
   set :topics, :Topic
-
   list :segments, :Segment
   list :words, :Word
 
@@ -34,6 +34,7 @@ class Textfile < Ohm::Model
 
   index :title
   index :path
+  index :batch
 
   def self.find_or_create_by_path(file_path, attributes = {})
     existing_file = find(path: file_path).first
@@ -60,6 +61,11 @@ class Textfile < Ohm::Model
       ids = redis.call("ZREVRANGE", key[:latest], 0, limit - 1)
       fetch(ids)
     end
+  end
+
+  def self.current_batch
+    batch_id = redis.call("GET", "current_batch_id")
+    find(batch: batch_id)
   end
 
   def add_topics(new_topics)
@@ -106,7 +112,6 @@ class Textfile < Ohm::Model
   def after_delete
     redis.call("ZREM", model.key[:latest], id)
   end
-
 end
 
 class Segment < Ohm::Model

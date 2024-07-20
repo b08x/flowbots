@@ -5,9 +5,15 @@ class TopicModelingTask < Jongleur::WorkerTask
   def execute
     text_file = Textfile.latest
     filtered_words = retrieve_filtered_words(text_file)
+
     topic_processor = Flowbots::TopicModelProcessor.instance
-    result = topic_processor.process(filtered_words)
-    store_topic_result(text_file, result)
+    topic_processor.load_or_create_model
+
+    results = filtered_words.map do |words|
+      topic_processor.infer_topics(words.join(' '))
+    end
+
+    store_topic_result(text_file, results)
   end
 
   private

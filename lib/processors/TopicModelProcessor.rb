@@ -5,6 +5,8 @@ require "tomoto"
 
 TOPIC_MODEL_PATH = ENV.fetch("TOPIC_MODEL_PATH", nil)
 
+# lib/processors/TopicModelProcessor.rb
+
 module Flowbots
   class TopicModelProcessor < TextProcessor
     attr_accessor :model_path, :model, :model_params
@@ -23,70 +25,151 @@ module Flowbots
       }
       @model_path = TOPIC_MODEL_PATH
       @model = nil
-      load_model(@model_params)
     end
 
-    def process(documents, num_topics=5)
-      logger.info "Processing text for topic modeling"
-      Flowbots::UI.say(:ok, "Processing documents for topic modeling")
-
-      raise FlowbotError.new("Empty document set provided", "EMPTY_DOCUMENT_SET") if documents.empty?
-
-      ensure_model_exists(documents)
-
-      load_model(@model_params)
-
-      results = documents.map do |doc|
-        infer_topics(doc) unless doc.empty?
-      end.compact # Remove any nil results
-
-      Flowbots::UI.info "Inferred topics for #{results.size} documents"
-      Flowbots::UI.info "Sample result: #{results.first.inspect}" if results.any?
-
-      # store_topics(results)
-
-      Flowbots::UI.say(:ok, "Topic inference completed")
-      results
-    end
-
-    def load_model(model_params)
-      @model_params = model_params
-      if File.exist?(TOPIC_MODEL_PATH)
-        Flowbots::UI.info "Loading existing model from #{TOPIC_MODEL_PATH}"
-        begin
-          @model = Tomoto::LDA.load(TOPIC_MODEL_PATH)
-        rescue StandardError => e
-          logger.error "Failed to load existing model: #{e.message}"
-          raise FlowbotError.new("Failed to load topic model", "MODEL_LOAD_ERROR", details: e.message)
-        end
-        logger.debug "Model loading completed"
-        Flowbots::UI.say(:ok, "Topic model loading completed")
+    def load_or_create_model
+      if File.exist?(@model_path)
+        load_existing_model
       else
-        logger.info "Creating new model"
-        begin
-          @model = Tomoto::LDA.new(**@model_params)
-        rescue StandardError => e
-          logger.error "Failed to load existing model: #{e.message}"
-          raise FlowbotError.new("Failed to create topic model", "MODEL_LOAD_ERROR", details: e.message)
-        end
-        logger.debug "New Model created"
+        create_new_model
       end
+    end
+
+    def train_model(documents, iterations=100)
+      ensure_model_exists
+
+      logger.info "Training topic model"
+      Flowbots::UI.say(:ok, "Training topic model")
+
+      documents.each do |doc|
+        words = doc.split
+        @model.add_doc(words) if words.any?
+      end
+
+      @model.burn_in = iterations
+      @model.train(0)
+
+      ui.info "Removed Top Words" do
+        ui.puts "#{@model.removed_top_words}"
+        ui.puts "Training..."
+        ui.framed do
+          100.times do |i|
+            @model.train(10)
+            ui.puts "Iteration: #{i * 10}\tLog-likelihood: #{@model.ll_per_word}"
+          end
+        end
+        ui.framed do
+          ui.puts @model.summary
+        end
+      end
+
+      ui.space
+
+      if @model.num_words == 0
+        raise FlowbotError.new("No valid words found in the provided documents", "EMPTY_VOCABULARY")
+      end
+
+      ui.info "Vocab" do
+        ui.puts "Documents added to model. Vocab size: #{@model.used_vocabs.length}, Total words: #{@model.num_words}"
+      end
+
+      logger.info "Model training completed"
+      Flowbots::UI.say(:ok, "Model training completed")
+
+      save_model
+    end
+
+    def infer_topics(document)
+      ensure_model_exists
+
+      doc = @model.make_doc(document.split)
+      topic_dist, _ = @model.infer(doc)
+
+      return {} if topic_dist.nil?
+
+      most_probable_topic = topic_dist.each_with_index.max_by { |prob, _| prob }[1]
+      top_words = @model.topic_words(most_probable_topic, top_n: 10)
+
+      {
+        most_probable_topic: most_probable_topic,
+        topic_distribution: topic_dist.to_a,
+        top_words: top_words
+      }
     end
 
     private
 
-    def ensure_model_exists(documents)
-      if @model.nil?
-        logger.info "Model doesn't exist. Training new model."
-        train_model(documents)
-      elsif !model_trained?
-        logger.info "Model exists but is not trained. Training model."
-        train_model(documents)
+    def ensure_model_exists
+      load_or_create_model if @model.nil?
+    end
+
+    def load_existing_model
+      Flowbots::UI.info "Loading existing model from #{@model_path}"
+      begin
+        @model = Tomoto::LDA.load(@model_path)
+        logger.debug "Model loading completed"
+        Flowbots::UI.say(:ok, "Topic model loading completed")
+      rescue StandardError => e
+        logger.error "Failed to load existing model: #{e.message}"
+        raise FlowbotError.new("Failed to load topic model", "MODEL_LOAD_ERROR", details: e.message)
       end
     end
 
-    def model_trained?
-      !@model.nil? && @model.num_words > 0
+    def create_new_model
+      logger.info "Creating new model"
+      begin
+        @model = Tomoto::LDA.new(**@model_params)
+        logger.debug "New Model created"
+      rescue StandardError => e
+        logger.error "Failed to create new model: #{e.message}"
+        raise FlowbotError.new("Failed to create topic model", "MODEL_CREATE_ERROR", details: e.message)
+      end
+    end
+
+    def save_model
+      logger.info "Attempting to save model to #{TOPIC_MODEL_PATH}"
+      Flowbots::UI.say(:ok, "Attempting to save topic model")
+
+      begin
+        # Check if the directory exists, create it if it doesn't
+        dir = File.dirname(TOPIC_MODEL_PATH)
+        FileUtils.mkdir_p(dir) unless File.directory?(dir)
+
+        # Check if we have write permissions
+        unless File.writable?(dir)
+          raise FlowbotError.new(
+            "No write permission for directory: #{dir}",
+            "PERMISSION_ERROR"
+          )
+        end
+
+        # Check available disk space (example threshold: 100MB)
+        available_space = `df -k #{dir} | awk '{print $4}' | tail -n 1`.to_i * 1024
+        if available_space < 100_000_000 # 100MB in bytes
+          raise FlowbotError.new(
+            "Insufficient disk space. Only #{available_space / 1_000_000}MB available.",
+            "DISK_SPACE_ERROR"
+          )
+        end
+
+        # Attempt to save the model
+        @model.save(TOPIC_MODEL_PATH)
+
+        logger.info "Model successfully saved to #{TOPIC_MODEL_PATH}"
+        Flowbots::UI.say(:ok, "Topic model saved successfully")
+      rescue Tomoto::Error => e
+        logger.error "Tomoto gem error while saving model: #{e.message}"
+        raise FlowbotError.new(
+          "Failed to save topic model due to Tomoto gem error: #{e.message}",
+          "TOMOTO_SAVE_ERROR"
+        )
+      rescue FlowbotError => e
+        logger.error e.message
+        raise e
+      rescue StandardError => e
+        logger.error "Unexpected error while saving model: #{e.message}"
+        raise FlowbotError.new("Unexpected error while saving topic model: #{e.message}", "SAVE_ERROR")
+      end
     end
   end
 end

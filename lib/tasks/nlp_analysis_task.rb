@@ -3,19 +3,34 @@
 
 class NlpAnalysisTask < Jongleur::WorkerTask
   def execute
-    segments = Textfile.latest.retrieve_segments
-
-    logger.debug "Number of segments: #{segments.length}"
-
     nlp_processor = Flowbots::NLPProcessor.instance
 
-    segments.each do |segment|
-      processed_tokens = nlp_processor.process(segment)
+    Textfile.current_batch.each do |text_file|
+      segments = text_file.retrieve_segments
 
-      tagged_hash = { tokens: processed_tokens }
-      segment.update(tagged: tagged_hash)
+      logger.debug "Number of segments for #{text_file.name}: #{segments.length}"
 
-      segment.add_words(processed_tokens)
+      segments.each do |segment|
+        processed_tokens = nlp_processor.process(segment, pos: true, dep: true, ner: true, tag: true)
+        segment.update(tagged: processed_tokens)
+        add_words_to_segment(segment, processed_tokens)
+      end
     end
+  end
+
+  private
+
+  def add_words_to_segment(segment, processed_tokens)
+    words = processed_tokens[:pos].keys
+    word_data = words.map do |word|
+      {
+        word: word,
+        pos: processed_tokens[:pos][word],
+        tag: processed_tokens[:tag][word],
+        dep: processed_tokens[:dep][word],
+        ner: processed_tokens[:ner][word]
+      }
+    end
+    segment.add_words(word_data)
   end
 end

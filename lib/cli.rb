@@ -34,6 +34,24 @@ module Flowbots
       end
     end
 
+    desc "train_topic_model FOLDER", "Train a topic model using text files in the specified folder"
+    def train_topic_model(folder)
+      unless Dir.exist?(folder)
+        say @pastel.red("Folder not found: #{folder}")
+        exit
+      end
+
+      say @pastel.green("Training topic model using files in: #{folder}")
+
+      begin
+        workflow = TopicModelTrainerWorkflow.new(folder)
+        workflow.run
+        say @pastel.green("Topic model training completed successfully")
+      rescue StandardError => e
+        ExceptionHandler.handle_exception(self.class.name, e)
+      end
+    end
+
     desc "process_text FILE", "Process a text file using the text processing workflow"
     def process_text(file)
       pastel = Pastel.new
