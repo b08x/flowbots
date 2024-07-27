@@ -65,6 +65,7 @@ class WorkflowOrchestrator
             ui.space
             ui.puts "Task matrix: #{task_matrix}"
           end
+          return "next"
         end
       end
     rescue StandardError => e

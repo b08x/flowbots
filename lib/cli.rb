@@ -18,6 +18,8 @@ module Flowbots
 
     desc "workflows", "List and select a workflow to run"
     def workflows
+      pastel = Pastel.new
+
       workflows = Workflows.new
 
       selected_workflow = workflows.list_and_select
@@ -25,9 +27,9 @@ module Flowbots
       if selected_workflow
         begin
           workflows.run(selected_workflow)
-          say @pastel.green("Workflow completed successfully")
+          say pastel.green("Workflow completed successfully")
         rescue FileNotFoundError => e
-          say @pastel.red(e.message)
+          say pastel.red(e.message)
         rescue StandardError => e
           ExceptionHandler.handle_exception(self.class.name, e)
         end
@@ -36,17 +38,19 @@ module Flowbots
 
     desc "train_topic_model FOLDER", "Train a topic model using text files in the specified folder"
     def train_topic_model(folder)
+      pastel = Pastel.new
+
       unless Dir.exist?(folder)
-        say @pastel.red("Folder not found: #{folder}")
+        say pastel.red("Folder not found: #{folder}")
         exit
       end
 
-      say @pastel.green("Training topic model using files in: #{folder}")
+      say pastel.green("Training topic model using files in: #{folder}")
 
       begin
         workflow = TopicModelTrainerWorkflow.new(folder)
         workflow.run
-        say @pastel.green("Topic model training completed successfully")
+        say pastel.green("Topic model training completed successfully")
       rescue StandardError => e
         ExceptionHandler.handle_exception(self.class.name, e)
       end

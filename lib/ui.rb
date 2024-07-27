@@ -14,13 +14,14 @@ require "tty-table"
 
 TITLE_WIDTH = 80
 
+PASTEL = Pastel.new
+
 module Flowbots
   module UI
     module_function
 
     def prompt
       @prompt = TTY::Prompt.new(enable_color: true, active_color: :cyan)
-      @pastel = Pastel.new
     end
 
     def say(type, statement)
@@ -37,7 +38,7 @@ module Flowbots
         @prompt.error(statement)
         logger.fatal statement
       else
-        @pastel.say(statement)
+        PASTEL.say(statement)
       end
     end
 
@@ -145,6 +146,79 @@ module UIBox
   end
 end
 
+# Add this to your ui.rb file or create a new file called box_ui.rb
+
+module BoxUI
+  class << self
+    def side_by_side_boxes(text1, text2, title1: "Box 1", title2: "Box 2")
+      screen_width = TTY::Screen.width
+      screen_height = TTY::Screen.height
+      box_width = (screen_width / 2) - 2
+      box_height = screen_height - 4  # Leave some space for prompts
+
+      box1 = create_scrollable_box(text1, box_width, box_height, title1)
+      box2 = create_scrollable_box(text2, box_width, box_height, title2)
+
+      display_boxes(box1, box2, box_height)
+    end
+
+    private
+
+    def create_scrollable_box(text, width, height, title)
+      lines = text.split("\n")
+      total_pages = (lines.length.to_f / (height - 2)).ceil
+      {
+        title: title,
+        lines: lines,
+        width: width,
+        height: height,
+        total_pages: total_pages,
+        current_page: 1
+      }
+    end
+
+    def display_boxes(box1, box2, box_height)
+      loop do
+        system('clear') || system('cls')
+        print_boxes(box1, box2, box_height)
+        print_navigation_info(box1, box2)
+
+        input = STDIN.getch
+        case input.downcase
+        when 'q'
+          break
+        when 'a'
+          box1[:current_page] = [1, box1[:current_page] - 1].max
+        when 'd'
+          box1[:current_page] = [box1[:total_pages], box1[:current_page] + 1].min
+        when 'j'
+          box2[:current_page] = [1, box2[:current_page] - 1].max
+        when 'l'
+          box2[:current_page] = [box2[:total_pages], box2[:current_page] + 1].min
+        end
+      end
+    end
+
+    def print_boxes(box1, box2, box_height)
+      start_line1 = (box1[:current_page] - 1) * (box_height - 2)
+      start_line2 = (box2[:current_page] - 1) * (box_height - 2)
+
+      box1_content = box1[:lines][start_line1, box_height - 2].join("\n")
+      box2_content = box2[:lines][start_line2, box_height - 2].join("\n")
+
+      box1_frame = TTY::Box.frame(width: box1[:width], height: box_height, title: { top_left: box1[:title] }) { box1_content }
+      box2_frame = TTY::Box.frame(width: box2[:width], height: box_height, title: { top_left: box2[:title] }) { box2_content }
+
+      puts box1_frame.split("\n").zip(box2_frame.split("\n")).map { |a, b| "#{a}  #{b}" }.join("\n")
+    end
+
+    def print_navigation_info(box1, box2)
+      puts "Box 1: Page #{box1[:current_page]}/#{box1[:total_pages]} (A/D to navigate)"
+      puts "Box 2: Page #{box2[:current_page]}/#{box2[:total_pages]} (J/L to navigate)"
+      puts "Press Q to exit"
+    end
+  end
+end
 #
 # TEXT = <<~TEXT.tr("\n", ' ')
 #   Lorem [[yellow]]ipsum[[/]] dolor sit amet, consectetur adipisicing elit, sed

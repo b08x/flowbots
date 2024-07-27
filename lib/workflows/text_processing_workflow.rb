@@ -41,7 +41,8 @@ module Flowbots
       logger.debug "Setting up workflow"
 
       workflow_graph = {
-        FileLoaderTask: [:TextSegmentTask],
+        FileLoaderTask: [:PreprocessTextFileTask],
+        PreprocessTextFileTask: [:TextSegmentTask],
         TextSegmentTask: [:TextTokenizeTask],
         TextTokenizeTask: [:NlpAnalysisTask],
         NlpAnalysisTask: [:TopicModelingTask],

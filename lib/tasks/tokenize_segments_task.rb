@@ -3,18 +3,15 @@
 
 class TokenizeSegmentsTask < Jongleur::WorkerTask
   def execute
+    textfile_id = Jongleur::WorkerTask.class_variable_get(:@@redis).get("current_textfile_id")
+    text_file = Textfile[textfile_id]
+
     text_tokenizer = Flowbots::TextTokenizeProcessor.instance
 
-    Textfile.current_batch.each do |text_file|
-      segments = text_file.retrieve_segments
-      segments.each do |segment|
-        tokens = text_tokenizer.process(segment.text, { clean: true })
-        segment.update(tokens: tokens)
-        segment.save
-      end
+    text_file.retrieve_segments.each do |segment|
+      tokens = text_tokenizer.process(segment.text, { clean: true })
+      segment.update(tokens: tokens)
+      segment.save
     end
-
-    logger.info "Tokenized segments for #{Textfile.current_batch.count} files"
-    Flowbots::UI.say(:ok, "Tokenized segments for #{Textfile.current_batch.count} files")
   end
 end

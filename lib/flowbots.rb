@@ -52,26 +52,16 @@ end
 
 # Orchestrator and Agent are core components of the Flowbots architecture.
 require_relative "components/WorkflowOrchestrator"
-# require_relative "components/WorkflowAgent"
-
-# require_relative "components/ExceptionAgent"
 require_relative "components/ExceptionHandler"
 
 require_relative "components/OhmModels"
-
 require_relative "components/FileLoader"
 
 require_relative "processors/TextProcessor"
-
 require_relative "processors/TextSegmentProcessor"
 require_relative "processors/TextTokenizeProcessor"
-
 require_relative "processors/NLPProcessor"
-
 require_relative "processors/TopicModelProcessor"
-require_relative "processors/modeler/inference"
-require_relative "processors/modeler/train"
-require_relative "processors/modeler/save"
 
 begin
   Ohm.redis = Redic.new("redis://localhost:6379/0")

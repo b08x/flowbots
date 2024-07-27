@@ -6,7 +6,6 @@ module Flowbots
 
     def initialize
       @prompt = TTY::Prompt.new
-      @pastel = Pastel.new
     end
 
     def list_and_select
@@ -78,7 +77,7 @@ module Flowbots
       end
 
       table = TTY::Table.new(
-        header: [@pastel.cyan("Workflow"), @pastel.cyan("Description")],
+        header: [PASTEL.cyan("Workflow"), PASTEL.cyan("Description")],
         rows: workflows
       )
 

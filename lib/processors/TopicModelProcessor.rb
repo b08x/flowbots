@@ -5,8 +5,6 @@ require "tomoto"
 
 TOPIC_MODEL_PATH = ENV.fetch("TOPIC_MODEL_PATH", nil)
 
-# lib/processors/TopicModelProcessor.rb
-
 module Flowbots
   class TopicModelProcessor < TextProcessor
     attr_accessor :model_path, :model, :model_params
@@ -42,7 +40,8 @@ module Flowbots
       Flowbots::UI.say(:ok, "Training topic model")
 
       documents.each do |doc|
-        words = doc.split
+        words = doc.split if doc.instance_of?(String)
+        words = doc if doc.instance_of?(Array)
         @model.add_doc(words) if words.any?
       end
 
