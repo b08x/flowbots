@@ -28,10 +28,14 @@ module Flowbots
         begin
           workflows.run(selected_workflow)
           say pastel.green("Workflow completed successfully")
+        rescue Interrupt
+          say pastel.yellow("Workflow interrupted by user")
         rescue FileNotFoundError => e
           say pastel.red(e.message)
         rescue StandardError => e
           ExceptionHandler.handle_exception(self.class.name, e)
+        ensure
+          Flowbots.shutdown
         end
       end
     end
@@ -48,7 +52,7 @@ module Flowbots
       say pastel.green("Training topic model using files in: #{folder}")
 
       begin
-        workflow = TopicModelTrainerWorkflow.new(folder)
+        workflow = TopicModelTrainerWorkflowtest.new(folder)
         workflow.run
         say pastel.green("Topic model training completed successfully")
       rescue StandardError => e

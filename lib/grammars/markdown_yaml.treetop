@@ -1,0 +1,37 @@
+grammar MarkdownYaml
+  rule document
+    yaml_front_matter? markdown_content
+  end
+
+  rule yaml_front_matter
+    '---' newline filtered_yaml_content* '---' newline
+  end
+
+  rule filtered_yaml_content
+    (!('---' / date_line / layout_line) yaml_line)
+  end
+
+  rule yaml_line
+    (!newline .)+ newline
+  end
+
+  rule date_line
+    'date:' (!newline .)* newline
+  end
+
+  rule layout_line
+    'layout:' (!newline .)* newline
+  end
+
+  rule markdown_content
+    (!end_of_file .)*
+  end
+
+  rule newline
+    '\r\n' / '\n' / '\r'
+  end
+
+  rule end_of_file
+    !.
+  end
+end

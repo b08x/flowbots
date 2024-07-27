@@ -2,25 +2,27 @@
 # frozen_string_literal: true
 
 class PreprocessTextFileTask < Jongleur::WorkerTask
-
   def execute
     logger.info "Starting PreprocessTextFileTask"
 
     textfile = retrieve_current_textfile
+    logger.debug "File content: #{textfile.content[0..200]}..." # Log first 200 characters
+
     begin
-      grammar_processor = Flowbots::GrammarProcessor.new('markdown_text_with_yaml')
-      parse_tree = grammar_processor.parse(textfile.content)
+      grammar_processor = Flowbots::GrammarProcessor.new('markdown_yaml')
+      parse_result = grammar_processor.parse(textfile.content)
+      p parse_result
+      logger.debug "Parse result: #{parse_result.inspect}"
     rescue StandardError => e
-      Flowbots::UI.exception "#{e.message}"
-      exit
+      logger.error "Error in grammar processing: #{e.message}"
+      logger.error e.backtrace.join("\n")
+      Flowbots::UI.exception("#{e.message}")
+      return
     end
 
-
-
-
-    if parse_tree
-      content = parse_tree.markdown_content.text_value
-      metadata = extract_metadata(parse_tree.yaml_front_matter)
+    if parse_result
+      content = parse_result[:markdown_content]
+      metadata = extract_metadata(parse_result[:yaml_front_matter])
       store_preprocessed_data(content, metadata)
       logger.info "Successfully preprocessed file with custom grammar"
     else
@@ -39,10 +41,9 @@ class PreprocessTextFileTask < Jongleur::WorkerTask
   end
 
   def extract_metadata(yaml_front_matter)
-    return {} unless yaml_front_matter
+    return {} if yaml_front_matter.empty?
 
-    yaml_content = yaml_front_matter.text_value.gsub(/^---\n/, '').gsub(/---\n$/, '')
-    YAML.safe_load(yaml_content)
+    YAML.safe_load(yaml_front_matter)
   rescue StandardError => e
     logger.error "Error parsing YAML front matter: #{e.message}"
     {}

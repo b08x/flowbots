@@ -34,30 +34,59 @@ class WorkflowOrchestrator
 
   def run_workflow
     logger.info "Starting workflow execution"
+    @running = true
+
     begin
       logger.debug "Printing graph to /tmp"
       Jongleur::API.print_graph("/tmp")
 
-
       Flowbots::UI.info "Starting Jongleur::API.run"
       Jongleur::API.run do |on|
-        on.completed do |task_matrix|
+        on.start do |task|
           ui.framed do
-            ui.puts Jongleur::API.successful_tasks(task_matrix)
-            ui.space
-          end
-          if Jongleur::API.failed_tasks(task_matrix).length > 0
-            Flowbots::UI.exception "One or more tasks failed...."
-            exit
-          else
-            return "next"
+            ui.puts "Starting task: #{task}"
           end
         end
+
+        on.finish do |task|
+          ui.framed do
+            ui.puts "Finished task: #{task}"
+          end
+          ui.space
+        end
+
+        on.error do |task, error|
+          logger.error "Error in task #{task}: #{error.message}"
+          logger.error error.backtrace.join("\n")
+        end
+
+        on.completed do |task_matrix|
+          ui.framed do
+            ui.puts "Workflow completed"
+            ui.space
+            ui.puts "Task matrix: #{task_matrix}"
+          end
+          @running = false
+          return "next"
+        end
       end
+    rescue Interrupt
+      logger.info "Workflow interrupted"
+      Flowbots::UI.say(:warn, "Workflow interrupted. Cleaning up...")
+      cleanup
     rescue StandardError => e
       logger.error "Error during workflow execution: #{e.message}"
       logger.error e.backtrace.join("\n")
+      cleanup
       raise
     end
   end
+
+  def cleanup
+    # Perform any necessary cleanup for the workflow
+    Jongleur::API.stop_all_tasks
+    # Add any other cleanup operations here
+  end
+
+
 end

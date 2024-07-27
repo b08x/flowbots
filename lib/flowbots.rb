@@ -73,6 +73,19 @@ rescue Ohm::Error => e
 end
 
 module Flowbots
+
+  def self.shutdown
+    # Perform any necessary cleanup
+    Ohm.redis.quit
+    stop_running_workflows
+    logger.info "Flowbots shut down gracefully"
+  end
+
+  def self.stop_running_workflows
+    WorkflowOrchestrator.stop_all
+    logger.info "All workflows stopped"
+  end
+  
   class FlowbotError < StandardError
     attr_reader :error_code, :details
 

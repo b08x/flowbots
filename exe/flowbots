@@ -13,4 +13,11 @@ rescue StandardError => e
 end
 
 require "flowbots"
+
+Signal.trap("INT") do
+  puts "\nInterrupt received. Shutting down gracefully..."
+  Flowbots.shutdown
+  exit(0)
+end
+
 Flowbots::CLI.start(ARGV)
