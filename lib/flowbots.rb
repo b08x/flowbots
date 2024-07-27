@@ -1,15 +1,17 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+require "jongleur"
+require "json"
+require "nano-bots"
+require "parallel"
 require "pry"
 require "pry-stack_explorer"
-require "thor"
-require "json"
 require "redis"
-require "yaml"
 require "ruby-spacy"
-require "nano-bots"
-require "jongleur"
+require "thor"
+require "treetop"
+require "yaml"
 
 module Flowbots
   autoload :VERSION, "version"
@@ -82,10 +84,10 @@ module Flowbots
   end
 
   def self.stop_running_workflows
-    WorkflowOrchestrator.stop_all
+    WorkflowOrchestrator.cleanup
     logger.info "All workflows stopped"
   end
-  
+
   class FlowbotError < StandardError
     attr_reader :error_code, :details
 

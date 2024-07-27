@@ -52,7 +52,7 @@ module Flowbots
       say pastel.green("Training topic model using files in: #{folder}")
 
       begin
-        workflow = TopicModelTrainerWorkflowtest.new(folder)
+        workflow = TopicModelTrainerWorkflow.new(folder)
         workflow.run
         say pastel.green("Topic model training completed successfully")
       rescue StandardError => e
