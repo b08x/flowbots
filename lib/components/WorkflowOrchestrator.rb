@@ -41,31 +41,17 @@ class WorkflowOrchestrator
 
       Flowbots::UI.info "Starting Jongleur::API.run"
       Jongleur::API.run do |on|
-        on.start do |task|
-          ui.framed do
-            ui.puts "Starting task: #{task}"
-          end
-        end
-
-        on.finish do |task|
-          ui.framed do
-            ui.puts "Finished task: #{task}"
-          end
-          ui.space
-        end
-
-        on.error do |task, error|
-          logger.error "Error in task #{task}: #{error.message}"
-          logger.error error.backtrace.join("\n")
-        end
-
         on.completed do |task_matrix|
           ui.framed do
-            ui.puts "Workflow completed"
+            ui.puts Jongleur::API.successful_tasks(task_matrix)
             ui.space
-            ui.puts "Task matrix: #{task_matrix}"
           end
-          return "next"
+          if Jongleur::API.failed_tasks(task_matrix).length > 0
+            Flowbots::UI.exception "One or more tasks failed...."
+            exit
+          else
+            return "next"
+          end
         end
       end
     rescue StandardError => e

@@ -28,6 +28,8 @@ require "ui"
 
 WORKFLOW_DIR = File.expand_path("workflows", __dir__)
 TASK_DIR = File.expand_path("tasks", __dir__)
+GRAMMAR_DIR = File.expand_path("grammars", __dir__)
+
 
 require "workflows"
 require "tasks"
@@ -57,6 +59,7 @@ require_relative "components/ExceptionHandler"
 require_relative "components/OhmModels"
 require_relative "components/FileLoader"
 
+require_relative "processors/GrammarProcessor"
 require_relative "processors/TextProcessor"
 require_relative "processors/TextSegmentProcessor"
 require_relative "processors/TextTokenizeProcessor"
@@ -119,5 +122,7 @@ Flowbots::UI.say(:ok, "Flowbots initialized")
 # Display a welcome message.
 puts UIBox.info_box("Hey! It's Flowbots!")
 sleep 1
+
+print TTY::Cursor.clear_screen_up
 
 require "cli"
