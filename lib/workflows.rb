@@ -3,7 +3,6 @@
 
 module Flowbots
   class Workflows
-
     def initialize
       @prompt = TTY::Prompt.new
     end

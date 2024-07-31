@@ -58,7 +58,7 @@ module Flowbots
 
     def flush_redis_cache
       redis = Jongleur::WorkerTask.class_variable_get(:@@redis)
-      redis.flushdb
+      # redis.flushdb
       logger.info "Redis cache flushed"
     end
 

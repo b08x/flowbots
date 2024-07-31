@@ -3,7 +3,6 @@
 
 require "jongleur"
 require "json"
-require "nano-bots"
 require "parallel"
 require "pry"
 require "pry-stack_explorer"
@@ -18,8 +17,7 @@ module Flowbots
   autoload :ThorExt, "thor_ext"
 end
 
-require "ohm"
-require "ohm/contrib"
+require_relative "utils/errors"
 
 require "logging"
 
@@ -28,31 +26,18 @@ include Logging
 # require "helper"
 require "ui"
 
+# from Monadic-Chat, MonadicApp class:
+# return true if we are inside a docker container
+def in_container?
+  File.file?("/.dockerenv")
+end
+
+IN_CONTAINER = in_container?
+
 WORKFLOW_DIR = File.expand_path("workflows", __dir__)
 TASK_DIR = File.expand_path("tasks", __dir__)
 GRAMMAR_DIR = File.expand_path("grammars", __dir__)
-
-
-require "workflows"
-require "tasks"
-
 CARTRIDGE_DIR = File.expand_path("../nano-bots/cartridges/", __dir__)
-
-# Configuration for Redis connection
-REDIS_CONFIG = {
-  host: "#{ENV.fetch('REDIS_HOST', nil)}",
-  port: 6379,
-  db: 15
-}
-
-# Define a class to manage Redis connection
-class RedisConnection
-  def initialize
-    @redis = Redis.new(REDIS_CONFIG)
-  end
-
-  attr_reader :redis
-end
 
 # Orchestrator and Agent are core components of the Flowbots architecture.
 require_relative "components/WorkflowOrchestrator"
@@ -71,14 +56,11 @@ require_relative "processors/TextTokenizeProcessor"
 require_relative "processors/NLPProcessor"
 require_relative "processors/TopicModelProcessor"
 
-begin
-  logger.debug "Connecting to redis host on db 0"
-  Ohm.redis = Redic.new("redis://localhost:6379/0")
-rescue Ohm::Error => e
-  Flowbots::ExceptionHandler.handle_exception(e)
-end
-
 module Flowbots
+  def self.init_redis
+    setup_redis
+    ensure_indices
+  end
 
   def self.shutdown
     # Perform any necessary cleanup
@@ -90,6 +72,24 @@ module Flowbots
   def self.stop_running_workflows
     WorkflowOrchestrator.cleanup
     logger.info "All workflows stopped"
+  end
+
+  def self.setup_redis
+    Ohm.redis = Redic.new(
+      "redis://#{ENV.fetch(
+        'REDIS_HOST',
+        'localhost'
+      )}:#{ENV.fetch(
+        'REDIS_PORT',
+        6379
+      )}/#{ENV.fetch('REDIS_DB', 15)}"
+    )
+  end
+
+  def self.ensure_indices
+    [Sourcefile, Workflow].each do |model|
+      model.ensure_indices
+    end
   end
 
   class FlowbotError < StandardError
@@ -106,34 +106,17 @@ module Flowbots
   class AgentError < FlowbotError; end
   class ConfigurationError < FlowbotError; end
   class APIError < FlowbotError; end
+
   # Add more specific error classes as needed
 end
 
-# from Monadic-Chat, MonadicApp class:
-# return true if we are inside a docker container
-def in_container?
-  File.file?("/.dockerenv")
-end
+Flowbots.init_redis
 
-IN_CONTAINER = in_container?
+require "workflows"
+require "tasks"
 
 Flowbots::Workflows.load_workflows
 Flowbots::Task.load_tasks
-
-# UI provides user interface elements.
-require "ui"
-
-# Jongleur::WorkerTask is a class that defines a task to be executed by Jongleur.
-class Jongleur::WorkerTask
-  # Initialize a Redis connection.
-  begin
-    redis_connection = RedisConnection.new
-    @@redis = redis_connection.redis
-  rescue Redis::CannotConnectError => e
-    puts "heeeey! Unable to connect to redis\n"
-    exit
-  end
-end
 
 # Display a message indicating that Flowbots has been initialized.
 Flowbots::UI.say(:ok, "Flowbots initialized")

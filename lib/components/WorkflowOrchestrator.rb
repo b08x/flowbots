@@ -1,30 +1,29 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require_relative 'WorkflowAgent'
-
 class WorkflowOrchestrator
   CARTRIDGE_BASE_DIR = File.expand_path("../../nano-bots/cartridges", __dir__)
 
   def initialize
     @tasks = []
     @agents = {}
-    logger = Logger.new(STDOUT)
     logger.level = Logger::DEBUG
   end
 
   def setup_workflow(workflow_type)
     logger.debug "Setting up workflow for type: #{workflow_type}"
 
-    workflow_name = to_camel_case("#{workflow_type}")
-
-    @workflow = Workflow.create(
-      name: "#{workflow_name}Workflow",
+    workflow = Workflow.create(
+      name: to_camel_case("#{workflow_type}Workflow"),
       status: "initialized",
       start_time: Time.now.to_s,
-      workflow_type: workflow_type,
+      workflow_type:,
       is_batch_workflow: (workflow_type == "topic_model_trainer")
     )
+
+    logger.debug "Created workflow: #{workflow.inspect}"
+    logger.debug "Workflow class: #{workflow.class}"
+    logger.debug "Workflow id: #{workflow.id}"
 
     @tasks = [
       WorkflowInitializerTask,
@@ -40,41 +39,48 @@ class WorkflowOrchestrator
     setup_agents
 
     logger.debug "Workflow setup completed for #{workflow_type}"
+    workflow
   end
 
-  def run_workflow
+  def run_workflow(workflow)
     logger.info "Starting workflow execution"
-    @workflow.update(status: "running")
 
-    if @workflow.is_batch_workflow
+    workflow.update(status: "running")
+
+    if workflow.is_batch_workflow
       run_batch_workflow
     else
       run_single_file_workflow
     end
 
-    @workflow.update(status: "completed", end_time: Time.now.to_s)
+    workflow.update(status: "completed", end_time: Time.now.to_s)
     logger.info "Workflow completed"
   end
 
   def self.cleanup
     logger.info "Cleaning up WorkflowOrchestrator"
     # Implement any necessary cleanup logic here
-    # For example:
-    Ohm.redis.call("FLUSHDB")
+    # Ohm.redis.call("FLUSHDB")
     logger.info "Cleanup completed"
   end
 
   private
 
   def setup_agents
-    @agents[:task_manager] = WorkflowAgent.new("task_manager", File.join(CARTRIDGE_BASE_DIR, "@b08x", "cartridges", "task_manager.yml"))
-    @agents[:exception_handler] = WorkflowAgent.new("exception_handler", File.join(CARTRIDGE_BASE_DIR, "@b08x", "cartridges", "exception_handler.yml"))
+    @agents[:task_manager] =
+      WorkflowAgent.new("task_manager", File.join(CARTRIDGE_BASE_DIR, "@b08x", "cartridges", "task_manager.yml"))
+    @agents[:exception_handler] =
+      WorkflowAgent.new(
+        "exception_handler",
+        File.join(CARTRIDGE_BASE_DIR, "@b08x", "cartridges", "exception_handler.yml")
+      )
     # Add more agents as needed
   end
 
   def run_batch_workflow
     while @workflow.status != "completed"
       @tasks.each do |task_class|
+        logger.debug "task class: #{task_class}"
         task = task_class.new
         run_task_with_agent(task)
         break if @workflow.reload.status == "completed"
@@ -121,6 +127,6 @@ class WorkflowOrchestrator
   end
 
   def to_camel_case(string)
-    string.split('_').map(&:capitalize).join
+    string.split("_").map(&:capitalize).join
   end
 end
