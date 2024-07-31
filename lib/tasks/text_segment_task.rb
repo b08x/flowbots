@@ -3,37 +3,40 @@
 
 class TextSegmentTask < Jongleur::WorkerTask
   def execute
-    logger.info "Starting TextSegmentTask"
+    workflow_id = Ohm.redis.get("current_workflow_id")
+    workflow = Workflow[workflow_id]
 
-    file_id = Jongleur::WorkerTask.class_variable_get(:@@redis).get("current_file_id")
-    text_file = Sourcefile[file_id]
-
-    preprocessed_content = retrieve_preprocessed_content
-
-    text_segmenter = Flowbots::TextSegmentProcessor.instance
-    segments = text_segmenter.process(preprocessed_content, { clean: true })
-
-    store_segments(text_file, segments)
-
-    logger.info "TextSegmentTask completed"
+    if workflow.is_batch_workflow
+      segment_batch_files(workflow)
+    else
+      segment_single_file(workflow)
+    end
   end
 
   private
 
-  def retrieve_preprocessed_content
-    content = Jongleur::WorkerTask.class_variable_get(:@@redis).get("preprocessed_content")
-    if content.nil? || content.empty?
-      logger.warn "No preprocessed content found. Falling back to original text file content."
-      file_id = Jongleur::WorkerTask.class_variable_get(:@@redis).get("current_file_id")
-      text_file = Sourcefile[file_id]
-      content = text_file.content
+  def segment_batch_files(workflow)
+    current_batch = workflow.batches.find(number: workflow.current_batch_number).first
+    current_batch.sourcefiles.each do |sourcefile|
+      segment_file(sourcefile)
     end
-    content
+    logger.info "Segmented files for Batch #{current_batch.number}"
   end
 
-  def store_segments(text_file, segments)
-    logger.info "Storing #{segments.length} segments for file: #{text_file.name}"
-    text_file.add_segments(segments)
-    logger.debug "Segments stored successfully"
+  def segment_single_file(workflow)
+    sourcefile = workflow.sourcefiles.first
+    segment_file(sourcefile)
+    logger.info "Segmented single file: #{sourcefile.path}"
+  end
+
+  def segment_file(sourcefile)
+    text_segmenter = Flowbots::TextSegmentProcessor.instance
+    segments = text_segmenter.process(sourcefile.preprocessed_content, { clean: true })
+
+    segments.each do |segment_text|
+      Segment.create(text: segment_text, sourcefile: sourcefile)
+    end
+
+    logger.debug "Created #{segments.length} segments for file: #{sourcefile.path}"
   end
 end

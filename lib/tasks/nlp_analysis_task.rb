@@ -3,65 +3,62 @@
 
 class NlpAnalysisTask < Jongleur::WorkerTask
   def execute
-    file_id = Jongleur::WorkerTask.class_variable_get(:@@redis).get("current_file_id")
-    text_file = Sourcefile[file_id]
+    workflow_id = Ohm.redis.get("current_workflow_id")
+    workflow = Workflow[workflow_id]
 
-    logger.info "Processing NlpAnalysisTask for file: #{text_file.name}"
-
-    nlp_processor = Flowbots::NLPProcessor.instance
-
-    text_file.retrieve_segments.each do |segment|
-      begin
-        logger.debug "Processing segment: #{segment.id}"
-        processed_tokens = nlp_processor.process(segment, pos: true, dep: true, ner: true, tag: true)
-
-        logger.debug "Processed tokens: #{processed_tokens.inspect}"
-
-        if processed_tokens.nil? || !processed_tokens.is_a?(Array)
-          logger.warn "NLP processing returned invalid result for segment #{segment.id}: #{processed_tokens.inspect}"
-          next
-        end
-
-        tagged = {
-          pos: {},
-          dep: {},
-          ner: {},
-          tag: {}
-        }
-
-        processed_tokens.each do |token|
-          word = token[:word]
-          tagged[:pos][word] = token[:pos]
-          tagged[:dep][word] = token[:dep]
-          tagged[:ner][word] = token[:ner]
-          tagged[:tag][word] = token[:tag]
-        end
-
-        segment.update(tagged: tagged)
-        logger.debug "Updated segment #{segment.id} with tagged data: #{tagged.inspect}"
-
-        add_words_to_segment(segment, processed_tokens)
-      rescue StandardError => e
-        logger.error "Error processing segment #{segment.id}: #{e.message}"
-        logger.error e.backtrace.join("\n")
-      end
+    if workflow.is_batch_workflow
+      analyze_batch_files(workflow)
+    else
+      analyze_single_file(workflow)
     end
-
-    logger.info "Completed NlpAnalysisTask for file: #{text_file.name}"
   end
 
   private
 
-  def add_words_to_segment(segment, processed_tokens)
-    words = processed_tokens.map do |token|
-      {
-        word: token[:word],
-        pos: token[:pos],
-        tag: token[:tag],
-        dep: token[:dep],
-        ner: token[:ner]
-      }
+  def analyze_batch_files(workflow)
+    current_batch = workflow.batches.find(number: workflow.current_batch_number).first
+    current_batch.sourcefiles.each do |sourcefile|
+      analyze_file_segments(sourcefile)
     end
-    segment.add_words(words)
+    logger.info "Performed NLP analysis for Batch #{current_batch.number}"
+  end
+
+  def analyze_single_file(workflow)
+    sourcefile = workflow.sourcefiles.first
+    analyze_file_segments(sourcefile)
+    logger.info "Performed NLP analysis for single file: #{sourcefile.path}"
+  end
+
+  def analyze_file_segments(sourcefile)
+    nlp_processor = Flowbots::NLPProcessor.instance
+
+    sourcefile.segments.each do |segment|
+      processed_tokens = nlp_processor.process(segment, pos: true, dep: true, ner: true, tag: true)
+
+      tagged = {
+        pos: {}, dep: {}, ner: {}, tag: {}
+      }
+
+      processed_tokens.each do |token|
+        word = token[:word]
+        tagged[:pos][word] = token[:pos]
+        tagged[:dep][word] = token[:dep]
+        tagged[:ner][word] = token[:ner]
+        tagged[:tag][word] = token[:tag]
+
+        Word.create(
+          word: word,
+          pos: token[:pos],
+          tag: token[:tag],
+          dep: token[:dep],
+          ner: token[:ner],
+          sourcefile: sourcefile,
+          segment: segment
+        )
+      end
+
+      segment.update(tagged: tagged)
+      logger.debug "Analyzed segment #{segment.id} for file: #{sourcefile.path}"
+    end
   end
 end

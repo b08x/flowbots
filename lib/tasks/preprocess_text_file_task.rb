@@ -2,59 +2,67 @@
 # frozen_string_literal: true
 
 class PreprocessTextFileTask < Jongleur::WorkerTask
-  def execute
-    logger.info "Starting PreprocessTextFileTask"
+  def execute(agent)
+    workflow_id = Ohm.redis.get("current_workflow_id")
+    workflow = Workflow[workflow_id]
 
-    textfile = retrieve_current_textfile
-    logger.debug "File content: #{textfile.content[0..200]}..." # Log first 200 characters
-
-    begin
-      grammar_processor = Flowbots::GrammarProcessor.new('markdown_yaml')
-      parse_result = grammar_processor.parse(textfile.content)
-      logger.debug "Parse result: #{parse_result.inspect}"
-
-      if parse_result
-        content = parse_result[:markdown_content]
-        metadata = extract_metadata(parse_result[:yaml_front_matter])
-        store_preprocessed_data(content, metadata)
-        logger.info "Successfully preprocessed file with custom grammar"
-      else
-        logger.error "Failed to parse the document with custom grammar"
-        store_preprocessed_data(textfile.content, {})
-      end
-    rescue StandardError => e
-      logger.error "Error in grammar processing: #{e.message}"
-      logger.error e.backtrace.join("\n")
-      Flowbots::UI.exception("#{e.message}")
-      store_preprocessed_data(textfile.content, {})
+    if workflow.is_batch_workflow
+      preprocess_batch_files(workflow, agent)
+    else
+      preprocess_single_file(workflow, agent)
     end
-
-    logger.info "PreprocessTextFileTask completed"
   end
 
   private
 
-  def retrieve_current_textfile
-    file_id = Jongleur::WorkerTask.class_variable_get(:@@redis).get("current_file_id")
-    Sourcefile[file_id]
+  def preprocess_batch_files(workflow, agent)
+    current_batch = workflow.batches.find(number: workflow.current_batch_number).first
+    current_batch.sourcefiles.each do |sourcefile|
+      preprocess_file(sourcefile, agent)
+    end
+    logger.info "Preprocessed files for Batch #{current_batch.number}"
   end
 
-  def extract_metadata(yaml_front_matter)
-    return {} if yaml_front_matter.empty?
+  def preprocess_single_file(workflow, agent)
+    sourcefile = workflow.sourcefiles.first
+    preprocess_file(sourcefile, agent)
+    logger.info "Preprocessed single file: #{sourcefile.path}"
+  end
 
-    begin
-      YAML.safe_load(yaml_front_matter)
-    rescue StandardError => e
-      logger.error "Error parsing YAML front matter: #{e.message}"
-      {}
+  def preprocess_file(sourcefile, agent)
+    agent_input = "Preprocess file: #{sourcefile.path}"
+    agent_response = agent.process(agent_input)
+
+    if should_preprocess?(agent_response)
+      grammar_processor = Flowbots::GrammarProcessor.new('markdown_yaml')
+      parse_result = grammar_processor.parse(sourcefile.content)
+
+      if parse_result
+        sourcefile.update(
+          preprocessed_content: parse_result[:markdown_content],
+          metadata: extract_metadata(parse_result[:yaml_front_matter])
+        )
+        logger.info "Successfully preprocessed file: #{sourcefile.path}"
+      else
+        logger.error "Failed to parse the document with custom grammar: #{sourcefile.path}"
+        sourcefile.update(
+          preprocessed_content: sourcefile.content,
+          metadata: {}
+        )
+      end
+    else
+      logger.info "Skipped preprocessing for file: #{sourcefile.path} based on agent decision"
     end
   end
 
-  def store_preprocessed_data(content, metadata)
-    redis = Jongleur::WorkerTask.class_variable_get(:@@redis)
-    redis.set("preprocessed_content", content)
-    redis.set("file_metadata", metadata.to_json)
-    logger.debug "Stored preprocessed content (first 100 chars): #{content[0..100]}"
-    logger.debug "Stored metadata: #{metadata.inspect}"
+  def should_preprocess?(agent_response)
+    agent_response.downcase.include?("preprocess")
+  end
+
+  def extract_metadata(yaml_front_matter)
+    YAML.safe_load(yaml_front_matter)
+  rescue StandardError => e
+    logger.error "Error parsing YAML front matter: #{e.message}"
+    {}
   end
 end

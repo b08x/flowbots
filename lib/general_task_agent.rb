@@ -115,7 +115,7 @@ end
 # topic_task.execute
 #
 # # Exception Handling
-# exception_agent = ExceptionAgent.new('error_handler', 'path/to/error_handler_cartridge.yml')
+# exception_agent = ExceptionAgent.new('exception_handler', 'path/to/exception_handler_cartridge.yml')
 # begin
 #   # Some operation that might raise an exception
 # rescue StandardError => e

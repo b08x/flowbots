@@ -56,7 +56,10 @@ end
 
 # Orchestrator and Agent are core components of the Flowbots architecture.
 require_relative "components/WorkflowOrchestrator"
+require_relative "components/WorkflowAgent"
+
 require_relative "components/ExceptionHandler"
+require_relative "components/ExceptionAgent"
 
 require_relative "components/OhmModels"
 require_relative "components/FileLoader"
@@ -69,6 +72,7 @@ require_relative "processors/NLPProcessor"
 require_relative "processors/TopicModelProcessor"
 
 begin
+  logger.debug "Connecting to redis host on db 0"
   Ohm.redis = Redic.new("redis://localhost:6379/0")
 rescue Ohm::Error => e
   Flowbots::ExceptionHandler.handle_exception(e)

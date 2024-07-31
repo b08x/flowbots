@@ -1,175 +1,105 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-class Topic < Ohm::Model
-  include Ohm::DataTypes
-  include Ohm::Callbacks
-
+class Workflow < Ohm::Model
   attribute :name
-  attribute :description
-  attribute :vector
-  reference :textfile, :Sourcefile
-  # reference :collection, :Collection # Reference to the parent collection
-  unique :name
-  index :name
+  attribute :status
+  attribute :start_time
+  attribute :end_time
+  attribute :current_batch_number
+  attribute :is_batch_workflow
+  attribute :workflow_type
+
+  set :sourcefiles, :Sourcefile
+  set :batches, :Batch
+
+  index :workflow_type
+end
+
+class Batch < Ohm::Model
+  attribute :number
+  attribute :status
+
+  reference :workflow, :Workflow
+  set :sourcefiles, :Sourcefile
+
+  index :number
+  index :workflow_id
 end
 
 class Sourcefile < Ohm::Model
-  include Ohm::DataTypes
-  include Ohm::Callbacks
-
-  attribute :name
   attribute :path
-  attribute :extension
-  attribute :title
+  attribute :name
   attribute :content
-  attribute :batch
+  attribute :preprocessed_content
+  attribute :metadata
 
-  set :topics, :Topic
-  list :segments, :Segment
-  list :words, :Word
+  reference :workflow, :Workflow
+  reference :batch, :Batch
 
-  unique :name
-  unique :path
-  unique :title
-
-  index :title
   index :path
   index :name
-  index :batch
+  index :workflow_id
+  index :batch_id
 
   def self.find_or_create_by_path(file_path, attributes = {})
+    logger.debug "Finding or creating Sourcefile for path: #{file_path}"
+    logger.debug "Attributes: #{attributes.inspect}"
+
     existing_file = find(path: file_path).first
-    return existing_file if existing_file
+    if existing_file
+      logger.debug "Existing file found: #{existing_file.inspect}"
+      return existing_file
+    end
 
+    logger.debug "No existing file found, creating new Sourcefile"
     file_name = File.basename(file_path)
-    extension = File.extname(file_path)
-    title = File.basename(file_path, ".*")
-
-    create(attributes.merge(
-      name: file_name,
+    new_attributes = attributes.merge(
       path: file_path,
-      extension: extension,
-      title: title
-    ))
-  end
+      name: file_name
+    )
+    logger.debug "New attributes: #{new_attributes.inspect}"
 
-  def self.latest(limit = nil)
-    if limit.nil?
-      ids = redis.call("ZREVRANGE", key[:latest], 0, 0)
-      result = fetch(ids)
-      result.empty? ? nil : result.first
-    else
-      ids = redis.call("ZREVRANGE", key[:latest], 0, limit - 1)
-      fetch(ids)
+    begin
+      p new_attributes
+      p file_name
+      new_file = create(new_attributes)
+      exit
+    rescue StandardError => e
+      logger.fatal "#{e.message}"
     end
-  end
 
-  def self.current_batch
-    batch_id = redis.call("GET", "current_batch_id")
-    find(batch: batch_id)
-  end
-
-  def add_topics(new_topics)
-    new_topics.each do |word|
-      begin
-        topics.add(Topic.create(name: word))
-      rescue StandardError => e
-        logger.warn "#{e.message}"
-      end
-    end
-    save
-  end
-
-  def add_segments(new_segments)
-    new_segments.each do |segment_text|
-      segment = Segment.create(text: segment_text, textfile: self)
-      segments.push(segment)
-    end
-    save
-  end
-
-  def retrieve_segments
-    segments.to_a
-  end
-
-  def retrieve_segment_texts
-    retrieve_segments.map(&:text)
-  end
-
-  def retrieve_words
-    segments.to_a.flat_map { |segment| segment.words.to_a }
-  end
-
-  def retrieve_word_texts
-    retrieve_words.map(&:word)
-  end
-
-  protected
-
-  def after_save
-    redis.call("ZADD", model.key[:latest], Time.now.to_f, id)
-  end
-
-  def after_delete
-    redis.call("ZREM", model.key[:latest], id)
+    logger.debug "New file created: #{new_file.inspect}"
+    new_file
   end
 end
 
 class Segment < Ohm::Model
-  include Ohm::DataTypes
-  include Ohm::Callbacks
-
   attribute :text
-  attribute :tokens, Type::Array
-  attribute :tagged, Type::Hash
+  attribute :tokens
+  attribute :tagged
 
+  reference :sourcefile, :Sourcefile
   list :words, :Word
-
-  reference :textfile, :Sourcefile
-  reference :topic, :Topic
-
-  def add_topics(new_topics)
-    new_topics.each do |topic|
-      next if Topic.find(name: word).first
-      topic = Topic.create(name: word, segment: self)
-      topics.push(topic)
-    end
-    save
-  end
-
-  def add_words(new_words)
-    new_words.each do |word_data|
-      word = Word.create(word_data.merge(segment: self))
-      words.push(word)
-    end
-    save
-  end
-
-  def retrieve_words
-    words.to_a
-  end
-
-  def retrieve_word_texts
-    retrieve_words.map(&:word)
-  end
-
 end
 
 class Word < Ohm::Model
-  include Ohm::DataTypes
-  include Ohm::Callbacks
-
   attribute :word
-  # attribute :synsets # TOOD: might be Hash type
   attribute :pos
   attribute :tag
   attribute :dep
   attribute :ner
 
-  reference :Sourcefile, :Sourcefile
+  reference :sourcefile, :Sourcefile
   reference :segment, :Segment
 
   index :word
-  # collection :vector_data, :VectorData
+end
+
+class Topic < Ohm::Model
+  attribute :name
+  attribute :description
+  attribute :vector
+
+  set :sourcefiles, :Sourcefile
 end
