@@ -14,7 +14,14 @@ class TrainTopicModelTask < Jongleur::WorkerTask
     Jongleur::WorkerTask.class_variable_get(:@@redis).set("all_filtered_segments", all_filtered_segments.to_json)
 
     # Only train the model on the last batch
-    if batch_id.end_with?("_#{(Dir.glob(File.join(@input_folder, "*.txt")).count.to_f / Flowbots::TopicModelTrainerWorkflow::BATCH_SIZE).ceil}")
+    if batch_id.end_with?(
+      "_#{(Dir.glob(
+        File.join(
+          @input_folder,
+          '*.md'
+        )
+      ).count.to_f / Flowbots::TopicModelTrainerWorkflow::BATCH_SIZE).ceil}"
+    )
       topic_processor = Flowbots::TopicModelProcessor.instance
       topic_processor.train_model(all_filtered_segments)
       logger.info "Topic model training completed for all batches"
