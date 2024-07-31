@@ -23,7 +23,7 @@ This document outlines the architecture and workflow of our LLM text processing 
 
 ## Text Processing Workflow - Draft
 
-Our system processes text through several phases, from initial input to LLM analysis. It uses a combination of custom Ruby classes, the Tomoto gem for topic modeling, and nano-bot cartridges for LLM analysis.
+The methods parses text through several phases, from initial input to LLM analysis. It uses a combination of custom Ruby classes, several gems including the Tomoto gem for topic modeling, and Ruby-Nano-Bot cartridges for LLM analysis.
 
 ### July 31st
 
@@ -108,7 +108,7 @@ classDiagram
 
 ```
 
-```mermiad
+```mermaid
 stateDiagram-v2
     [*] --> FileLoading : Start Workflow
 
@@ -183,7 +183,7 @@ mindmap
 ```
 
 
-> Right, so, we take your text (or ramblings, as the case may be), and our system ruthlessly dissects it with algorithms and a sprinkle of Ruby magic.
+> Right, so, first we take your text (or ramblings, as the case may be), and the method ruthlessly dissects it with algorithms and a sprinkle of Ruby magic.
 
 ## Workflow Phases
 
