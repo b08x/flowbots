@@ -57,7 +57,7 @@ module Flowbots
 
     def store_file_data(file_path, extracted_text)
 
-      file = Textfile.find_or_create_by_path(
+      file = Sourcefile.find_or_create_by_path(
         file_path, attributes = { content: extracted_text }
       )
 

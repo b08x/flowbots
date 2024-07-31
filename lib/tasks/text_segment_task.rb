@@ -5,8 +5,8 @@ class TextSegmentTask < Jongleur::WorkerTask
   def execute
     logger.info "Starting TextSegmentTask"
 
-    textfile_id = Jongleur::WorkerTask.class_variable_get(:@@redis).get("current_textfile_id")
-    text_file = Textfile[textfile_id]
+    file_id = Jongleur::WorkerTask.class_variable_get(:@@redis).get("current_file_id")
+    text_file = Sourcefile[file_id]
 
     preprocessed_content = retrieve_preprocessed_content
 
@@ -24,8 +24,8 @@ class TextSegmentTask < Jongleur::WorkerTask
     content = Jongleur::WorkerTask.class_variable_get(:@@redis).get("preprocessed_content")
     if content.nil? || content.empty?
       logger.warn "No preprocessed content found. Falling back to original text file content."
-      textfile_id = Jongleur::WorkerTask.class_variable_get(:@@redis).get("current_textfile_id")
-      text_file = Textfile[textfile_id]
+      file_id = Jongleur::WorkerTask.class_variable_get(:@@redis).get("current_file_id")
+      text_file = Sourcefile[file_id]
       content = text_file.content
     end
     content

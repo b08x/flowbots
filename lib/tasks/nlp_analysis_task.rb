@@ -3,8 +3,8 @@
 
 class NlpAnalysisTask < Jongleur::WorkerTask
   def execute
-    textfile_id = Jongleur::WorkerTask.class_variable_get(:@@redis).get("current_textfile_id")
-    text_file = Textfile[textfile_id]
+    file_id = Jongleur::WorkerTask.class_variable_get(:@@redis).get("current_file_id")
+    text_file = Sourcefile[file_id]
 
     logger.info "Processing NlpAnalysisTask for file: #{text_file.name}"
 

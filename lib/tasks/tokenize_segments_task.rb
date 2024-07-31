@@ -3,8 +3,8 @@
 
 class TokenizeSegmentsTask < Jongleur::WorkerTask
   def execute
-    textfile_id = Jongleur::WorkerTask.class_variable_get(:@@redis).get("current_textfile_id")
-    text_file = Textfile[textfile_id]
+    file_id = Jongleur::WorkerTask.class_variable_get(:@@redis).get("current_file_id")
+    text_file = Sourcefile[file_id]
 
     text_tokenizer = Flowbots::TextTokenizeProcessor.instance
 

@@ -44,8 +44,8 @@ class LlmAnalysisTask < Jongleur::WorkerTask
   private
 
   def retrieve_current_textfile
-    textfile_id = Jongleur::WorkerTask.class_variable_get(:@@redis).get("current_textfile_id")
-    Textfile[textfile_id]
+    file_id = Jongleur::WorkerTask.class_variable_get(:@@redis).get("current_file_id")
+    Sourcefile[file_id]
   end
 
   def retrieve_preprocessed_content

@@ -8,13 +8,13 @@ class Topic < Ohm::Model
   attribute :name
   attribute :description
   attribute :vector
-  reference :textfile, :Textfile
+  reference :textfile, :Sourcefile
   # reference :collection, :Collection # Reference to the parent collection
   unique :name
   index :name
 end
 
-class Textfile < Ohm::Model
+class Sourcefile < Ohm::Model
   include Ohm::DataTypes
   include Ohm::Callbacks
 
@@ -29,11 +29,13 @@ class Textfile < Ohm::Model
   list :segments, :Segment
   list :words, :Word
 
-  unique :title
+  unique :name
   unique :path
+  unique :title
 
   index :title
   index :path
+  index :name
   index :batch
 
   def self.find_or_create_by_path(file_path, attributes = {})
@@ -124,7 +126,7 @@ class Segment < Ohm::Model
 
   list :words, :Word
 
-  reference :textfile, :Textfile
+  reference :textfile, :Sourcefile
   reference :topic, :Topic
 
   def add_topics(new_topics)
@@ -165,7 +167,7 @@ class Word < Ohm::Model
   attribute :dep
   attribute :ner
 
-  reference :Textfile, :Textfile
+  reference :Sourcefile, :Sourcefile
   reference :segment, :Segment
 
   index :word

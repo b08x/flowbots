@@ -8,7 +8,7 @@ class LoadTextFilesTask < Jongleur::WorkerTask
     begin
       file_loader = Flowbots::FileLoader.new(file_path)
       textfile = file_loader.file_data
-      Jongleur::WorkerTask.class_variable_get(:@@redis).set("current_textfile_id", textfile.id)
+      Jongleur::WorkerTask.class_variable_get(:@@redis).set("current_file_id", textfile.id)
       logger.debug "Loaded file: #{file_path}"
     rescue StandardError => e
       logger.error "Error loading file #{file_path}: #{e.message}"

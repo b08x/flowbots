@@ -3,7 +3,7 @@
 
 class TopicModelingTask < Jongleur::WorkerTask
   def execute
-    text_file = Textfile.latest
+    text_file = Sourcefile.latest
     filtered_words = retrieve_filtered_words(text_file)
 
     topic_processor = Flowbots::TopicModelProcessor.instance
@@ -59,6 +59,6 @@ class TopicModelingTask < Jongleur::WorkerTask
       # This depends on how your topic modeling algorithm works
       # and what information it returns in the result
 
-    logger.info "Stored #{result.length} topics for Textfile #{text_file.id}"
+    logger.info "Stored #{result.length} topics for Sourcefile #{text_file.id}"
   end
 end
