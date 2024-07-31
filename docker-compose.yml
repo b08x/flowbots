@@ -99,7 +99,7 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=production
-      - DATABASE_URL=postgresql://postgres:postgres@192.168.36.3:5432/flowbots
+      - DATABASE_URL=postgresql://postgres:postgres@postgres_service:5432/flowbots
       - NEXTAUTH_SECRET=mysecret
       - SALT=mysalt
       - NEXTAUTH_URL=http://localhost:3000

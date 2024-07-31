@@ -3,7 +3,7 @@
 
 class TextTokenizeTask < Jongleur::WorkerTask
   def execute
-    segments = Textfile.latest.retrieve_segments
+    segments = Sourcefile.latest.retrieve_segments
     text_tokenizer = Flowbots::TextTokenizeProcessor.instance
     segments.each do |segment|
       tokens = text_tokenizer.process(segment.text, { clean: true })

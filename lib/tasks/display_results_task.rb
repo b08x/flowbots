@@ -7,28 +7,49 @@ class DisplayResultsTask < Jongleur::WorkerTask
   def execute
     logger.info "Starting DisplayResultsTask"
 
-    # raw_text = retrieve_raw_text
-    processed_text = retrieve_processed_text
+    textfile = retrieve_current_textfile
     analysis_result = retrieve_analysis_result
 
-    # Assuming UIBox methods can be called here
-    # puts UIBox.comparison_box(analysis_result, processed_text, title1: "Raw Text", title2: "Processed Text")
-    puts UIBox.eval_result_box(analysis_result, title: "LLM Analysis Result")
+    display_results(textfile, analysis_result)
 
     logger.info "DisplayResultsTask completed"
   end
 
   private
 
-  def retrieve_raw_text
-    # Implement logic to retrieve raw text (e.g., from file or shared storage)
-  end
-
-  def retrieve_processed_text
-    JSON.parse(Jongleur::WorkerTask.class_variable_get(:@@redis).get("processed_text"))
+  def retrieve_current_textfile
+    file_id = Jongleur::WorkerTask.class_variable_get(:@@redis).get("current_file_id")
+    Sourcefile[file_id]
   end
 
   def retrieve_analysis_result
     JSON.parse(Jongleur::WorkerTask.class_variable_get(:@@redis).get("analysis_result"))
+  end
+
+  def display_results(textfile, analysis_result)
+    file_info = format_file_info(textfile)
+    analysis = format_analysis(analysis_result)
+
+    puts BoxUI.side_by_side_boxes(file_info, analysis,
+                                  title1: "File Information",
+                                  title2: "LLM Analysis Result")
+  end
+
+  def format_file_info(textfile)
+    <<~INFO
+      Filename: #{textfile.name}
+      Topics: #{textfile.topics.to_a.map(&:name).join(", ")}
+
+      Content Preview:
+      #{textfile.content}
+
+      Total Segments: #{textfile.segments.count}
+      Total Words: #{textfile.words.count}
+    INFO
+  end
+
+  def format_analysis(analysis_result)
+    # If analysis_result is a hash or has a specific structure, format it accordingly
+    analysis_result.is_a?(String) ? analysis_result : JSON.pretty_generate(analysis_result)
   end
 end

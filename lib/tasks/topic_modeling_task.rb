@@ -3,56 +3,64 @@
 
 class TopicModelingTask < Jongleur::WorkerTask
   def execute
-    text_file = Textfile.latest
-    filtered_words = retrieve_filtered_words(text_file)
-    topic_processor = Flowbots::TopicModelProcessor.instance
-    result = topic_processor.process(filtered_words)
-    store_topic_result(text_file, result)
+    workflow_id = Ohm.redis.get("current_workflow_id")
+    workflow = Workflow[workflow_id]
+
+    if workflow.is_batch_workflow
+      model_batch_topics(workflow)
+    else
+      model_single_file_topics(workflow)
+    end
   end
 
   private
 
-  def retrieve_filtered_words(text_file)
-    segments = text_file.retrieve_segments
+  def model_batch_topics(workflow)
+    current_batch = workflow.batches.find(number: workflow.current_batch_number).first
+    documents = current_batch.sourcefiles.map { |sf| prepare_document(sf) }
 
-    filtered_words = segments.flat_map do |segment|
-      filter_segment_words(segment)
-    end
+    topic_processor = Flowbots::TopicModelProcessor.instance
+    topic_processor.load_or_create_model
+    results = topic_processor.infer_topics(documents)
 
-    logger.info "Retrieved #{filtered_words.length} filtered words for topic modeling"
-    filtered_words
+    store_batch_topics(current_batch, results)
+    logger.info "Modeled topics for Batch #{current_batch.number}"
   end
 
-  def filter_segment_words(segment)
-    relevant_tags = ['NN', 'JJ', 'RB']
+  def model_single_file_topics(workflow)
+    sourcefile = workflow.sourcefiles.first
+    document = prepare_document(sourcefile)
 
-    tokens = segment.tagged['tokens'] || []
+    topic_processor = Flowbots::TopicModelProcessor.instance
+    topic_processor.load_or_create_model
+    result = topic_processor.infer_topics([document]).first
 
-    tokens.select { |token| relevant_tags.include?(token['tag']) }
-          .map { |token| token['word'] }
+    store_file_topics(sourcefile, result)
+    logger.info "Modeled topics for single file: #{sourcefile.path}"
   end
 
-  def store_topic_result(text_file, result)
+  def prepare_document(sourcefile)
+    sourcefile.segments.map(&:text).join(' ')
+  end
 
-    unique_words = result.each_with_object(Set.new) do |hash, words|
-      hash[:top_words].keys.each do |key|
-        # Check if the key is a string and only contains letters
-        words << key if key.is_a?(String) && key.match?(/^[a-zA-Z]+$/)
-      end
-      hash[:sorted_words].each do |word|
-        # Check if the key is a string and only contains letters
-        words << word[0] if word[0].is_a?(String) && word[0].match?(/^[a-zA-Z]+$/)
-      end
+  def store_batch_topics(batch, results)
+    batch.sourcefiles.zip(results).each do |sourcefile, result|
+      store_file_topics(sourcefile, result)
     end
-    begin
-      text_file.add_topics(unique_words.to_a)
-    rescue StandardError => e
-      logger.warn "#{e.message}"
-    end
-      # Optionally, you could also associate the topic with relevant segments
-      # This depends on how your topic modeling algorithm works
-      # and what information it returns in the result
+  end
 
-    logger.info "Stored #{result.length} topics for Textfile #{text_file.id}"
+  def store_file_topics(sourcefile, result)
+    result[:top_words].each do |word, score|
+      topic = Topic.find(name: word).first || Topic.create(name: word)
+      topic.sourcefiles.add(sourcefile)
+    end
+
+    sourcefile.update(
+      metadata: sourcefile.metadata.merge(
+        topics: result[:top_words],
+        topic_distribution: result[:topic_distribution]
+      )
+    )
+    logger.debug "Stored topics for file: #{sourcefile.path}"
   end
 end

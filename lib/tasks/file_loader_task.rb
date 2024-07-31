@@ -8,12 +8,12 @@ class FileLoaderTask < Jongleur::WorkerTask
     text_file_id = file_processor.file_data.id
 
     if text_file_id.nil?
-      logger.error "Failed to load Textfile with ID: #{text_file_id}"
-      raise FlowbotError.new("Textfile not found", "FILENOTFOUND")
+      logger.error "Failed to load Sourcefile with ID: #{text_file_id}"
+      raise FlowbotError.new("Sourcefile not found", "FILENOTFOUND")
     end
 
-    logger.info "Loaded Textfile with ID: #{text_file_id}"
-    Flowbots::UI.say(:ok, "Loaded Textfile with ID: #{text_file_id}")
+    logger.info "Loaded Sourcefile with ID: #{text_file_id}"
+    Flowbots::UI.say(:ok, "Loaded Sourcefile with ID: #{text_file_id}")
     ui.space
   end
 end

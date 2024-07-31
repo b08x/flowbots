@@ -60,3 +60,7 @@ gem "tty-table", "~> 0.12.0"
 gem "wordnet", "~> 1.2"
 gem "wordnet-defaultdb", "~> 2.0"
 gem "yaml", "~> 0.3.0"
+
+gem "polyglot", "~> 0.3.5"
+
+gem "sublayer", "~> 0.2.0"

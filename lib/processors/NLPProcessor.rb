@@ -7,8 +7,25 @@ module Flowbots
       load_model
     end
 
-    def process(segment)
-      result = process_sentence(segment)
+    def process(segment, options = {})
+      logger.debug "Processing segment: #{segment.inspect}"
+      logger.debug "Options: #{options.inspect}"
+
+      doc = create_doc(segment)
+      result = []
+
+      doc.each do |token|
+        token_data = {
+          word: token.text,
+          pos: token.pos_,
+          tag: token.tag_,
+          dep: token.dep_,
+          ner: token.ent_type_
+        }
+        result << token_data
+      end
+
+      logger.debug "Processed result: #{result.inspect}"
       result
     end
 
@@ -29,23 +46,11 @@ module Flowbots
       end
     end
 
-    def process_sentence(segment)
-      logger.debug "Processing segment of length: #{segment.text.length}"
-
-      logger.debug "Starting NLP processing"
+    def create_doc(segment)
+      logger.debug "Creating doc for segment: #{segment.text.length} characters"
       doc = @nlp.read(segment.tokens.join(" "))
-      logger.debug "NLP processing completed"
-
-      processed_tokens = doc.map do |token|
-        {
-          word: token.text,
-          pos: token.pos_,
-          tag: token.tag_,
-          dep: token.dep_,
-          ner: token.ent_type_
-        }
-      end
-
+      logger.debug "Doc created successfully"
+      doc
     end
   end
 end
