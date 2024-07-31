@@ -1,18 +1,251 @@
-# FlowBots
+# Flowbots - Draft
+
+Flowbots is a kind of workflow automation system designed for processing and analyzing text data. It leverages natural language processing, topic modeling, and customizable workflows to extract insights from various text sources.
+
+## Features
+
+-  [ ] File Processing: Support for various file types, including markdown and plain text.
+-  [ ] Natural Language Processing: Utilize advanced NLP techniques for text analysis.
+-  [ ] Topic Modeling: Extract and analyze topics from large text corpora.
+-  [ ] Batch Processing: Handle large volumes of files efficiently with batch processing capabilities.
+-  [ ] Redis Integration: Use Redis for caching and temporary data storage during processing.
+-  [ ] Exception Handling: Robust error handling and reporting system.
+-  [ ] CLI Interface: Easy-to-use command-line interface for running workflows and managing the system.
+
+
+## Acknowledgments
+
+-   [Ohm](https://github.com/soveran/ohm) for Redis object mapping.
+-   [Jongleur](https://github.com/b08x/jongleur) for workflow management.
+-   [TTY](https://github.com/piotrmurach/tty) for the CLI interface.
 
 This document outlines the architecture and workflow of our LLM text processing pipeline, which incorporates topic modeling and can handle both text documents and audio transcriptions.
 
-## Text Processing Workflow
+## Text Processing Workflow - Draft
 
 Our system processes text through several phases, from initial input to LLM analysis. It uses a combination of custom Ruby classes, the Tomoto gem for topic modeling, and nano-bot cartridges for LLM analysis.
+
+### July 31st
+
+```mermaid
+classDiagram
+    class Flowbots {
+        +initialize()
+        +run()
+    }
+
+    class WorkflowOrchestrator {
+        -tasks: List
+        -agents: Map
+        +setup_workflow(workflow_type)
+        +run_workflow(workflow)
+        -setup_agents()
+    }
+
+    class Workflow {
+        <<OhmModel>>
+        +name: String
+        +status: String
+        +start_time: DateTime
+        +end_time: DateTime
+        +current_batch_number: Integer
+        +is_batch_workflow: Boolean
+        +workflow_type: String
+        +current_file_id: String
+        +verify_indices()
+    }
+
+    class Task {
+        <<OhmModel>>
+        +name: String
+        +status: String
+        +result: String
+        +start_time: DateTime
+        +end_time: DateTime
+    }
+
+    class Sourcefile {
+        <<OhmModel>>
+        +path: String
+        +name: String
+        +content: Text
+        +preprocessed_content: Text
+        +metadata: Hash
+        +find_or_create_by_path(file_path)
+        +add_to_workflow(workflow)
+        +preprocess_content()
+    }
+
+    class WorkflowAgent {
+        -role: String
+        -state: Map
+        +process(input)
+        +save_state()
+        +load_state()
+    }
+
+    class ExceptionHandler {
+        +handle_exception(classname, exception)
+        -log_exception(exception)
+        -notify_exception(report)
+    }
+
+    class FileLoader {
+        +load(file_path)
+        -classify_file(file_path)
+        -extract_text(file_type, file_path)
+        -store_file_data(file_path, extracted_text)
+    }
+
+    Flowbots --> WorkflowOrchestrator
+    WorkflowOrchestrator --> Workflow
+    WorkflowOrchestrator --> Task
+    WorkflowOrchestrator --> WorkflowAgent
+    Workflow --> Sourcefile
+    Workflow --> Task
+    WorkflowOrchestrator --> ExceptionHandler
+    WorkflowOrchestrator --> FileLoader
+
+```
+
+```mermiad
+stateDiagram-v2
+    [*] --> FileLoading : Start Workflow
+
+    state FileLoading {
+        CF: Classify File
+        ET: Extract Text
+        SS: Store in Sourcefile
+        CF --> ET
+        ET --> SS
+    }
+
+    FileLoading --> WorkflowSetup : File Loaded
+
+    state WorkflowSetup {
+        CW: Create Workflow
+        IT: Initialize Tasks
+        CW --> IT
+    }
+
+    WorkflowSetup --> TaskExecution : Workflow Ready
+
+    state TaskExecution {
+        PT: PreprocessTextFileTask
+        NA: NlpAnalysisTask
+        TS: TokenizeSegmentsTask
+        TM: TopicModelingTask
+        PT --> NA
+        NA --> TS
+        TS --> TM
+    }
+
+    TaskExecution --> DataPersistence : Tasks Completed
+    TaskExecution --> ExceptionHandling : Error Occurred
+
+    state ExceptionHandling {
+        LE: Log Exception
+        GR: Generate Report
+        N: Notify
+        LE --> GR
+        GR --> N
+    }
+
+    ExceptionHandling --> DataPersistence : Exception Handled
+
+    state DataPersistence {
+        UOM: Update Ohm Models
+        EI: Ensure Indices
+        UOM --> EI
+    }
+
+    DataPersistence --> [*] : Workflow Completed
+```
+
+```mermaid
+mindmap
+  Flowbots
+    Jongleur Workflows
+      "ruby-nano-bots" as Agents
+        Intelligent Decision Making
+        Task Execution
+      Future Enhancements
+        Sublayer Integration
+          Event-driven Agents
+          Goal-oriented Tasks
+          Continuous Status Checking
+          Enhanced Interoperability
+    README Update
+      Nano Bot Cartridge
+        YAML Definition
+      Workflow Agent Task
+        Ruby Implementation
+```
+
 
 > Right, so, we take your text (or ramblings, as the case may be), and our system ruthlessly dissects it with algorithms and a sprinkle of Ruby magic.
 
 ## Workflow Phases
 
-### 1. Workflow Initiation
+```plantuml
+@startuml
+[*] --> FileLoading : Start Workflow
 
-``` mermaid
+state FileLoading {
+  state "Classify File" as CF
+  state "Extract Text" as ET
+  state "Store in Sourcefile" as SS
+  CF --> ET
+  ET --> SS
+}
+
+FileLoading --> WorkflowSetup : File Loaded
+
+state WorkflowSetup {
+  state "Create Workflow" as CW
+  state "Initialize Tasks" as IT
+  CW --> IT
+}
+
+WorkflowSetup --> TaskExecution : Workflow Ready
+
+state TaskExecution {
+  state "PreprocessTextFileTask" as PT
+  state "NlpAnalysisTask" as NA
+  state "TokenizeSegmentsTask" as TS
+  state "TopicModelingTask" as TM
+  PT --> NA
+  NA --> TS
+  TS --> TM
+}
+
+TaskExecution --> DataPersistence : Tasks Completed
+TaskExecution --> ExceptionHandling : Error Occurred
+
+state ExceptionHandling {
+  state "Log Exception" as LE
+  state "Generate Report" as GR
+  state "Notify" as N
+  LE --> GR
+  GR --> N
+}
+
+ExceptionHandling --> DataPersistence : Exception Handled
+
+state DataPersistence {
+  state "Update Ohm Models" as UOM
+  state "Ensure Indices" as EI
+  UOM --> EI
+}
+
+DataPersistence --> [*] : Workflow Completed
+
+@enduml
+```
+
+### Workflow Initiation
+
+```mermaid
 sequenceDiagram
     participant User as 👤 User
     participant CLI as 💻 CLI
@@ -26,14 +259,14 @@ sequenceDiagram
 
 In this phase:
 
-- The user initiates the workflow through the CLI.
-- The `TextProcessingWorkflow` is created and set up.
+-   The user initiates the workflow through the CLI.
+-   The `TextProcessingWorkflow` is created and set up.
 
 > So, the workflow kicks off when our eager user pokes the CLI with a file. The CLI then spins up the `TextProcessingWorkflow` and gets the ball rolling.
 
-### 2. Text Processing Phase
+### Text Processing Phase
 
-``` mermaid
+```mermaid
 sequenceDiagram
     participant TPW as 🔄 TextProcessingWorkflow
     participant TP as 📝 TextProcessor
@@ -59,16 +292,18 @@ sequenceDiagram
 
 Key features:
 
-- Handles both text documents and audio transcriptions.
-- Segments text using `TextSegmenter`.
-- Processes text using SpacyNLP.
-- Stores processed text in Redis.
+-   Handles both text documents and audio transcriptions.
+-   Segments text using `TextSegmenter`.
+-   Processes text using SpacyNLP.
+-   Stores processed text in Redis.
 
 > Alright, so the text processing workflow ingests text, slices and dices it into manageable chunks, then feeds it to the SpacyNLP engine for analysis. The processed output is finally stashed away in Redis for later retrieval.
 
-### 3. Topic Modeling Phase
+### Topic Modeling Phase
 
-``` mermaid
+#TODO: update graphs
+
+```mermaid
 sequenceDiagram
     participant TPW as 🔄 TextProcessingWorkflow
     participant TMT as 🔍 TopicModelingTask
@@ -91,130 +326,26 @@ sequenceDiagram
 
 Key features:
 
-- Loads or creates a topic model using `TopicModelManager`.
-- Trains the model if necessary.
-- Infers topics from the processed text.
-- Stores inferred topics in Redis.
+-   Loads or creates a topic model using `TopicModelManager`.
+-   Trains the model if necessary.
+-   Infers topics from the processed text.
+-   Stores inferred topics in Redis.
 
 > Ah, the Topic Modeling Phase. Where we sift through the textual muck to unearth those shimmering nuggets of thematic gold. It's like panning for gold, but instead of a pan, we have a TopicModelManager, and instead of gold, we have, well, topics.
 
-#### Modular Topic Modeling
-
-We've refactored the `TopicModelingTask` into a separate, reusable module. This improves the modularity of our code and allows for easier maintenance and potential reuse in other parts of the application.
-
-##### Topic Modeling Module
-
-The topic modeling functionality is now encapsulated in a separate module:
-
-``` ruby
-# lib/modules/topic_modeling.rb
-
-module TopicModeling
-  class TopicModelingTask < Jongleur::WorkerTask
-    def initialize(model_path:, redis_client: nil)
-      @model_path = model_path
-      @redis_client = redis_client
-      @logger = Logger.new(STDOUT)
-      @logger.level = Logger::INFO
-    end
-
-    def execute
-      @logger.info "Starting TopicModelingTask"
-
-      begin
-        raw_text = get_processed_text
-        @logger.debug "Retrieved processed text from Redis (length): #{raw_text.length}"
-
-        processed_text = JSON.parse(raw_text)
-        @logger.debug "Parsed processed text (length): #{processed_text.length}"
-
-        topic_modeler = TopicModelManager.new(@model_path)
-        @logger.debug "Created TopicModelManager instance"
-
-        # Train the model if it's not already trained
-        unless topic_modeler.model_trained?
-          @logger.info "Model is not trained. Training now..."
-          begin
-            topic_modeler.train_model(processed_text)
-            @logger.info "Model training completed"
-          rescue StandardError => e
-            @logger.error "Error during model training: #{e.message}"
-            raise
-          end
-        else
-          @logger.info "Model is already trained"
-        end
-
-        @logger.debug "Inferring topics"
-        begin
-          topics_info = topic_modeler.infer_topics(processed_text.join(" "), 5)
-          @logger.info "Most probable topic: #{topics_info[:most_probable_topic]}"
-          @logger.info "Top words: #{topics_info[:top_words].map { |word, prob| word }.join(', ')}"
-          @logger.debug "Full topic distribution: #{topics_info[:topic_distribution]}"
-
-          store_topics_info(topics_info)
-          @logger.debug "Stored topics info in Redis"
-        rescue StandardError => e
-          @logger.error "Error during topic inference: #{e.message}"
-          raise
-        end
-
-        @logger.info "TopicModelingTask completed"
-      rescue StandardError => e
-        @logger.error "Error in TopicModelingTask: #{e.message}"
-        @logger.error e.backtrace.join("\n")
-        raise
-      end
-    end
-
-    private
-
-    def get_processed_text
-      redis = @redis_client || Jongleur::WorkerTask.class_variable_get(:@@redis)
-      redis.get("processed_text")
-    end
-
-    def store_topics_info(topics_info)
-      redis = @redis_client || Jongleur::WorkerTask.class_variable_get(:@@redis)
-      redis.set("topics_info", topics_info.to_json)
-    end
-  end
-end
-```
-
 #### Integration with Workflow
 
-To use this modular `TopicModelingTask` in your workflow, update the `TextProcessingWorkflow` class:
+To use the  `TopicModelingTask` in your workflow, update the `TextProcessingWorkflow` class:
 
-``` ruby
-# lib/workflows/text_processing_workflow.rb
-
-require_relative '../modules/topic_modeling'
-
-class TextProcessingWorkflow
-  def initialize(input_file_path)
-    # ... [other initializations] ...
-    @topic_modeling_task = TopicModeling::TopicModelingTask.new(
-      model_path: File.join(ENV["HOME"], "Workspace", "flowbots", "models", "topic_model.lda.bin"),
-      redis_client: Jongleur::WorkerTask.class_variable_get(:@@redis)
-    )
-  end
-
-  def run
-    # ... [other steps] ...
-    @topic_modeling_task.execute
-    # ... [remaining steps] ...
-  end
-
-  # ... [rest of the class]
-end
+```ruby
+#TODO example...
 ```
 
 > So, we've tidied up the code and tucked away the topic modeling bits into their own module.
 
-### 4. LLM Analysis Phase
+### LLM Analysis Phase
 
-``` mermaid
+```mermaid
 sequenceDiagram
     participant TMT as 🔍 TopicModelingTask
     participant AAT as 🔬 LLMAnalysisTask
@@ -230,113 +361,18 @@ sequenceDiagram
 
 Key features:
 
-- Retrieves processed text and topics from Redis.
-- Performs LLM analysis using a nano-bot cartridge.
-- Stores analysis results in Redis.
+-   Retrieves processed text and topics from Redis.
+-   Performs LLM analysis using a nano-bot cartridge.
+-   Stores analysis results in Redis.
 
-> The LLM Analysis Task, digs through the processed text and topics from Redis and performs its assigned LLM analysis. The results, hopefully useful, are then sent back to the Redis storehouse.
+> The LLM Analysis Task, digs through the processed text and topics from Redis and performs its assigned LLM analysis. The results, hopefully useful, are then sent back to the Redis storehouse. These can be layer for fun or enjoyment.
 
-### 5. (Placeholder For Additional Workflow Task)
 
-``` mermaid
-sequenceDiagram
-    participant PreviousTask as Previous Task
-    participant NewTask as 🆕 New Workflow Task
-    participant Redis as 🗄️ Redis
+* * *
 
-    PreviousTask->>NewTask: execute()
-    NewTask->>Redis: get required data
-    Redis-->>NewTask: return data
-    NewTask->>NewTask: perform new task
-    NewTask->>Redis: set("new_task_result", result.to_json)
-```
+## todos
 
-This placeholder diagram illustrates how an additional task could be integrated into the workflow. The new task would:
-
-- Be triggered by the previous task.
-- Retrieve necessary data from Redis.
-- Perform its specific function.
-- Store its results back in Redis.
-
-> Alright, so let's say the previous task was baking a cake. This new task, it's like adding the frosting. It takes the cake from the previous step, grabs the frosting recipe (that's the Redis part), and then, well, you get your frosted cake. Basically, it's just saying that a new task would grab data, do its thing, and then update Redis.
-
-### Literal Summary
-
-The text describes a placeholder in a workflow labeled "future development." This section lacks concrete implementation details. The text uses an analogy to explain the placeholder's intended function: a task retrieves data, processes it, and updates a Redis database. The analogy compares this process to frosting a cake, where the cake represents the data from the previous step, the frosting recipe represents data fetched from Redis, and the act of frosting represents the data processing and update.
-
-### Ironically Literal Figurative Language Summary
-
-The text doesn't actually bake any cakes. It's disappointing, I know. There is no delicious frosting involved, only cold, hard data. And while the text mentions "grabbing" things, no physical grabbing occurs. This "grabbing" is a metaphor, representing data retrieval, not a strongman competition. It's all very metaphorical and not at all delicious.
-
-# TODO..
-
-this section:
-
-## Usage
-
-- ☐ dockerize and document....
-
-1.  Ensure all required gems and dependencies are installed.
-
-2.  Prepare your input text file or audio transcription.
-
-3.  Run the workflow using the CLI:
-
-    ``` bash
-    flowbots process_text path/to/your/input/file.txt
-    ```
-
-4.  The system will process the text, perform topic modeling, and conduct LLM analysis.
-
-5.  Results will be stored in Redis and can be retrieved for further use or display.
-
-## Extending the Workflow
-
-To add a new task to the workflow:
-
-1.  Create a new task class that inherits from `Jongleur::WorkerTask`.
-
-``` ruby
-class Your < Jongleur::WorkerTask
-
-    def execute
-        puts "yes! a task!"
-    end
-
-end
-```
-
-2.  Update the `WorkflowOrchestrator` to include the new task in the workflow graph.
-3.  If necessary, modify the `TextProcessingWorkflow` class to accommodate the new task.
-
-Example of adding a new task to the workflow graph:
-
-``` ruby
-workflow_graph = {
-  TextProcessingTask: [:TopicModelingTask],
-  TopicModelingTask: [:LLMAnalysisTask],
-  LLMAnalysisTask: [:NewTask],  # Add this line
-  NewTask: []  # Add this line
-}
-```
-
-This flexible architecture allows for expansion of the workflow to include additional processing or analysis steps as needed.
-
-------------------------------------------------------------------------
-
-# DevOps Enhancements for the Text Processing Workflow
-
-This response focuses on providing practical DevOps solutions for the given text processing workflow, incorporating best practices and industry standards.
-
-**Key Areas of Improvement:**
-
-- **Configuration Management:** Implement environment-based configuration for flexibility.
-- **Containerization (Docker):** Package the application and its dependencies for consistent execution.
-- **CI/CD Pipeline (GitHub Actions):** Automate testing, building, and deploying the application.
-- **Monitoring and Logging:** Gain insights into application performance and identify potential issues.
-- **Security:** Address potential vulnerabilities in Redis and data handling.
-
-## 1. Configuration Management
+## Configuration Management
 
 **Problem:** Hardcoded paths and settings within the codebase make it difficult to manage different environments (development, testing, production).
 
@@ -346,7 +382,7 @@ This response focuses on providing practical DevOps solutions for the given text
 
 1.  **Create a configuration file (e.g., `config/application.yml`)**:
 
-``` yaml
+```yaml
 development:
   redis_host: localhost
   redis_port: 6379
@@ -359,7 +395,7 @@ production:
 
 2.  **Load configuration in your Ruby code:**
 
-``` ruby
+```ruby
 require 'yaml'
 
 config = YAML.load_file('config/application.yml')[ENV['RAILS_ENV'] || 'development']
@@ -369,7 +405,7 @@ redis_host = config['redis_host']
 model_path = config['model_path']
 ```
 
-## 2. Containerization with Docker
+## Containerization with Docker
 
 **Problem:** Dependency management and ensuring consistent execution across environments can be challenging.
 
@@ -377,7 +413,7 @@ model_path = config['model_path']
 
 **Example (Dockerfile):**
 
-``` dockerfile
+```dockerfile
 FROM ruby:3.1
 
 RUN apt-get update && apt-get install -y python3-pip
@@ -394,7 +430,7 @@ CMD ["ruby", "spacy_server.rb"]
 
 Create a `Dockerfile.workflow` for your main workflow:
 
-``` dockerfile
+```dockerfile
 FROM ruby:3.1
 
 RUN gem install redis
@@ -405,16 +441,7 @@ COPY ./app /app
 CMD ["ruby", "main.rb"]
 ```
 
-    project_root/
-    ├── docker-compose.yml
-    ├── Dockerfile
-    ├── Dockerfile.workflow
-    └── app/
-        ├── main.rb
-        ├── spacy_server.rb
-        └── [other Ruby files]
-
-``` mermaid
+```mermaid
 sequenceDiagram
     participant TPW as 🔄 TextProcessingWorkflow
     participant TP as 📝 TextProcessor
@@ -438,27 +465,7 @@ sequenceDiagram
     TPW->>Redis: set("processed_text", processed_text.to_json)
 ```
 
-### Usage with Docker Compose
-
-To use this system with Docker Compose:
-
-1.  Ensure Docker and Docker Compose are installed on your system.
-
-2.  Navigate to your project root directory.
-
-3.  Build and start the services:
-
-    `docker-compose up --build`
-
-4.  In a new terminal, run the workflow:
-
-    `docker-compose run workflow ruby main.rb path/to/your/input/file.txt`
-
-    Note: Make sure `path/to/your/input/file.txt` is within the `./app` directory or adjust the volume mapping in `docker-compose.yml` accordingly.
-
-The system will now use the Dockerized versions of ruby-spacy and Redis for text processing and data storage, ensuring consistency and ease of deployment across different environments.
-
-## 3. CI/CD Pipeline with GitHub Actions
+## CI/CD Pipeline with GitHub Actions
 
 **Problem:** Manual testing and deployment processes are time-consuming and error-prone.
 
@@ -466,7 +473,7 @@ The system will now use the Dockerized versions of ruby-spacy and Redis for text
 
 **Example (.github/workflows/ci-cd.yml):**
 
-``` yaml
+```yaml
 name: CI/CD Pipeline
 
 on: [push]
@@ -495,5 +502,3 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
 ```
-
-> Right, because flowery language is to DevOps as a floppy disk is to a supercomputer
