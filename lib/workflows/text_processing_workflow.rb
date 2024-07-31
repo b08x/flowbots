@@ -1,9 +1,6 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# text_processing_workflow.rb
-# Description: A text processing workflow that processes a text file, segments it, and performs topic modeling
-
 module Flowbots
   class TextProcessingWorkflow
     attr_reader :input_file_path, :text_file_id
