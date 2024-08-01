@@ -2,21 +2,12 @@
 # frozen_string_literal: true
 
 class WorkflowOrchestrator
-  include Logging
-
-  CARTRIDGE_BASE_DIR = File.expand_path("../../nano-bots/cartridges", __dir__)
-
   class << self
-    include Logging
-
     def cleanup
-      logger.info("Cleaning up WorkflowOrchestrator")
-      # Add any necessary cleanup actions here
-      logger.info("Cleanup completed")
+      # Add any necessary cleanup logic here
+      logger.info "Cleaning up WorkflowOrchestrator"
     end
   end
-
-  attr_reader :debug_log
 
   def initialize
     @tasks = []
@@ -25,33 +16,10 @@ class WorkflowOrchestrator
     @debug_log = []
   end
 
-  def setup_workflow(workflow_type)
-    @workflow = Workflow.create(
-      name: to_camel_case("#{workflow_type}Workflow"),
-      status: "initialized",
-      start_time: Time.now.to_s,
-      workflow_type: workflow_type,
-      is_batch_workflow: (workflow_type == "topic_model_trainer")
-    )
-
-    logger.debug("Created workflow: #{@workflow.inspect}")
-
-    @tasks = [
-      WorkflowInitializerTask,
-      LoadTextFilesTask,
-      PreprocessTextFileTask,
-      TextSegmentTask,
-      TokenizeSegmentsTask,
-      NlpAnalysisTask,
-      TopicModelingTask,
-      BatchCompletionTask
-    ]
-
-    setup_agents
-    define_jongleur_workflow
-
-    logger.info("Workflow setup completed for #{workflow_type}")
-    @workflow
+  def define_workflow(workflow_graph)
+    @tasks = workflow_graph.keys
+    Jongleur::API.add_task_graph(workflow_graph)
+    logger.info "Workflow defined with #{@tasks.length} tasks"
   end
 
   def run_workflow(workflow)
@@ -65,11 +33,11 @@ class WorkflowOrchestrator
 
       Jongleur::API.run do |on|
         on.start do |task|
-          logger.info("Starting task: #{task.class.name}")
+          logger.info("Starting task: #{task}")
         end
 
         on.finish do |task|
-          logger.info("Finished task: #{task.class.name}")
+          logger.info("Finished task: #{task}")
         end
 
         on.error do |task, error|

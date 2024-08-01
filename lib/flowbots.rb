@@ -1,6 +1,9 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+require "ohm"
+require "ohm/contrib"
+
 require "jongleur"
 require "json"
 require "parallel"
@@ -12,19 +15,73 @@ require "thor"
 require "treetop"
 require "yaml"
 
+require_relative "utils/errors"
+require "logging"
+include Logging
+require "ui"
+
+autoload :VERSION, "version"
+autoload :ThorExt, "thor_ext"
+
 module Flowbots
-  autoload :VERSION, "version"
-  autoload :ThorExt, "thor_ext"
+  class << self
+    attr_reader :redis
+
+    def setup
+      setup_redis
+      load_components
+      ensure_indices
+    end
+
+    def setup_redis
+      redis_url = ENV['REDIS_URL'] || "redis://localhost:6379/15"
+      Ohm.redis = Redic.new(redis_url)
+      @redis = Redis.new(url: redis_url)
+      Jongleur::WorkerTask.class_variable_set(:@@redis, @redis)
+    end
+
+    def load_components
+      # Load TaskHelper first
+      require_relative 'components/task_helper'
+
+      # Then load all other components, tasks, workflows, etc.
+      Dir[File.join(__dir__, 'components', '*.rb')].each { |file| require file unless file.end_with?('task_helper.rb') }
+      Dir[File.join(__dir__, 'tasks', '*.rb')].each { |file| require file }
+      Dir[File.join(__dir__, 'workflows', '*.rb')].each { |file| require file }
+      Dir[File.join(__dir__, 'processors', '*.rb')].each { |file| require file }
+    end
+
+    def ensure_indices
+      [Sourcefile, Workflow].each do |model|
+        model.ensure_indices
+      end
+    end
+
+    def verify_indices
+      [Sourcefile, Workflow].each do |model|
+        model.verify_indices
+      end
+    end
+
+    def shutdown
+      Ohm.redis.quit
+      @redis.quit
+      stop_running_workflows
+      logger.info "Flowbots shut down gracefully"
+    end
+
+    def stop_running_workflows
+      WorkflowOrchestrator.cleanup
+      logger.info "All workflows stopped"
+    end
+  end
 end
 
-require_relative "utils/errors"
-
-require "logging"
-
-include Logging
-
-# require "helper"
-require "ui"
+# Constants
+WORKFLOW_DIR = File.expand_path("workflows", __dir__)
+TASK_DIR = File.expand_path("tasks", __dir__)
+GRAMMAR_DIR = File.expand_path("grammars", __dir__)
+CARTRIDGE_DIR = File.expand_path("../nano-bots/cartridges/", __dir__)
 
 # from Monadic-Chat, MonadicApp class:
 # return true if we are inside a docker container
@@ -34,64 +91,11 @@ end
 
 IN_CONTAINER = in_container?
 
-WORKFLOW_DIR = File.expand_path("workflows", __dir__)
-TASK_DIR = File.expand_path("tasks", __dir__)
-GRAMMAR_DIR = File.expand_path("grammars", __dir__)
-CARTRIDGE_DIR = File.expand_path("../nano-bots/cartridges/", __dir__)
+# Setup Flowbots
+Flowbots.setup
 
-# Orchestrator and Agent are core components of the Flowbots architecture.
-require_relative "components/WorkflowOrchestrator"
-require_relative "components/WorkflowAgent"
-
-require_relative "components/ExceptionHandler"
-require_relative "components/ExceptionAgent"
-
-require_relative "components/OhmModels"
-require_relative "components/FileLoader"
-
-require_relative "processors/GrammarProcessor"
-require_relative "processors/TextProcessor"
-require_relative "processors/TextSegmentProcessor"
-require_relative "processors/TextTokenizeProcessor"
-require_relative "processors/NLPProcessor"
-require_relative "processors/TopicModelProcessor"
-
+# Error classes
 module Flowbots
-  def self.init_redis
-    setup_redis
-    ensure_indices
-  end
-
-  def self.shutdown
-    # Perform any necessary cleanup
-    Ohm.redis.quit
-    stop_running_workflows
-    logger.info "Flowbots shut down gracefully"
-  end
-
-  def self.stop_running_workflows
-    WorkflowOrchestrator.cleanup
-    logger.info "All workflows stopped"
-  end
-
-  def self.setup_redis
-    Ohm.redis = Redic.new(
-      "redis://#{ENV.fetch(
-        'REDIS_HOST',
-        'localhost'
-      )}:#{ENV.fetch(
-        'REDIS_PORT',
-        6379
-      )}/#{ENV.fetch('REDIS_DB', 15)}"
-    )
-  end
-
-  def self.ensure_indices
-    [Sourcefile, Workflow].each do |model|
-      model.ensure_indices
-    end
-  end
-
   class FlowbotError < StandardError
     attr_reader :error_code, :details
 
@@ -106,25 +110,15 @@ module Flowbots
   class AgentError < FlowbotError; end
   class ConfigurationError < FlowbotError; end
   class APIError < FlowbotError; end
-
-  # Add more specific error classes as needed
 end
 
-Flowbots.init_redis
-
-require "workflows"
-require "tasks"
-
-Flowbots::Workflows.load_workflows
-Flowbots::Task.load_tasks
-
-# Display a message indicating that Flowbots has been initialized.
+# Display initialization message
 Flowbots::UI.say(:ok, "Flowbots initialized")
 
-# Display a welcome message.
+# Display welcome message
 puts UIBox.info_box("Hey! It's Flowbots!")
 sleep 1
 
 print TTY::Cursor.clear_screen_up
 
-require "cli"
+require_relative "cli"

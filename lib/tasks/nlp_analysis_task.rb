@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 module Flowbots
-  class NlpAnalysisTask < Task
+  class NlpAnalysisTask < Jongleur::WorkerTask
     def perform
       nlp_processor = NLPProcessor.instance
 

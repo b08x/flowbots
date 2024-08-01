@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 module Flowbots
-  class NLPProcessor < TextProcessor
+  class NLPProcessor
     def initialize
       load_model
     end

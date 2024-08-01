@@ -1,9 +1,6 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require "ohm"
-require "ohm/contrib"
-
 module Flowbots
   module Flowbots::OhmIndexManager
     def self.included(base)

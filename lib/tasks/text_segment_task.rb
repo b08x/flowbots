@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 module Flowbots
-  class TextSegmentTask < Task
+  class TextSegmentTask < Jongleur::WorkerTask
     def perform
       text_segmenter = TextSegmentProcessor.instance
       segments = text_segmenter.process(sourcefile.preprocessed_content, { clean: true })

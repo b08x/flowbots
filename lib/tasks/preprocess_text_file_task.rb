@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 module Flowbots
-  class PreprocessTextFileTask < Task
+  class PreprocessTextFileTask < Jongleur::WorkerTask
     def perform
       grammar_processor = GrammarProcessor.new('markdown_yaml')
       parse_result = grammar_processor.parse(sourcefile.content)

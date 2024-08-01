@@ -14,9 +14,10 @@ module Flowbots
       Flowbots::UI.say(:ok, "Setting Up Text Processing Workflow")
       logger.info "Setting Up Text Processing Workflow"
 
-      ensure_indices
-      verify_indices
+      Flowbots.ensure_indices
+      Flowbots.verify_indices
       setup_workflow
+      define_tasks
       process_input_file
 
       Flowbots::UI.info "Running Text Processing Workflow"
@@ -28,33 +29,7 @@ module Flowbots
 
     private
 
-    def ensure_indices
-      logger.debug "Ensuring indices for Sourcefile and Workflow models"
-      Sourcefile.ensure_indices
-      Workflow.ensure_indices
-      logger.debug "All indices ensured"
-    end
-
-    def verify_indices
-      logger.debug "Verifying indices for Sourcefile and Workflow models"
-      Sourcefile.verify_indices
-      Workflow.verify_indices
-      logger.debug "All indices verified"
-    rescue Ohm::IndexNotFound => e
-      logger.error "Index verification failed: #{e.message}"
-      raise FlowbotError.new("Database index error: #{e.message}", "INDEX_VERIFICATION_ERROR")
-    end
-
-    def prompt_for_file
-      get_file_path = `gum file`.chomp.strip
-      file_path = File.join(get_file_path)
-      raise FlowbotError.new("File not found", "FILENOTFOUND") unless File.exist?(file_path)
-
-      file_path
-    end
-
     def setup_workflow
-      logger.debug "Setting up workflow"
       @workflow = Workflow.create(
         name: "TextProcessingWorkflow",
         status: "started",
@@ -63,6 +38,31 @@ module Flowbots
         workflow_type: "text_processing"
       )
       logger.debug "Workflow created: #{@workflow.inspect}"
+    end
+
+    def define_tasks
+      tasks = [
+        'Flowbots::FileLoaderTask',
+        'Flowbots::PreprocessTextFileTask',
+        'Flowbots::TextSegmentTask',
+        'Flowbots::TokenizeSegmentsTask',
+        'Flowbots::NlpAnalysisTask',
+        'Flowbots::TopicModelingTask',
+        'Flowbots::LlmAnalysisTask',
+        'Flowbots::DisplayResultsTask'
+      ]
+
+      workflow_graph = {}
+      tasks.each_with_index do |task, index|
+        if index < tasks.length - 1
+          workflow_graph[task] = [tasks[index + 1]]
+        else
+          workflow_graph[task] = []
+        end
+      end
+
+      @orchestrator.define_workflow(workflow_graph)
+      logger.debug "Tasks defined and added to workflow"
     end
 
     def process_input_file
@@ -93,6 +93,14 @@ module Flowbots
         logger.error e.backtrace.join("\n")
         raise FlowbotError.new("Error processing input file: #{e.message}", "FILE_PROCESSING_ERROR")
       end
+    end
+
+    def prompt_for_file
+      get_file_path = `gum file`.chomp.strip
+      file_path = File.join(get_file_path)
+      raise FlowbotError.new("File not found", "FILENOTFOUND") unless File.exist?(file_path)
+
+      file_path
     end
   end
 end

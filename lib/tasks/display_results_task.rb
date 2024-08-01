@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 class DisplayResultsTask < Jongleur::WorkerTask
-  include Logging
 
   def execute
     logger.info "Starting DisplayResultsTask"
