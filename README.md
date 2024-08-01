@@ -25,6 +25,61 @@ This document outlines the architecture and workflow of our LLM text processing 
 
 The methods parses text through several phases, from initial input to LLM analysis. It uses a combination of custom Ruby classes, several gems including the Tomoto gem for topic modeling, and Ruby-Nano-Bot cartridges for LLM analysis.
 
+
+### Aug 1st
+
+```plantuml
+stateDiagram-v2
+    [*] --> Initialized
+
+    state Initialized {
+        [*] --> SetupWorkflow
+        SetupWorkflow --> WorkflowCreated : Workflow Created
+        WorkflowCreated --> AgentsSetup : Agents Set Up
+        AgentsSetup --> ReadyToRun
+    }
+
+    ReadyToRun --> RunningWorkflow : Start Execution
+
+    state RunningWorkflow {
+        [*] --> CheckWorkflowType
+        CheckWorkflowType --> BatchWorkflow : Is Batch
+        CheckWorkflowType --> SingleFileWorkflow : Is Single File
+
+        state BatchWorkflow {
+            [*] --> NextBatch
+            NextBatch --> RunTask
+            RunTask --> NextTask : Task Completed
+            NextTask --> RunTask : More Tasks
+            NextTask --> NextBatch : Batch Completed
+            NextBatch --> [*] : All Batches Processed
+        }
+
+        state SingleFileWorkflow {
+            [*] --> RunTask
+            RunTask --> NextTask : Task Completed
+            NextTask --> RunTask : More Tasks
+            NextTask --> [*] : All Tasks Completed
+        }
+    }
+
+    RunningWorkflow --> CompletedWorkflow : All Tasks Finished
+
+    CompletedWorkflow --> CleaningUp : Start Cleanup
+    CleaningUp --> [*] : Cleanup Finished
+
+    state ErrorHandling {
+        TaskError --> ErrorProcessing
+        ErrorProcessing --> ResumeWorkflow : Error Handled
+        ErrorProcessing --> TerminateWorkflow : Unrecoverable Error
+    }
+
+    RunningWorkflow --> ErrorHandling : Error Occurred
+    ErrorHandling --> RunningWorkflow : Resume Workflow
+    ErrorHandling --> CompletedWorkflow : Terminate Workflow
+```
+
+
 ### July 31st
 
 ```mermaid

@@ -65,13 +65,51 @@ class Workflow < Ohm::Model
 end
 
 class Task < Ohm::Model
+  include Ohm::DataTypes
+
   attribute :name
   attribute :status
   attribute :result
-  attribute :start_time
-  attribute :end_time
+  attribute :start_time, Type::Time
+  attribute :end_time, Type::Time
+
+  reference :workflow, :Workflow
+  reference :sourcefile, :Sourcefile
+
   index :name
   index :status
+  index :workflow_id
+  index :sourcefile_id
+
+  def self.create(workflow, sourcefile)
+    task = new
+    task.init_with_ohm(workflow, sourcefile)
+    task
+  end
+
+  def init_with_ohm(workflow, sourcefile)
+    self.name = self.class.name
+    self.status = "pending"
+    self.start_time = Time.now
+    self.workflow = workflow
+    self.sourcefile = sourcefile
+    save
+  end
+
+  def execute
+    update(status: "running")
+    begin
+      perform
+      update(status: "completed", end_time: Time.now)
+    rescue StandardError => e
+      update(status: "failed", result: e.message, end_time: Time.now)
+      raise
+    end
+  end
+
+  def perform
+    raise NotImplementedError, "#{self.class.name}#perform must be implemented in subclass"
+  end
 end
 
 class Batch < Ohm::Model
