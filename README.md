@@ -26,6 +26,43 @@ This document outlines the architecture and workflow of our LLM text processing 
 The methods parses text through several phases, from initial input to LLM analysis. It uses a combination of custom Ruby classes, several gems including the Tomoto gem for topic modeling, and Ruby-Nano-Bot cartridges for LLM analysis.
 
 
+---
+
+## What we Promise
+
+
+conversational AI serves as the foundational layer, enabling seamless interaction between users and AI agents
+
+enabling systems to understand and solve complex problems independently.
+
+
+like cron, can operate autonomously on a user’s behalf for several days
+
+will not follow predefined rules but will also think critically about how to achieve goals more effectively
+and efficiently.
+
+“organizations” will function as cohesive units, handling functions and making promises.
+
+[source](https://media.licdn.com/dms/document/media/D4D1FAQFg42jcgHv7JA/feedshare-document-pdf-analyzed/0/1721652524742?e=1723680000&v=beta&t=_GkEmqkCt9Ea8vg928vHQYGWvxtfAO7k7TVAVGWHNu8#page=5.09)
+
+
+
+
+----
+
+
+B< Natural Language Understanding
+
+< Integration with DockerÍ< Sandboxed Execution
+
+ò< Community-Driven Innovation
+
+ Education
+AIOS operates as a decentralized system, differentiating itself from centralized AI platforms like OpenAI. This
+decentralization ensures that no single entity controls the platform, fostering an open and collaborative
+environment. Users can deploy models directly from repositories like Hugging Face, integrating them with AIOS's
+infrastructure to create unique solutions.
+
 ### Aug 1st
 
 ```plantuml

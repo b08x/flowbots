@@ -4,43 +4,46 @@
 require "ohm"
 require "ohm/contrib"
 
-module OhmIndexManager
-  def self.included(base)
-    base.extend(ClassMethods)
-  end
-
-  module ClassMethods
-    def ensure_indices
-      indices.each do |index_name|
-        key = "#{self.key}:indices:#{index_name}"
-        unless Ohm.redis.call("EXISTS", key) == 1
-          logger.info "Creating missing index '#{index_name}' for #{name}"
-          Ohm.redis.call("SADD", key, "")
-        end
-      end
+module Flowbots
+  module Flowbots::OhmIndexManager
+    def self.included(base)
+      base.extend(ClassMethods)
     end
 
-    def verify_indices
-      logger.debug "Verifying indices for #{name}"
-      indices.each do |index_name|
-        key = "#{self.key}:indices:#{index_name}"
-        unless Ohm.redis.call("TYPE", key) == "set"
-          logger.error "Index '#{index_name}' not found for #{name}"
-          raise Ohm::IndexNotFound, "Index '#{index_name}' not found for #{name}"
+    module ClassMethods
+      def ensure_indices
+        indices.each do |index_name|
+          key = "#{self.key}:indices:#{index_name}"
+          unless Ohm.redis.call("EXISTS", key) == 1
+            logger.info "Creating missing index '#{index_name}' for #{name}"
+            Ohm.redis.call("SADD", key, "")
+          end
         end
       end
-      logger.debug "All indices verified for #{name}"
+
+      def verify_indices
+        logger.debug "Verifying indices for #{name}"
+        indices.each do |index_name|
+          key = "#{self.key}:indices:#{index_name}"
+          unless Ohm.redis.call("TYPE", key) == "set"
+            logger.error "Index '#{index_name}' not found for #{name}"
+            raise Ohm::IndexNotFound, "Index '#{index_name}' not found for #{name}"
+          end
+        end
+        logger.debug "All indices verified for #{name}"
+      end
     end
   end
 end
 
 class Workflow < Ohm::Model
-  include OhmIndexManager
+  include Ohm::DataTypes
+  include Flowbots::OhmIndexManager
 
   attribute :name
   attribute :status
-  attribute :start_time
-  attribute :end_time
+  attribute :start_time, Type::Time
+  attribute :end_time, Type::Time
   attribute :current_batch_number
   attribute :is_batch_workflow
   attribute :workflow_type
@@ -51,21 +54,12 @@ class Workflow < Ohm::Model
 
   index :workflow_type
   index :status
-
-  def self.verify_indices
-    logger.debug "Verifying Workflow indices"
-    %i[workflow_type status].each do |index_name|
-      unless Ohm.redis.call("TYPE", "#{key}:indices:#{index_name}") == "set"
-        logger.error "Index '#{index_name}' not found for Workflow"
-        raise Ohm::IndexNotFound, "Index '#{index_name}' not found for Workflow"
-      end
-    end
-    logger.debug "All Workflow indices verified"
-  end
+  index :current_file_id
 end
 
-class Task < Ohm::Model
+class OhmTask < Ohm::Model
   include Ohm::DataTypes
+  include Flowbots::OhmIndexManager
 
   attribute :name
   attribute :status
@@ -83,11 +77,11 @@ class Task < Ohm::Model
 
   def self.create(workflow, sourcefile)
     task = new
-    task.init_with_ohm(workflow, sourcefile)
+    task.init(workflow, sourcefile)
     task
   end
 
-  def init_with_ohm(workflow, sourcefile)
+  def init(workflow, sourcefile)
     self.name = self.class.name
     self.status = "pending"
     self.start_time = Time.now
@@ -96,23 +90,18 @@ class Task < Ohm::Model
     save
   end
 
-  def execute
-    update(status: "running")
-    begin
-      perform
-      update(status: "completed", end_time: Time.now)
-    rescue StandardError => e
-      update(status: "failed", result: e.message, end_time: Time.now)
-      raise
-    end
-  end
-
-  def perform
-    raise NotImplementedError, "#{self.class.name}#perform must be implemented in subclass"
+  def update_status(new_status, result=nil)
+    self.status = new_status
+    self.result = result if result
+    self.end_time = Time.now if %w[completed failed].include?(new_status)
+    save
   end
 end
 
 class Batch < Ohm::Model
+  include Ohm::DataTypes
+  include Flowbots::OhmIndexManager
+
   attribute :number
   attribute :status
 
@@ -124,13 +113,14 @@ class Batch < Ohm::Model
 end
 
 class Sourcefile < Ohm::Model
-  include OhmIndexManager
+  include Ohm::DataTypes
+  include Flowbots::OhmIndexManager
 
   attribute :path
   attribute :name
   attribute :content
   attribute :preprocessed_content
-  attribute :metadata
+  attribute :metadata, Type::Hash
 
   set :workflows, :Workflow
   reference :batch, :Batch
@@ -197,6 +187,8 @@ class Sourcefile < Ohm::Model
 end
 
 class Segment < Ohm::Model
+  include Flowbots::OhmIndexManager
+
   attribute :text
   attribute :tokens
   attribute :tagged
@@ -206,6 +198,8 @@ class Segment < Ohm::Model
 end
 
 class Word < Ohm::Model
+  include Flowbots::OhmIndexManager
+
   attribute :word
   attribute :pos
   attribute :tag
@@ -219,6 +213,8 @@ class Word < Ohm::Model
 end
 
 class Topic < Ohm::Model
+  include Flowbots::OhmIndexManager
+
   attribute :name
   attribute :description
   attribute :vector

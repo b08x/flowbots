@@ -52,7 +52,7 @@ module Flowbots
         AccumulateFilteredSegmentsTask: []
       }
 
-      @orchestrator.define_workflow(workflow_graph)
+      p @orchestrator.run_workflow(workflow_graph)
       logger.debug "Workflow setup completed"
     end
 

@@ -1,64 +1,50 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-class NlpAnalysisTask < Jongleur::WorkerTask
-  def execute
-    workflow_id = Ohm.redis.get("current_workflow_id")
-    workflow = Workflow[workflow_id]
+module Flowbots
+  class NlpAnalysisTask < Task
+    def perform
+      nlp_processor = NLPProcessor.instance
 
-    if workflow.is_batch_workflow
-      analyze_batch_files(workflow)
-    else
-      analyze_single_file(workflow)
-    end
-  end
+      sourcefile.segments.each do |segment|
+        processed_tokens = nlp_processor.process(segment, pos: true, dep: true, ner: true, tag: true)
 
-  private
+        tagged = {
+          pos: {}, dep: {}, ner: {}, tag: {}
+        }
 
-  def analyze_batch_files(workflow)
-    current_batch = workflow.batches.find(number: workflow.current_batch_number).first
-    current_batch.sourcefiles.each do |sourcefile|
-      analyze_file_segments(sourcefile)
-    end
-    logger.info "Performed NLP analysis for Batch #{current_batch.number}"
-  end
+        processed_tokens.each do |token|
+          word = token[:word]
+          tagged[:pos][word] = token[:pos]
+          tagged[:dep][word] = token[:dep]
+          tagged[:ner][word] = token[:ner]
+          tagged[:tag][word] = token[:tag]
 
-  def analyze_single_file(workflow)
-    sourcefile = workflow.sourcefiles.first
-    analyze_file_segments(sourcefile)
-    logger.info "Performed NLP analysis for single file: #{sourcefile.path}"
-  end
+          Word.create(
+            word: word,
+            pos: token[:pos],
+            tag: token[:tag],
+            dep: token[:dep],
+            ner: token[:ner],
+            sourcefile: sourcefile,
+            segment: segment
+          )
+        end
 
-  def analyze_file_segments(sourcefile)
-    nlp_processor = Flowbots::NLPProcessor.instance
-
-    sourcefile.segments.each do |segment|
-      processed_tokens = nlp_processor.process(segment, pos: true, dep: true, ner: true, tag: true)
-
-      tagged = {
-        pos: {}, dep: {}, ner: {}, tag: {}
-      }
-
-      processed_tokens.each do |token|
-        word = token[:word]
-        tagged[:pos][word] = token[:pos]
-        tagged[:dep][word] = token[:dep]
-        tagged[:ner][word] = token[:ner]
-        tagged[:tag][word] = token[:tag]
-
-        Word.create(
-          word: word,
-          pos: token[:pos],
-          tag: token[:tag],
-          dep: token[:dep],
-          ner: token[:ner],
-          sourcefile: sourcefile,
-          segment: segment
-        )
+        segment.update(tagged: tagged)
       end
 
-      segment.update(tagged: tagged)
-      logger.debug "Analyzed segment #{segment.id} for file: #{sourcefile.path}"
+      "Performed NLP analysis for file: #{sourcefile.path}"
     end
+  end
+
+  class Word < Ohm::Model
+    attribute :word
+    attribute :pos
+    attribute :tag
+    attribute :dep
+    attribute :ner
+    reference :sourcefile, 'Flowbots::Sourcefile'
+    reference :segment, 'Flowbots::Segment'
   end
 end
