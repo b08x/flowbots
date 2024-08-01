@@ -28,25 +28,17 @@ The methods parses text through several phases, from initial input to LLM analys
 
 ---
 
-## What we Promise
+* ConverXational AI serves as the foundational layer, ideally making the experience of working with a computer less like working with a human. Heh. Heh. The "X" is to force your attenuation.
 
+* Enabling systems to understand and solve complex problems independently. Although, I'm still not sure who's doing the actually moving of the objects that must be involved...if you're in to that sort of thing.
 
-conversational AI serves as the foundational layer, enabling seamless interaction between users and AI agents
+* Like cron, can operate autonomously on a user’s behalf for several days
 
-enabling systems to understand and solve complex problems independently.
+* Like most Athletes, will not follow predefined rules but will also think critically about how to achieve goals more effectively and efficiently.
 
-
-like cron, can operate autonomously on a user’s behalf for several days
-
-will not follow predefined rules but will also think critically about how to achieve goals more effectively
-and efficiently.
-
-“organizations” will function as cohesive units, handling functions and making promises.
+* “organizations” will function as cohesive units, handling functions and making promises.
 
 [source](https://media.licdn.com/dms/document/media/D4D1FAQFg42jcgHv7JA/feedshare-document-pdf-analyzed/0/1721652524742?e=1723680000&v=beta&t=_GkEmqkCt9Ea8vg928vHQYGWvxtfAO7k7TVAVGWHNu8#page=5.09)
-
-
-
 
 ----
 
@@ -55,7 +47,7 @@ B< Natural Language Understanding
 
 < Integration with DockerÍ< Sandboxed Execution
 
-ò< Community-Driven Innovation
+ò< Community-Driven Innovations Cobbled Together To Make it Seem Rustic
 
  Education
 AIOS operates as a decentralized system, differentiating itself from centralized AI platforms like OpenAI. This
