@@ -13,6 +13,70 @@ Flowbots is a kind of workflow automation system designed for processing and ana
 -  [ ] CLI Interface: Easy-to-use command-line interface for running workflows and managing the system.
 
 
+
+```mermaid
+classDiagram
+    class FlowbotError {
+        +String message
+        +String code
+    }
+    class WorkflowError
+    class AgentError
+    class ConfigurationError
+    class APIError
+
+    FlowbotError <|-- WorkflowError
+    FlowbotError <|-- AgentError
+    FlowbotError <|-- ConfigurationError
+    FlowbotError <|-- APIError
+
+    class Task {
+        +execute()
+    }
+    class Jongleur_WorkerTask {
+        +execute()
+    }
+    class BaseTask {
+        +OhmTask ohm_task
+        +execute()
+        +perform()
+    }
+
+    Task <|-- Jongleur_WorkerTask
+    Jongleur_WorkerTask <|-- BaseTask
+
+    class FileLoaderTask
+    class PreprocessTextFileTask
+    class TextSegmentTask
+    class TokenizeSegmentsTask
+    class NlpAnalysisTask
+    class TopicModelingTask
+    class LlmAnalysisTask
+    class DisplayResultsTask
+
+    BaseTask <|-- FileLoaderTask
+    BaseTask <|-- PreprocessTextFileTask
+    BaseTask <|-- TextSegmentTask
+    BaseTask <|-- TokenizeSegmentsTask
+    BaseTask <|-- NlpAnalysisTask
+    BaseTask <|-- TopicModelingTask
+    BaseTask <|-- LlmAnalysisTask
+    BaseTask <|-- DisplayResultsTask
+
+    class WorkflowOrchestrator {
+        +define_workflow()
+        +run_workflow()
+    }
+
+    class ExceptionHandler {
+        +handle_exception()
+    }
+
+    WorkflowOrchestrator --> BaseTask : manages
+    ExceptionHandler --> FlowbotError : handles
+
+```
+
 ## Acknowledgments
 
 -   [Ohm](https://github.com/soveran/ohm) for Redis object mapping.
