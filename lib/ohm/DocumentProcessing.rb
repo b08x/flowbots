@@ -4,6 +4,8 @@
 require "ohm"
 require "ohm/contrib"
 
+#accessions
+
 class Project < Ohm::Model
   attribute :name
   collection :document_collections, :DocumentCollection
