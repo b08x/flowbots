@@ -31,7 +31,6 @@ flowbots.json
 /examples/test/
 /data/
 /.bold/
-/.examples/
 /.vendor/
 /.docs/
 *.text.json
