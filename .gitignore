@@ -34,5 +34,4 @@ flowbots.json
 /.examples/
 /.vendor/
 /.docs/
-/exception_reports/
 *.text.json
