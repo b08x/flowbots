@@ -32,7 +32,6 @@ WORKFLOW_DIR = File.expand_path("workflows", __dir__)
 TASK_DIR = File.expand_path("tasks", __dir__)
 GRAMMAR_DIR = File.expand_path("grammars", __dir__)
 
-
 require "workflows"
 require "tasks"
 
@@ -75,7 +74,6 @@ rescue Ohm::Error => e
 end
 
 module Flowbots
-
   def self.shutdown
     # Perform any necessary cleanup
     Ohm.redis.quit
@@ -84,7 +82,6 @@ module Flowbots
   end
 
   def self.stop_running_workflows
-    WorkflowOrchestrator.cleanup
     logger.info "All workflows stopped"
   end
 
@@ -112,12 +109,10 @@ def in_container?
 end
 
 IN_CONTAINER = in_container?
+BATCH = FalseClass
 
 Flowbots::Workflows.load_workflows
 Flowbots::Task.load_tasks
-
-# UI provides user interface elements.
-require "ui"
 
 # Jongleur::WorkerTask is a class that defines a task to be executed by Jongleur.
 class Jongleur::WorkerTask

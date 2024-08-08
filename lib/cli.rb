@@ -24,19 +24,19 @@ module Flowbots
 
       selected_workflow = workflows.list_and_select
 
-      if selected_workflow
-        begin
-          workflows.run(selected_workflow)
-          say pastel.green("Workflow completed successfully")
-        rescue Interrupt
-          say pastel.yellow("Workflow interrupted by user")
-        rescue FileNotFoundError => e
-          say pastel.red(e.message)
-        rescue StandardError => e
-          ExceptionHandler.handle_exception(self.class.name, e)
-        ensure
-          Flowbots.shutdown
-        end
+      return unless selected_workflow
+
+      begin
+        workflows.run(selected_workflow)
+        say pastel.green("Workflow completed successfully")
+      rescue Interrupt
+        say pastel.yellow("Workflow interrupted by user")
+      rescue FileNotFoundError => e
+        say pastel.red(e.message)
+      rescue StandardError => e
+        ExceptionHandler.handle_exception(self.class.name, e)
+      ensure
+        Flowbots.shutdown
       end
     end
 

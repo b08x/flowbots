@@ -11,6 +11,7 @@ module Flowbots
     def initialize(input_folder_path=nil)
       @input_folder_path = input_folder_path || prompt_for_folder
       @orchestrator = WorkflowOrchestrator.new
+      Object.const_set(:BATCH, true) # Redefines the constant
     end
 
     def run
@@ -36,9 +37,7 @@ module Flowbots
       get_folder_path = `gum file --directory`.chomp.strip
       folder_path = File.join(get_folder_path)
 
-      unless File.directory?(folder_path)
-        raise FlowbotError.new('Folder not found', 'FOLDERNOTFOUND')
-      end
+      raise FlowbotError.new("Folder not found", "FOLDERNOTFOUND") unless File.directory?(folder_path)
 
       folder_path
     end
@@ -117,15 +116,15 @@ module Flowbots
     private
 
     def clean_segments_for_modeling(segments)
-     segments.reject do |segment|
-       segment.include?("tags") || segment.include?("title") || segment.include?("toc")
-     end.map do |segment|
-       segment.reject do |word|
-         word.to_s.length < 3 || # Remove very short words
-         word.to_s.match?(/^\d+$/) || # Remove purely numeric words
-         word.to_s.match?(/^[[:punct:]]+$/) # Remove punctuation-only words
-       end
-     end.reject(&:empty?)
+      segments.reject do |segment|
+        segment.include?("tags") || segment.include?("title") || segment.include?("toc")
+      end.map do |segment|
+        segment.reject do |word|
+          word.to_s.length < 3 || # Remove very short words
+            word.to_s.match?(/^\d+$/) || # Remove purely numeric words
+            word.to_s.match?(/^[[:punct:]]+$/) # Remove punctuation-only words
+        end
+      end.reject(&:empty?)
     end
   end
 end

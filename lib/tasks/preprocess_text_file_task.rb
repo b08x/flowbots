@@ -6,10 +6,11 @@ class PreprocessTextFileTask < Jongleur::WorkerTask
     logger.info "Starting PreprocessTextFileTask"
 
     textfile = retrieve_current_textfile
+
     logger.debug "File content: #{textfile.content[0..200]}..." # Log first 200 characters
 
     begin
-      grammar_processor = Flowbots::GrammarProcessor.new('markdown_yaml')
+      grammar_processor = Flowbots::GrammarProcessor.new("markdown_yaml")
       parse_result = grammar_processor.parse(textfile.content)
       logger.debug "Parse result: #{parse_result.inspect}"
 

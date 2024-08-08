@@ -67,7 +67,7 @@ class WorkflowOrchestrator
             ui.puts "Task matrix: #{task_matrix}"
           end
           @running = false
-          return "next"
+          return "next" if BATCH
         end
       end
     rescue Interrupt
@@ -84,9 +84,7 @@ class WorkflowOrchestrator
 
   def cleanup
     # Perform any necessary cleanup for the workflow
-    Jongleur::API.stop_all_tasks
+    Jongleur::API.trap_quit_signals
     # Add any other cleanup operations here
   end
-
-
 end
