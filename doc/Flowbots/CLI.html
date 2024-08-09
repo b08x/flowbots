@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="UTF-8">
+
+<title>class Flowbots::CLI - flowbots v0.1</title>
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "../";
+  var index_rel_prefix = "../";
+</script>
+
+<script src="../js/navigation.js" defer></script>
+<script src="../js/search.js" defer></script>
+<script src="../js/search_index.js" defer></script>
+<script src="../js/searcher.js" defer></script>
+<script src="../js/darkfish.js" defer></script>
+
+<link href="../css/fonts.css" rel="stylesheet">
+<link href="../css/rdoc.css" rel="stylesheet">
+
+
+<body id="top" role="document" class="class">
+<nav role="navigation">
+  <div id="project-navigation">
+    <div id="home-section" role="region" title="Quick navigation" class="nav-section">
+  <h2>
+    <a href="../index.html" rel="home">Home</a>
+  </h2>
+
+  <div id="table-of-contents-navigation">
+    <a href="../table_of_contents.html#pages">Pages</a>
+    <a href="../table_of_contents.html#classes">Classes</a>
+    <a href="../table_of_contents.html#methods">Methods</a>
+  </div>
+</div>
+
+    <div id="search-section" role="search" class="project-section initially-hidden">
+  <form action="#" method="get" accept-charset="utf-8">
+    <div id="search-field-wrapper">
+      <input id="search-field" role="combobox" aria-label="Search"
+             aria-autocomplete="list" aria-controls="search-results"
+             type="text" name="search" placeholder="Search" spellcheck="false"
+             title="Type to search, Up and Down to navigate, Enter to load">
+    </div>
+
+    <ul id="search-results" aria-label="Search Results"
+        aria-busy="false" aria-expanded="false"
+        aria-atomic="false" class="initially-hidden"></ul>
+  </form>
+</div>
+
+  </div>
+
+  
+
+  <div id="class-metadata">
+    
+    
+<div id="parent-class-section" class="nav-section">
+  <h3>Parent</h3>
+
+  <p class="link">Thor
+</div>
+
+    
+    
+<div id="extends-section" class="nav-section">
+  <h3>Extended With Modules</h3>
+
+  <ul class="link-list">
+    <li><span class="extend">ThorExt::Start</span>
+  </ul>
+</div>
+
+    
+<!-- Method Quickref -->
+<div id="method-list-section" class="nav-section">
+  <h3>Methods</h3>
+
+  <ul class="link-list" role="directory">
+    <li ><a href="#method-c-exit_on_failure-3F">::exit_on_failure?</a>
+    <li ><a href="#method-i-process_text">#process_text</a>
+    <li ><a href="#method-i-train_topic_model">#train_topic_model</a>
+    <li ><a href="#method-i-version">#version</a>
+    <li ><a href="#method-i-workflows">#workflows</a>
+  </ul>
+</div>
+
+  </div>
+</nav>
+
+<main role="main" aria-labelledby="class-Flowbots::CLI">
+  <h1 id="class-Flowbots::CLI" class="class">
+    class Flowbots::CLI
+  </h1>
+
+  <section class="description">
+    
+  </section>
+
+  <section id="5Buntitled-5D" class="documentation-section">
+
+
+
+
+
+     <section id="public-class-5Buntitled-5D-method-details" class="method-section">
+       <header>
+         <h3>Public Class Methods</h3>
+       </header>
+
+      <div id="method-c-exit_on_failure-3F" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">exit_on_failure?</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          
+
+          <div class="method-source-code" id="exit_on_failure-3F-source">
+            <pre><span class="ruby-comment"># File lib/cli.rb, line 8</span>
+<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">exit_on_failure?</span>
+  <span class="ruby-keyword">true</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+    </section>
+
+     <section id="public-instance-5Buntitled-5D-method-details" class="method-section">
+       <header>
+         <h3>Public Instance Methods</h3>
+       </header>
+
+      <div id="method-i-process_text" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">process_text</span><span
+            class="method-args">(file)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          
+
+          <div class="method-source-code" id="process_text-source">
+            <pre><span class="ruby-comment"># File lib/cli.rb, line 64</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">process_text</span>(<span class="ruby-identifier">file</span>)
+  <span class="ruby-identifier">pastel</span> = <span class="ruby-constant">Pastel</span>.<span class="ruby-identifier">new</span>
+
+  <span class="ruby-keyword">unless</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exist?</span>(<span class="ruby-identifier">file</span>)
+    <span class="ruby-identifier">say</span> <span class="ruby-identifier">pastel</span>.<span class="ruby-identifier">red</span>(<span class="ruby-node">&quot;File not found: #{file}&quot;</span>)
+    <span class="ruby-identifier">exit</span>
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-identifier">say</span> <span class="ruby-identifier">pastel</span>.<span class="ruby-identifier">green</span>(<span class="ruby-node">&quot;Processing file: #{file}&quot;</span>)
+
+  <span class="ruby-keyword">begin</span>
+    <span class="ruby-identifier">workflow</span> = <span class="ruby-constant">TextProcessingWorkflow</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">file</span>)
+    <span class="ruby-identifier">workflow</span>.<span class="ruby-identifier">run</span>
+    <span class="ruby-identifier">say</span> <span class="ruby-identifier">pastel</span>.<span class="ruby-identifier">green</span>(<span class="ruby-string">&quot;Text processing completed successfully&quot;</span>)
+  <span class="ruby-keyword">rescue</span> <span class="ruby-constant">StandardError</span> <span class="ruby-operator">=&gt;</span> <span class="ruby-identifier">e</span>
+    <span class="ruby-constant">ExceptionHandler</span>.<span class="ruby-identifier">handle_exception</span>(<span class="ruby-keyword">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">name</span>, <span class="ruby-identifier">e</span>)
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-train_topic_model" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">train_topic_model</span><span
+            class="method-args">(folder)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          
+
+          <div class="method-source-code" id="train_topic_model-source">
+            <pre><span class="ruby-comment"># File lib/cli.rb, line 44</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">train_topic_model</span>(<span class="ruby-identifier">folder</span>)
+  <span class="ruby-identifier">pastel</span> = <span class="ruby-constant">Pastel</span>.<span class="ruby-identifier">new</span>
+
+  <span class="ruby-keyword">unless</span> <span class="ruby-constant">Dir</span>.<span class="ruby-identifier">exist?</span>(<span class="ruby-identifier">folder</span>)
+    <span class="ruby-identifier">say</span> <span class="ruby-identifier">pastel</span>.<span class="ruby-identifier">red</span>(<span class="ruby-node">&quot;Folder not found: #{folder}&quot;</span>)
+    <span class="ruby-identifier">exit</span>
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-identifier">say</span> <span class="ruby-identifier">pastel</span>.<span class="ruby-identifier">green</span>(<span class="ruby-node">&quot;Training topic model using files in: #{folder}&quot;</span>)
+
+  <span class="ruby-keyword">begin</span>
+    <span class="ruby-identifier">workflow</span> = <span class="ruby-constant">TopicModelTrainerWorkflow</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">folder</span>)
+    <span class="ruby-identifier">workflow</span>.<span class="ruby-identifier">run</span>
+    <span class="ruby-identifier">say</span> <span class="ruby-identifier">pastel</span>.<span class="ruby-identifier">green</span>(<span class="ruby-string">&quot;Topic model training completed successfully&quot;</span>)
+  <span class="ruby-keyword">rescue</span> <span class="ruby-constant">StandardError</span> <span class="ruby-operator">=&gt;</span> <span class="ruby-identifier">e</span>
+    <span class="ruby-constant">ExceptionHandler</span>.<span class="ruby-identifier">handle_exception</span>(<span class="ruby-keyword">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">name</span>, <span class="ruby-identifier">e</span>)
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-version" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">version</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          
+
+          <div class="method-source-code" id="version-source">
+            <pre><span class="ruby-comment"># File lib/cli.rb, line 15</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">version</span>
+  <span class="ruby-identifier">say</span> <span class="ruby-node">&quot;flowbots/#{VERSION} #{RUBY_DESCRIPTION}&quot;</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-workflows" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">workflows</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          
+
+          <div class="method-source-code" id="workflows-source">
+            <pre><span class="ruby-comment"># File lib/cli.rb, line 20</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">workflows</span>
+  <span class="ruby-identifier">pastel</span> = <span class="ruby-constant">Pastel</span>.<span class="ruby-identifier">new</span>
+
+  <span class="ruby-identifier">workflows</span> = <span class="ruby-constant">Workflows</span>.<span class="ruby-identifier">new</span>
+
+  <span class="ruby-identifier">selected_workflow</span> = <span class="ruby-identifier">workflows</span>.<span class="ruby-identifier">list_and_select</span>
+
+  <span class="ruby-keyword">return</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">selected_workflow</span>
+
+  <span class="ruby-keyword">begin</span>
+    <span class="ruby-identifier">workflows</span>.<span class="ruby-identifier">run</span>(<span class="ruby-identifier">selected_workflow</span>)
+    <span class="ruby-identifier">say</span> <span class="ruby-identifier">pastel</span>.<span class="ruby-identifier">green</span>(<span class="ruby-string">&quot;Workflow completed successfully&quot;</span>)
+  <span class="ruby-keyword">rescue</span> <span class="ruby-constant">Interrupt</span>
+    <span class="ruby-identifier">say</span> <span class="ruby-identifier">pastel</span>.<span class="ruby-identifier">yellow</span>(<span class="ruby-string">&quot;Workflow interrupted by user&quot;</span>)
+  <span class="ruby-keyword">rescue</span> <span class="ruby-constant">FileNotFoundError</span> <span class="ruby-operator">=&gt;</span> <span class="ruby-identifier">e</span>
+    <span class="ruby-identifier">say</span> <span class="ruby-identifier">pastel</span>.<span class="ruby-identifier">red</span>(<span class="ruby-identifier">e</span>.<span class="ruby-identifier">message</span>)
+  <span class="ruby-keyword">rescue</span> <span class="ruby-constant">StandardError</span> <span class="ruby-operator">=&gt;</span> <span class="ruby-identifier">e</span>
+    <span class="ruby-constant">ExceptionHandler</span>.<span class="ruby-identifier">handle_exception</span>(<span class="ruby-keyword">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">name</span>, <span class="ruby-identifier">e</span>)
+  <span class="ruby-keyword">ensure</span>
+    <span class="ruby-constant">Flowbots</span>.<span class="ruby-identifier">shutdown</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+    </section>
+
+  </section>
+</main>
+
+
+<footer id="validator-badges" role="contentinfo">
+  <p><a href="https://validator.w3.org/check/referer">Validate</a>
+  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.4.0.
+  <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
+</footer>
+
