@@ -6,20 +6,21 @@ require "pragmatic_tokenizer"
 module Flowbots
   class TextTokenizeProcessor < TextProcessor
     DEFAULT_OPTIONS = {
-      # remove_stop_words: stopwords,
-      # punctuation: punct,
+      remove_stop_words: true,
+      stop_words: ['the'],
+      punctuation: :semi,
       numbers: :all,
       minimum_length: 0,
-      remove_emoji: false,
+      remove_emoji: true,
       remove_emails: true,
       remove_urls: true,
       remove_domains: true,
       expand_contractions: true,
       clean: true,
-      mentions: :keep_original,
+      mentions: :remove,
       hashtags: :keep_original,
       classic_filter: true,
-      downcase: false,
+      downcase: true,
       long_word_split: 20
     }
 

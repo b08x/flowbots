@@ -8,7 +8,8 @@ class TextSegmentTask < Jongleur::WorkerTask
     textfile_id = Jongleur::WorkerTask.class_variable_get(:@@redis).get("current_textfile_id")
     text_file = Textfile[textfile_id]
 
-    preprocessed_content = retrieve_preprocessed_content
+    # preprocessed_content = retrieve_preprocessed_content
+    preprocessed_content = text_file.preprocessed_content
 
     text_segmenter = Flowbots::TextSegmentProcessor.instance
     segments = text_segmenter.process(preprocessed_content, { clean: true })

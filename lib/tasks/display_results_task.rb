@@ -8,7 +8,7 @@ class DisplayResultsTask < Jongleur::WorkerTask
     logger.info "Starting DisplayResultsTask"
 
     textfile = retrieve_current_textfile
-    analysis_result = retrieve_analysis_result
+    analysis_result = textfile.analysis
 
     display_results(textfile, analysis_result)
 

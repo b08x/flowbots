@@ -3,7 +3,7 @@
 
 class TopicModelingTask < Jongleur::WorkerTask
   def execute
-    text_file = Textfile.latest
+    text_file = retrieve_current_textfile
     filtered_words = retrieve_filtered_words(text_file)
 
     topic_processor = Flowbots::TopicModelProcessor.instance
@@ -17,6 +17,11 @@ class TopicModelingTask < Jongleur::WorkerTask
   end
 
   private
+
+  def retrieve_current_textfile
+    textfile_id = Jongleur::WorkerTask.class_variable_get(:@@redis).get("current_textfile_id")
+    Textfile[textfile_id]
+  end
 
   def retrieve_filtered_words(text_file)
     segments = text_file.retrieve_segments

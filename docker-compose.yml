@@ -9,7 +9,6 @@ services:
         - USE_TRF=False
         - USE_BOOKNLP=False
     container_name: flowbots
-    command: "bash && . /app/.venv/bin/activate"
     env_file:
       - .env
     environment:
@@ -99,7 +98,7 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=production
-      - DATABASE_URL=postgresql://postgres:postgres@192.168.36.3:5432/flowbots
+      - DATABASE_URL=postgresql://postgres:postgres@postgres_service:5432/flowbots
       - NEXTAUTH_SECRET=mysecret
       - SALT=mysalt
       - NEXTAUTH_URL=http://localhost:3000

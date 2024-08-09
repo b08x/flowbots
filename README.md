@@ -1,4 +1,4 @@
-# Flowbots: Prompt Compression and Evaluation Workflow
+Flowbots: Prompt Compression and Evaluation Workflow
 
 Flowbots is a Ruby-based workflow orchestration system designed for compressing, testing, and evaluating AI prompts. It uses a combination of nano-bots, Redis for state management, and a series of interconnected tasks to process and analyze prompts.
 

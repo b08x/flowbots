@@ -5,7 +5,13 @@ require "faraday"
 require "faraday/multipart"
 require "json"
 
+# This class provides an interface for interacting with the Flowise API.
 class FlowiseApiClient
+  # Initializes a new FlowiseApiClient instance.
+  #
+  # @param base_url [String] The base URL of the Flowise API.
+  #
+  # @return [void]
   def initialize(base_url)
     @base_url = base_url
     @conn = Faraday.new(url: @base_url) do |faraday|
@@ -15,6 +21,20 @@ class FlowiseApiClient
     end
   end
 
+  # Sends a prediction request to the Flowise API.
+  #
+  # @param chatflow_id [String] The ID of the chatflow to use for prediction.
+  # @param options [Hash] A hash of options for the prediction request.
+  #   - :question [String] The question to ask the chatflow.
+  #   - :history [Array] A list of previous questions and answers.
+  #   - :overrideConfig [Hash] A hash of configuration overrides for the chatflow.
+  #   - :socketIOClientId [String] The socket.io client ID.
+  #   - :file_path [String] The path to a file to upload for prediction.
+  #   - :worker_name [String] The name of the worker to use for prediction.
+  #   - :worker_prompt [String] The prompt to use for the worker.
+  #   - :prompt_values [Hash] A hash of prompt values to use for the worker.
+  #
+  # @return [Hash] The response from the Flowise API.
   def predict(chatflow_id, options={})
     endpoint = "/api/v1/prediction/#{chatflow_id}"
 
@@ -48,6 +68,16 @@ class FlowiseApiClient
     handle_response(response)
   end
 
+  # Sends a document upsert request to the Flowise API.
+  #
+  # @param chatflow_id [String] The ID of the chatflow to use for document upsert.
+  # @param file_path [String] The path to the file to upload.
+  # @param local_ai_config [Hash] A hash of configuration options for the local AI.
+  #   - :api_key [String] The API key for the local AI.
+  #   - :base_path [String] The base path for the local AI.
+  #   - :model_name [String] The name of the model to use for the local AI.
+  #
+  # @return [Hash] The response from the Flowise API.
   def upsert_document(chatflow_id, file_path, local_ai_config={})
     endpoint = "/api/v1/vector/upsert/#{chatflow_id}"
 
@@ -72,6 +102,12 @@ class FlowiseApiClient
 
   private
 
+  # Handles the response from the Flowise API.
+  #
+  # @param response [Faraday::Response] The response from the Flowise API.
+  #
+  # @return [Hash] The parsed response body.
+  # @raise [RuntimeError] If the response status is not 200.
   def handle_response(response)
     case response.status
     when 200

@@ -23,6 +23,11 @@ class Textfile < Ohm::Model
   attribute :extension
   attribute :title
   attribute :content
+  attribute :preprocessed_content
+  attribute :metadata, Type::Hash
+  attribute :tagged, Type::Hash
+  attribute :analysis
+
   attribute :batch
 
   set :topics, :Topic
@@ -35,8 +40,9 @@ class Textfile < Ohm::Model
   index :title
   index :path
   index :batch
+  index :analysis
 
-  def self.find_or_create_by_path(file_path, attributes = {})
+  def self.find_or_create_by_path(file_path, attributes={})
     existing_file = find(path: file_path).first
     return existing_file if existing_file
 
@@ -44,15 +50,17 @@ class Textfile < Ohm::Model
     extension = File.extname(file_path)
     title = File.basename(file_path, ".*")
 
-    create(attributes.merge(
-      name: file_name,
-      path: file_path,
-      extension: extension,
-      title: title
-    ))
+    create(
+      attributes.merge(
+        name: file_name,
+        path: file_path,
+        extension:,
+        title:
+      )
+    )
   end
 
-  def self.latest(limit = nil)
+  def self.latest(limit=nil)
     if limit.nil?
       ids = redis.call("ZREVRANGE", key[:latest], 0, 0)
       result = fetch(ids)
@@ -70,11 +78,9 @@ class Textfile < Ohm::Model
 
   def add_topics(new_topics)
     new_topics.each do |word|
-      begin
-        topics.add(Topic.create(name: word))
-      rescue StandardError => e
-        logger.warn "#{e.message}"
-      end
+      topics.add(Topic.create(name: word))
+    rescue StandardError => e
+      logger.warn "#{e.message}"
     end
     save
   end
@@ -130,6 +136,7 @@ class Segment < Ohm::Model
   def add_topics(new_topics)
     new_topics.each do |topic|
       next if Topic.find(name: word).first
+
       topic = Topic.create(name: word, segment: self)
       topics.push(topic)
     end
@@ -151,7 +158,6 @@ class Segment < Ohm::Model
   def retrieve_word_texts
     retrieve_words.map(&:word)
   end
-
 end
 
 class Word < Ohm::Model

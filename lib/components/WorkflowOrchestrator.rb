@@ -3,15 +3,27 @@
 
 require_relative "WorkflowAgent"
 
+# This class orchestrates the execution of workflows in the Flowbots application.
 class WorkflowOrchestrator
+  # The base directory for cartridges.
   CARTRIDGE_BASE_DIR = File.expand_path("../../nano-bots/cartridges", __dir__)
 
+  # Initializes a new WorkflowOrchestrator instance.
+  #
+  # @return [void]
   def initialize
     @agents = {}
     logger = Logger.new(STDOUT)
     logger.level = Logger::DEBUG
   end
 
+  # Adds an agent to the orchestrator.
+  #
+  # @param role [String] The role of the agent.
+  # @param cartridge_file [String] The name of the cartridge file.
+  # @param author [String] The author of the cartridge.
+  #
+  # @return [void]
   def add_agent(role, cartridge_file, author: "@b08x")
     logger.debug "Adding agent: #{role}"
     cartridge_path = File.join(CARTRIDGE_BASE_DIR, author, "cartridges", cartridge_file)
@@ -25,6 +37,11 @@ class WorkflowOrchestrator
     logger.debug "Agent added: #{role}"
   end
 
+  # Defines a workflow using the given definition.
+  #
+  # @param workflow_definition [Hash] The workflow definition.
+  #
+  # @return [void]
   def define_workflow(workflow_definition)
     logger.debug "Defining workflow"
     logger.debug "Workflow definition: #{workflow_definition}"
@@ -32,6 +49,9 @@ class WorkflowOrchestrator
     logger.debug "Workflow defined"
   end
 
+  # Runs the defined workflow.
+  #
+  # @return [void]
   def run_workflow
     logger.info "Starting workflow execution"
     @running = true
@@ -82,6 +102,9 @@ class WorkflowOrchestrator
     end
   end
 
+  # Performs cleanup operations for the workflow.
+  #
+  # @return [void]
   def cleanup
     # Perform any necessary cleanup for the workflow
     Jongleur::API.trap_quit_signals

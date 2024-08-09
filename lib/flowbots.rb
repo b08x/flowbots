@@ -12,6 +12,7 @@ require "ruby-spacy"
 require "thor"
 require "treetop"
 require "yaml"
+require "scalpel"
 
 module Flowbots
   autoload :VERSION, "version"
@@ -65,7 +66,9 @@ require_relative "processors/TextProcessor"
 require_relative "processors/TextSegmentProcessor"
 require_relative "processors/TextTokenizeProcessor"
 require_relative "processors/NLPProcessor"
+require_relative "processors/TextTaggerProcessor"
 require_relative "processors/TopicModelProcessor"
+
 
 begin
   Ohm.redis = Redic.new("redis://localhost:6379/0")
@@ -74,6 +77,14 @@ rescue Ohm::Error => e
 end
 
 module Flowbots
+  ##
+  # Creates a new shape described by a +polyline+.
+  #
+  # If the +polyline+ does not end at the same point it started at the
+  # first pointed is copied and placed at the end of the line.
+  #
+  # An ArgumentError is raised if the line crosses itself, but shapes may
+  # be concave.
   def self.shutdown
     # Perform any necessary cleanup
     Ohm.redis.quit

@@ -92,7 +92,7 @@ RUN if [ "${USE_TRF}" = "True"]; then \
         python3 -m spacy download en_core_web_trf \
     ; fi
 
-RUN if [ "${USE_TRF}" = "True"]; then \
+RUN if [ "${USE_BOOKNLP}" = "True"]; then \
         . /app/.venv/bin/activate && \
         pip3 install -U transformers booknlp \
     ; fi
@@ -107,7 +107,7 @@ COPY examples/ ./examples/
 COPY exe/ ./exe/
 COPY lib/ ./lib/
 COPY nano-bots/ ./nano-bots/
-COPY workflows/ ./workflows/
+COPY flowbots.json .
 
 # Set environment variables
 ENV LANG=C.UTF-8 \
@@ -121,10 +121,11 @@ RUN chown -R flowbots:flowbots /app
 USER flowbots
 
 ENV PATH="/home/flowbots/.local/share/gem/ruby/3.3.0/bin:$PATH"
+ENV PATH="/app/.venv/bin:$PATH"
 
 RUN bundle lock --add-platform x86_64-linux && \
     bundle config build.redic --with-cxx="clang++" --with-cflags="-std=c++0x" && \
     bundle install
 
 # Set the default command (can be overridden)
-CMD ["bash"]
+CMD . .venv/bin/activate && exec bash

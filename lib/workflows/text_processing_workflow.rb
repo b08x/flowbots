@@ -39,7 +39,8 @@ module Flowbots
 
       workflow_graph = {
         FileLoaderTask: [:PreprocessTextFileTask],
-        PreprocessTextFileTask: [:TextSegmentTask],
+        PreprocessTextFileTask: [:TextTaggerTask],
+        TextTaggerTask: [:TextSegmentTask],
         TextSegmentTask: [:TextTokenizeTask],
         TextTokenizeTask: [:NlpAnalysisTask],
         NlpAnalysisTask: [:TopicModelingTask],

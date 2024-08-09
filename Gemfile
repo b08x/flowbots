@@ -62,3 +62,11 @@ gem "wordnet-defaultdb", "~> 2.0"
 gem "yaml", "~> 0.3.0"
 
 gem "polyglot", "~> 0.3.5"
+
+gem "engtagger", "~> 0.4.1"
+
+gem "scalpel", "~> 0.2.1"
+
+gem "gokdok", "~> 0.4.2"
+
+gem "shale", "~> 1.1"

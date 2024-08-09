@@ -9,7 +9,7 @@ class LlmAnalysisTask < Jongleur::WorkerTask
     begin
       agent = WorkflowAgent.new(
         "ironically_literal",
-        File.join(CARTRIDGE_DIR, "@b08x", "cartridges", "assistants/steve.yml")
+        File.join(CARTRIDGE_DIR, "@b08x", "cartridges", "assistants/nlp-techniques-and-tools.yml")
       )
 
       logger.debug "Created WorkflowAgent instance"
@@ -18,8 +18,8 @@ class LlmAnalysisTask < Jongleur::WorkerTask
       logger.debug "Loaded agent state"
 
       textfile = retrieve_current_textfile
-      content = retrieve_preprocessed_content
-      metadata = retrieve_file_metadata
+      content = textfile.preprocessed_content
+      metadata = textfile.metadata || {}
       nlp_result = retrieve_nlp_result(textfile)
 
       prompt = generate_analysis_prompt(textfile, content, metadata, nlp_result)
@@ -30,7 +30,7 @@ class LlmAnalysisTask < Jongleur::WorkerTask
       agent.save_state
       logger.debug "Saved agent state"
 
-      store_analysis_result(analysis_result)
+      store_analysis_result(textfile, analysis_result)
       logger.debug "Stored analysis result"
 
       logger.info "LLMAnalysisTask completed"
@@ -48,9 +48,9 @@ class LlmAnalysisTask < Jongleur::WorkerTask
     Textfile[textfile_id]
   end
 
-  def retrieve_preprocessed_content
-    Jongleur::WorkerTask.class_variable_get(:@@redis).get("preprocessed_content")
-  end
+  # def retrieve_preprocessed_content
+  #   Jongleur::WorkerTask.class_variable_get(:@@redis).get("preprocessed_content")
+  # end
 
   def retrieve_file_metadata
     JSON.parse(Jongleur::WorkerTask.class_variable_get(:@@redis).get("file_metadata") || "{}")
@@ -72,7 +72,7 @@ class LlmAnalysisTask < Jongleur::WorkerTask
       Document Name: #{textfile.name}
 
       Content:
-      #{content[0..1000]}... (truncated for brevity)
+      #{content}
 
       NLP Analysis:
       #{format_nlp_result(nlp_result)}
@@ -91,14 +91,15 @@ class LlmAnalysisTask < Jongleur::WorkerTask
   def format_nlp_result(nlp_result)
     nlp_result.first(10).map do |segment|
       <<~SEGMENT
-        Segment: "#{segment[:text][0..100]}..."
+        Segment: "#{segment[:text]}"
         Parts of Speech: #{segment[:tagged][:pos].to_a.first(5).map { |word, pos| "#{word}(#{pos})" }.join(", ")}
         Named Entities: #{segment[:tagged][:ner].to_a.first(5).map { |word, ner| "#{word}(#{ner})" }.join(", ")}
       SEGMENT
     end.join("\n")
   end
 
-  def store_analysis_result(result)
-    Jongleur::WorkerTask.class_variable_get(:@@redis).set("analysis_result", result.to_json)
+  def store_analysis_result(textfile,result)
+    textfile.update(analysis: result)
+    # Jongleur::WorkerTask.class_variable_get(:@@redis).set("analysis_result", result.to_json)
   end
 end
