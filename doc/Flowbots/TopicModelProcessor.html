@@ -93,6 +93,8 @@
 
   <section class="description">
     
+<p>This class provides functionality for processing text using a topic <a href="TopicModelProcessor.html#attribute-i-model"><code>model</code></a>.</p>
+
   </section>
 
   <section id="5Buntitled-5D" class="documentation-section">
@@ -111,7 +113,7 @@
         </div>
 
         <div class="method-description">
-        
+        <p>The Tomoto::LDA <a href="TopicModelProcessor.html#attribute-i-model"><code>model</code></a> object.</p>
         </div>
       </div>
       <div id="attribute-i-model_params" class="method-detail">
@@ -121,7 +123,7 @@
         </div>
 
         <div class="method-description">
-        
+        <p>The parameters for the topic <a href="TopicModelProcessor.html#attribute-i-model"><code>model</code></a>.</p>
         </div>
       </div>
       <div id="attribute-i-model_path" class="method-detail">
@@ -131,7 +133,7 @@
         </div>
 
         <div class="method-description">
-        
+        <p>The path to the topic <a href="TopicModelProcessor.html#attribute-i-model"><code>model</code></a> file.</p>
         </div>
       </div>
     </section>
@@ -150,25 +152,27 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Initializes a <a href="TopicModelProcessor.html#method-c-new"><code>new</code></a> <a href="TopicModelProcessor.html"><code>TopicModelProcessor</code></a> instance.</p>
+
+<p>@return [void]</p>
             <div class="method-calls-super">
               Calls superclass method
               <a href="TextProcessor.html#method-c-new"><code>Flowbots::TextProcessor::new</code></a>
             </div>
 
           <div class="method-source-code" id="new-source">
-            <pre><span class="ruby-comment"># File lib/processors/TopicModelProcessor.rb, line 12</span>
+            <pre><span class="ruby-comment"># File lib/processors/TopicModelProcessor.rb, line 23</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">initialize</span>
   <span class="ruby-keyword">super</span>
   <span class="ruby-ivar">@model_params</span> = {
-    <span class="ruby-value">k:</span> <span class="ruby-value">20</span>,
-    <span class="ruby-value">tw:</span> <span class="ruby-value">:one</span>,
-    <span class="ruby-value">min_cf:</span> <span class="ruby-value">3</span>,
-    <span class="ruby-value">min_df:</span> <span class="ruby-value">2</span>,
-    <span class="ruby-value">rm_top:</span> <span class="ruby-value">4</span>,
-    <span class="ruby-value">alpha:</span> <span class="ruby-value">0.1</span>,
-    <span class="ruby-value">eta:</span> <span class="ruby-value">0.01</span>,
-    <span class="ruby-value">seed:</span> <span class="ruby-value">42</span>
+    <span class="ruby-value">k:</span> <span class="ruby-value">20</span>, <span class="ruby-comment"># Number of topics</span>
+    <span class="ruby-value">tw:</span> <span class="ruby-value">:one</span>, <span class="ruby-comment"># Topic weight</span>
+    <span class="ruby-value">min_cf:</span> <span class="ruby-value">3</span>, <span class="ruby-comment"># Minimum count for a word to be included in the vocabulary</span>
+    <span class="ruby-value">min_df:</span> <span class="ruby-value">2</span>, <span class="ruby-comment"># Minimum document frequency for a word to be included in the vocabulary</span>
+    <span class="ruby-value">rm_top:</span> <span class="ruby-value">4</span>, <span class="ruby-comment"># Number of top words to remove from the vocabulary</span>
+    <span class="ruby-value">alpha:</span> <span class="ruby-value">0.1</span>, <span class="ruby-comment"># Dirichlet prior parameter for the topic distribution</span>
+    <span class="ruby-value">eta:</span> <span class="ruby-value">0.01</span>, <span class="ruby-comment"># Dirichlet prior parameter for the word distribution</span>
+    <span class="ruby-value">seed:</span> <span class="ruby-value">42</span> <span class="ruby-comment"># Random seed for reproducibility</span>
   }
   <span class="ruby-ivar">@model_path</span> = <span class="ruby-constant">TOPIC_MODEL_PATH</span>
   <span class="ruby-ivar">@model</span> = <span class="ruby-keyword">nil</span>
@@ -194,15 +198,19 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Infers the topics for a given document.</p>
+
+<p>@param document [String] The document to infer topics for.</p>
+
+<p>@return [Hash] A hash containing the most probable topic, topic distribution, and top words for the document.</p>
 
           <div class="method-source-code" id="infer_topics-source">
-            <pre><span class="ruby-comment"># File lib/processors/TopicModelProcessor.rb, line 81</span>
+            <pre><span class="ruby-comment"># File lib/processors/TopicModelProcessor.rb, line 106</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">infer_topics</span>(<span class="ruby-identifier">document</span>)
   <span class="ruby-identifier">ensure_model_exists</span>
 
   <span class="ruby-identifier">doc</span> = <span class="ruby-ivar">@model</span>.<span class="ruby-identifier">make_doc</span>(<span class="ruby-identifier">document</span>.<span class="ruby-identifier">split</span>)
-  <span class="ruby-identifier">topic_dist</span>, <span class="ruby-identifier">_</span> = <span class="ruby-ivar">@model</span>.<span class="ruby-identifier">infer</span>(<span class="ruby-identifier">doc</span>)
+  <span class="ruby-identifier">topic_dist</span>, = <span class="ruby-ivar">@model</span>.<span class="ruby-identifier">infer</span>(<span class="ruby-identifier">doc</span>)
 
   <span class="ruby-keyword">return</span> {} <span class="ruby-keyword">if</span> <span class="ruby-identifier">topic_dist</span>.<span class="ruby-identifier">nil?</span>
 
@@ -210,9 +218,9 @@
   <span class="ruby-identifier">top_words</span> = <span class="ruby-ivar">@model</span>.<span class="ruby-identifier">topic_words</span>(<span class="ruby-identifier">most_probable_topic</span>, <span class="ruby-value">top_n:</span> <span class="ruby-value">10</span>)
 
   {
-    <span class="ruby-value">most_probable_topic:</span> <span class="ruby-identifier">most_probable_topic</span>,
+    <span class="ruby-value">most_probable_topic:</span>,
     <span class="ruby-value">topic_distribution:</span> <span class="ruby-identifier">topic_dist</span>.<span class="ruby-identifier">to_a</span>,
-    <span class="ruby-value">top_words:</span> <span class="ruby-identifier">top_words</span>
+    <span class="ruby-value">top_words:</span>
   }
 <span class="ruby-keyword">end</span></pre>
           </div>
@@ -229,10 +237,12 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Loads an existing topic <a href="TopicModelProcessor.html#attribute-i-model"><code>model</code></a> or creates a <a href="TopicModelProcessor.html#method-c-new"><code>new</code></a> one if it doesn’t exist.</p>
+
+<p>@return [void]</p>
 
           <div class="method-source-code" id="load_or_create_model-source">
-            <pre><span class="ruby-comment"># File lib/processors/TopicModelProcessor.rb, line 28</span>
+            <pre><span class="ruby-comment"># File lib/processors/TopicModelProcessor.rb, line 42</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">load_or_create_model</span>
   <span class="ruby-keyword">if</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exist?</span>(<span class="ruby-ivar">@model_path</span>)
     <span class="ruby-identifier">load_existing_model</span>
@@ -254,10 +264,14 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Trains a topic <a href="TopicModelProcessor.html#attribute-i-model"><code>model</code></a> using the provided documents.</p>
+
+<p>@param documents [Array] An array of documents to train the <a href="TopicModelProcessor.html#attribute-i-model"><code>model</code></a> on. @param iterations [Integer] The number of iterations to train the <a href="TopicModelProcessor.html#attribute-i-model"><code>model</code></a> for.</p>
+
+<p>@return [void]</p>
 
           <div class="method-source-code" id="train_model-source">
-            <pre><span class="ruby-comment"># File lib/processors/TopicModelProcessor.rb, line 36</span>
+            <pre><span class="ruby-comment"># File lib/processors/TopicModelProcessor.rb, line 56</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">train_model</span>(<span class="ruby-identifier">documents</span>, <span class="ruby-identifier">iterations</span>=<span class="ruby-value">100</span>)
   <span class="ruby-identifier">ensure_model_exists</span>
 
@@ -323,10 +337,12 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Creates a <a href="TopicModelProcessor.html#method-c-new"><code>new</code></a> topic <a href="TopicModelProcessor.html#attribute-i-model"><code>model</code></a> with the specified parameters.</p>
+
+<p>@return [void]</p>
 
           <div class="method-source-code" id="create_new_model-source">
-            <pre><span class="ruby-comment"># File lib/processors/TopicModelProcessor.rb, line 117</span>
+            <pre><span class="ruby-comment"># File lib/processors/TopicModelProcessor.rb, line 151</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_new_model</span>
   <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-string">&quot;Creating new model&quot;</span>
   <span class="ruby-keyword">begin</span>
@@ -351,10 +367,12 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Ensures that the topic <a href="TopicModelProcessor.html#attribute-i-model"><code>model</code></a> exists, loading or creating it if necessary.</p>
+
+<p>@return [void]</p>
 
           <div class="method-source-code" id="ensure_model_exists-source">
-            <pre><span class="ruby-comment"># File lib/processors/TopicModelProcessor.rb, line 101</span>
+            <pre><span class="ruby-comment"># File lib/processors/TopicModelProcessor.rb, line 129</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">ensure_model_exists</span>
   <span class="ruby-identifier">load_or_create_model</span> <span class="ruby-keyword">if</span> <span class="ruby-ivar">@model</span>.<span class="ruby-identifier">nil?</span>
 <span class="ruby-keyword">end</span></pre>
@@ -372,10 +390,12 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Loads an existing topic <a href="TopicModelProcessor.html#attribute-i-model"><code>model</code></a> from the specified path.</p>
+
+<p>@return [void]</p>
 
           <div class="method-source-code" id="load_existing_model-source">
-            <pre><span class="ruby-comment"># File lib/processors/TopicModelProcessor.rb, line 105</span>
+            <pre><span class="ruby-comment"># File lib/processors/TopicModelProcessor.rb, line 136</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">load_existing_model</span>
   <span class="ruby-constant">Flowbots</span><span class="ruby-operator">::</span><span class="ruby-constant">UI</span>.<span class="ruby-identifier">info</span> <span class="ruby-node">&quot;Loading existing model from #{@model_path}&quot;</span>
   <span class="ruby-keyword">begin</span>
@@ -401,10 +421,12 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Saves the topic <a href="TopicModelProcessor.html#attribute-i-model"><code>model</code></a> to the specified path.</p>
+
+<p>@return [void]</p>
 
           <div class="method-source-code" id="save_model-source">
-            <pre><span class="ruby-comment"># File lib/processors/TopicModelProcessor.rb, line 128</span>
+            <pre><span class="ruby-comment"># File lib/processors/TopicModelProcessor.rb, line 165</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">save_model</span>
   <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-node">&quot;Attempting to save model to #{TOPIC_MODEL_PATH}&quot;</span>
   <span class="ruby-constant">Flowbots</span><span class="ruby-operator">::</span><span class="ruby-constant">UI</span>.<span class="ruby-identifier">say</span>(<span class="ruby-value">:ok</span>, <span class="ruby-string">&quot;Attempting to save topic model&quot;</span>)

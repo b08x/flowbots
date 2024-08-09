@@ -119,17 +119,24 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Adds new topics to the <a href="Segment.html"><code>Segment</code></a> object.</p>
+
+<p>@param new_topics [Array] An array of new topic names.</p>
+
+<p>@return [void]</p>
 
           <div class="method-source-code" id="add_topics-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 136</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 215</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">add_topics</span>(<span class="ruby-identifier">new_topics</span>)
+  <span class="ruby-comment"># Iterates through each new topic name and creates a new Topic object.</span>
   <span class="ruby-identifier">new_topics</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">topic</span><span class="ruby-operator">|</span>
     <span class="ruby-keyword">next</span> <span class="ruby-keyword">if</span> <span class="ruby-constant">Topic</span>.<span class="ruby-identifier">find</span>(<span class="ruby-value">name:</span> <span class="ruby-identifier">word</span>).<span class="ruby-identifier">first</span>
 
     <span class="ruby-identifier">topic</span> = <span class="ruby-constant">Topic</span>.<span class="ruby-identifier">create</span>(<span class="ruby-value">name:</span> <span class="ruby-identifier">word</span>, <span class="ruby-value">segment:</span> <span class="ruby-keyword">self</span>)
     <span class="ruby-identifier">topics</span>.<span class="ruby-identifier">push</span>(<span class="ruby-identifier">topic</span>)
   <span class="ruby-keyword">end</span>
+
+  <span class="ruby-comment"># Saves the updated Segment object.</span>
   <span class="ruby-identifier">save</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
@@ -146,15 +153,22 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Adds new words to the <a href="Segment.html"><code>Segment</code></a> object.</p>
+
+<p>@param new_words [Array] An array of new word data.</p>
+
+<p>@return [void]</p>
 
           <div class="method-source-code" id="add_words-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 146</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 233</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">add_words</span>(<span class="ruby-identifier">new_words</span>)
+  <span class="ruby-comment"># Iterates through each new word data and creates a new Word object.</span>
   <span class="ruby-identifier">new_words</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">word_data</span><span class="ruby-operator">|</span>
     <span class="ruby-identifier">word</span> = <span class="ruby-constant">Word</span>.<span class="ruby-identifier">create</span>(<span class="ruby-identifier">word_data</span>.<span class="ruby-identifier">merge</span>(<span class="ruby-value">segment:</span> <span class="ruby-keyword">self</span>))
     <span class="ruby-identifier">words</span>.<span class="ruby-identifier">push</span>(<span class="ruby-identifier">word</span>)
   <span class="ruby-keyword">end</span>
+
+  <span class="ruby-comment"># Saves the updated Segment object.</span>
   <span class="ruby-identifier">save</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
@@ -171,10 +185,12 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Retrieves the text content of all words associated with the <a href="Segment.html"><code>Segment</code></a> object.</p>
+
+<p>@return [Array] An array of word texts.</p>
 
           <div class="method-source-code" id="retrieve_word_texts-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 158</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 254</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">retrieve_word_texts</span>
   <span class="ruby-identifier">retrieve_words</span>.<span class="ruby-identifier">map</span>(<span class="ruby-operator">&amp;</span><span class="ruby-value">:word</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -192,10 +208,12 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Retrieves all words associated with the <a href="Segment.html"><code>Segment</code></a> object.</p>
+
+<p>@return [Array] An array of <a href="Word.html"><code>Word</code></a> objects.</p>
 
           <div class="method-source-code" id="retrieve_words-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 154</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 247</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">retrieve_words</span>
   <span class="ruby-identifier">words</span>.<span class="ruby-identifier">to_a</span>
 <span class="ruby-keyword">end</span></pre>

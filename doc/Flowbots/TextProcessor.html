@@ -95,6 +95,8 @@
 
   <section class="description">
     
+<p>This class provides a base class for text processors in the <a href="../Flowbots.html"><code>Flowbots</code></a> application.</p>
+
   </section>
 
   <section id="5Buntitled-5D" class="documentation-section">
@@ -116,14 +118,23 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Initializes a <a href="TextProcessor.html#method-c-new"><code>new</code></a> <a href="TextProcessor.html"><code>TextProcessor</code></a> instance.</p>
+
+<p>@return [void]</p>
 
           <div class="method-source-code" id="new-source">
-            <pre><span class="ruby-comment"># File lib/processors/TextProcessor.rb, line 8</span>
+            <pre><span class="ruby-comment"># File lib/processors/TextProcessor.rb, line 13</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">initialize</span>
+  <span class="ruby-comment"># Logs a message indicating the start of initialization for the current class.</span>
   <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-node">&quot;Initializing #{self.class.name}&quot;</span>
+
+  <span class="ruby-comment"># Displays a success message to the user indicating the initialization of the current class.</span>
   <span class="ruby-constant">Flowbots</span><span class="ruby-operator">::</span><span class="ruby-constant">UI</span>.<span class="ruby-identifier">say</span>(<span class="ruby-value">:ok</span>, <span class="ruby-node">&quot;Initializing #{self.class.name}&quot;</span>)
+
+  <span class="ruby-comment"># Logs a message indicating the completion of initialization for the current class.</span>
   <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-node">&quot;#{self.class.name} initialization completed&quot;</span>
+
+  <span class="ruby-comment"># Displays a success message to the user indicating the completion of initialization for the current class.</span>
   <span class="ruby-constant">Flowbots</span><span class="ruby-operator">::</span><span class="ruby-constant">UI</span>.<span class="ruby-identifier">say</span>(<span class="ruby-value">:ok</span>, <span class="ruby-node">&quot;#{self.class.name} initialization completed&quot;</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
@@ -147,10 +158,16 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Processes the given text.</p>
+
+<p>This method must be implemented in subclasses.</p>
+
+<p>@param text [String] The text to be processed.</p>
+
+<p>@return [void] @raise [NotImplementedError] If the method is not implemented in a subclass.</p>
 
           <div class="method-source-code" id="process-source">
-            <pre><span class="ruby-comment"># File lib/processors/TextProcessor.rb, line 15</span>
+            <pre><span class="ruby-comment"># File lib/processors/TextProcessor.rb, line 35</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">process</span>(<span class="ruby-identifier">text</span>)
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">NotImplementedError</span>, <span class="ruby-node">&quot;#{self.class.name}#process must be implemented in subclass&quot;</span>
 <span class="ruby-keyword">end</span></pre>

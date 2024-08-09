@@ -130,8 +130,6 @@
             <pre><span class="ruby-comment"># File lib/components/WorkflowOrchestrator.rb, line 14</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">initialize</span>
   <span class="ruby-ivar">@agents</span> = {}
-  <span class="ruby-identifier">logger</span> = <span class="ruby-constant">Logger</span>.<span class="ruby-identifier">new</span>(<span class="ruby-constant">STDOUT</span>)
-  <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">level</span> = <span class="ruby-constant">Logger</span><span class="ruby-operator">::</span><span class="ruby-constant">DEBUG</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
         </div>
@@ -161,7 +159,7 @@
 <p>@return [void]</p>
 
           <div class="method-source-code" id="add_agent-source">
-            <pre><span class="ruby-comment"># File lib/components/WorkflowOrchestrator.rb, line 27</span>
+            <pre><span class="ruby-comment"># File lib/components/WorkflowOrchestrator.rb, line 25</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">add_agent</span>(<span class="ruby-identifier">role</span>, <span class="ruby-identifier">cartridge_file</span>, <span class="ruby-value">author:</span> <span class="ruby-string">&quot;@b08x&quot;</span>)
   <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;Adding agent: #{role}&quot;</span>
   <span class="ruby-identifier">cartridge_path</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-constant">CARTRIDGE_BASE_DIR</span>, <span class="ruby-identifier">author</span>, <span class="ruby-string">&quot;cartridges&quot;</span>, <span class="ruby-identifier">cartridge_file</span>)
@@ -193,7 +191,7 @@
 <p>@return [void]</p>
 
           <div class="method-source-code" id="cleanup-source">
-            <pre><span class="ruby-comment"># File lib/components/WorkflowOrchestrator.rb, line 108</span>
+            <pre><span class="ruby-comment"># File lib/components/WorkflowOrchestrator.rb, line 106</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">cleanup</span>
   <span class="ruby-comment"># Perform any necessary cleanup for the workflow</span>
   <span class="ruby-constant">Jongleur</span><span class="ruby-operator">::</span><span class="ruby-constant">API</span>.<span class="ruby-identifier">trap_quit_signals</span>
@@ -220,7 +218,7 @@
 <p>@return [void]</p>
 
           <div class="method-source-code" id="define_workflow-source">
-            <pre><span class="ruby-comment"># File lib/components/WorkflowOrchestrator.rb, line 45</span>
+            <pre><span class="ruby-comment"># File lib/components/WorkflowOrchestrator.rb, line 43</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">define_workflow</span>(<span class="ruby-identifier">workflow_definition</span>)
   <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-string">&quot;Defining workflow&quot;</span>
   <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;Workflow definition: #{workflow_definition}&quot;</span>
@@ -246,7 +244,7 @@
 <p>@return [void]</p>
 
           <div class="method-source-code" id="run_workflow-source">
-            <pre><span class="ruby-comment"># File lib/components/WorkflowOrchestrator.rb, line 55</span>
+            <pre><span class="ruby-comment"># File lib/components/WorkflowOrchestrator.rb, line 53</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">run_workflow</span>
   <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-string">&quot;Starting workflow execution&quot;</span>
   <span class="ruby-ivar">@running</span> = <span class="ruby-keyword">true</span>

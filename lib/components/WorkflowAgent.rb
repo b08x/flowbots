@@ -2,6 +2,43 @@
 # frozen_string_literal: true
 
 # This class represents an agent in a workflow.
+# Class representing an individual agent within a workflow in the Flowbots system.
+#
+# The WorkflowAgent is a key component in the text processing pipeline, responsible
+# for performing specific tasks as defined by its role and cartridge configuration.
+# It's designed to be flexible, maintainable, and integrated seamlessly with the
+# WorkflowOrchestrator.
+#
+# == Key Features
+#
+# * Role-based processing: Each agent has a specific role in the workflow.
+# * Cartridge-based configuration: Agent behavior is defined by a cartridge file.
+# * State management: Agents can save and load state from Redis.
+# * Real-time feedback: Provides visual feedback during processing.
+# * Logging: Includes logging for monitoring and debugging.
+#
+# == Relation to Workflow
+#
+# WorkflowAgent instances are typically:
+# 1. Created and managed by the WorkflowOrchestrator.
+# 2. Arranged in a sequence to form the text processing pipeline.
+# 3. Called upon by the orchestrator to process input and produce output.
+# 4. Capable of maintaining state across multiple workflow steps or runs.
+#
+# == Example Usage
+#
+#  ```ruby
+#   agent = WorkflowAgent.new("preprocessor", "path/to/cartridge.yml")
+#   result = agent.process(input_text)
+#   agent.save_state
+#  ```
+#
+# == Integration
+#
+# The WorkflowOrchestrator would typically:
+# * Initialize multiple WorkflowAgents for different stages of processing.
+# * Call the #process method of each agent in sequence.
+# * Manage the flow of data between agents in the workflow.
 class WorkflowAgent
   # The base directory for cartridges.
   CARTRIDGE_DIR = File.expand_path("../../nano-bots/cartridges", __dir__)

@@ -14,9 +14,10 @@
 * { padding: 0; margin: 0; }
 
 body {
-  background: #fafafa;
-  font-family: Lato, sans-serif;
+  background: darkslategray;
+  font-family: "Source Code Pro", monospace;
   font-weight: 300;
+  font-size: 1.25rem;
 }
 
 h1 span,
@@ -193,7 +194,7 @@ main {
   margin: 0 2em 5em 260px;
   padding-left: 20px;
   min-width: 340px;
-  font-size: 16px;
+  /* font-size: 1rem; */
 }
 
 main h1,
@@ -309,7 +310,7 @@ dl.note-list dt {
 
 /* @group Documentation Section */
 main {
-  color: #333;
+  color: black;
 }
 
 main > h1:first-child,
@@ -541,7 +542,7 @@ main .method-alias .method-heading {
 main .method-description,
 main .aliases {
   margin-top: 0.75em;
-  color: #333;
+  color: palegoldenrod;
 }
 
 main .aliases {
@@ -636,4 +637,3 @@ pre {
 }
 
 /* @end */
-

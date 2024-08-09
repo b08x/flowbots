@@ -94,13 +94,13 @@
       </header>
       <dl>
         <dt id="LOG_DIR">LOG_DIR
-        <dd>
+        <dd><p>The directory where log files will be stored.</p>
         <dt id="LOG_LEVEL">LOG_LEVEL
-        <dd>
+        <dd><p>The default log level.</p>
         <dt id="LOG_MAX_FILES">LOG_MAX_FILES
-        <dd>
+        <dd><p>The maximum number of log files to keep.</p>
         <dt id="LOG_MAX_SIZE">LOG_MAX_SIZE
-        <dd>
+        <dd><p>The maximum size of a log file in bytes.</p>
       </dl>
     </section>
 
@@ -119,15 +119,28 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Configures a <a href="Logging.html#method-i-logger"><code>logger</code></a> for the specified class and method.</p>
+
+<p>@param <em>classname [String] The name of the class. @param </em>methodname [String] The name of the method.</p>
+
+<p>@return [Logger] The configured <a href="Logging.html#method-i-logger"><code>logger</code></a> object.</p>
 
           <div class="method-source-code" id="configure_logger_for-source">
-            <pre><span class="ruby-comment"># File lib/logging.rb, line 33</span>
+            <pre><span class="ruby-comment"># File lib/logging.rb, line 69</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">configure_logger_for</span>(<span class="ruby-identifier">_classname</span>, <span class="ruby-identifier">_methodname</span>)
+  <span class="ruby-comment"># Get the current date in YYYY-MM-DD format.</span>
   <span class="ruby-identifier">current_date</span> = <span class="ruby-constant">Time</span>.<span class="ruby-identifier">now</span>.<span class="ruby-identifier">strftime</span>(<span class="ruby-string">&quot;%Y-%m-%d&quot;</span>)
+
+  <span class="ruby-comment"># Construct the log file path.</span>
   <span class="ruby-identifier">log_file</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-constant">LOG_DIR</span>, <span class="ruby-node">&quot;flowbots-#{current_date}.log&quot;</span>)
+
+  <span class="ruby-comment"># Create a new logger object.</span>
   <span class="ruby-identifier">logger</span> = <span class="ruby-constant">Logger</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">log_file</span>, <span class="ruby-constant">LOG_MAX_FILES</span>, <span class="ruby-constant">LOG_MAX_SIZE</span>)
+
+  <span class="ruby-comment"># Set the log level.</span>
   <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">level</span> = <span class="ruby-identifier">log_level</span>
+
+  <span class="ruby-comment"># Return the configured logger object.</span>
   <span class="ruby-identifier">logger</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
@@ -144,10 +157,12 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Returns the default log level.</p>
+
+<p>@return [Integer] The log level.</p>
 
           <div class="method-source-code" id="log_level-source">
-            <pre><span class="ruby-comment"># File lib/logging.rb, line 25</span>
+            <pre><span class="ruby-comment"># File lib/logging.rb, line 48</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">log_level</span>
   <span class="ruby-constant">Logger</span><span class="ruby-operator">::</span><span class="ruby-constant">DEBUG</span>
 <span class="ruby-keyword">end</span></pre>
@@ -165,11 +180,16 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Returns the <a href="Logging.html#method-i-logger"><code>logger</code></a> for the specified class and method.</p>
+
+<p>@param classname [String] The name of the class. @param methodname [String] The name of the method.</p>
+
+<p>@return [Logger] The <a href="Logging.html#method-i-logger"><code>logger</code></a> object.</p>
 
           <div class="method-source-code" id="logger_for-source">
-            <pre><span class="ruby-comment"># File lib/logging.rb, line 29</span>
+            <pre><span class="ruby-comment"># File lib/logging.rb, line 58</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">logger_for</span>(<span class="ruby-identifier">classname</span>, <span class="ruby-identifier">methodname</span>)
+  <span class="ruby-comment"># Get the logger for the specified class, or create a new one if it doesn&#39;t exist.</span>
   <span class="ruby-ivar">@loggers</span>[<span class="ruby-identifier">classname</span>] <span class="ruby-operator">||=</span> <span class="ruby-identifier">configure_logger_for</span>(<span class="ruby-identifier">classname</span>, <span class="ruby-identifier">methodname</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
@@ -193,15 +213,26 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Returns the <a href="Logging.html#method-i-logger"><code>logger</code></a> for the current class and method.</p>
+
+<p>@return [Logger] The <a href="Logging.html#method-i-logger"><code>logger</code></a> object.</p>
 
           <div class="method-source-code" id="logger-source">
-            <pre><span class="ruby-comment"># File lib/logging.rb, line 16</span>
+            <pre><span class="ruby-comment"># File lib/logging.rb, line 27</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">logger</span>
+  <span class="ruby-comment"># Get the name of the current class.</span>
   <span class="ruby-identifier">classname</span> = <span class="ruby-keyword">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">name</span>
-  <span class="ruby-identifier">methodname</span> = <span class="ruby-identifier">caller</span>[<span class="ruby-value">0</span>][<span class="ruby-regexp">/`([^&#39;]*)&#39;/</span>, <span class="ruby-value">1</span>]
+
+  <span class="ruby-comment"># Get the name of the current method.</span>
+  <span class="ruby-identifier">methodname</span> = <span class="ruby-identifier">caller</span>(<span class="ruby-value">1</span><span class="ruby-operator">..</span><span class="ruby-value">1</span>).<span class="ruby-identifier">first</span>[<span class="ruby-regexp">/`([^&#39;]*)&#39;/</span>, <span class="ruby-value">1</span>]
+
+  <span class="ruby-comment"># Get the logger for the current class, or create a new one if it doesn&#39;t exist.</span>
   <span class="ruby-ivar">@logger</span> <span class="ruby-operator">||=</span> <span class="ruby-constant">Logging</span>.<span class="ruby-identifier">logger_for</span>(<span class="ruby-identifier">classname</span>, <span class="ruby-identifier">methodname</span>)
-  <span class="ruby-ivar">@logger</span>.<span class="ruby-identifier">progname</span> = <span class="ruby-node">&quot;#{classname}\##{methodname}&quot;</span>
+
+  <span class="ruby-comment"># Set the progname of the logger to include the class and method name.</span>
+  <span class="ruby-ivar">@logger</span>.<span class="ruby-identifier">progname</span> = <span class="ruby-node">&quot;#{classname}##{methodname}&quot;</span>
+
+  <span class="ruby-comment"># Return the logger object.</span>
   <span class="ruby-ivar">@logger</span>
 <span class="ruby-keyword">end</span></pre>
           </div>

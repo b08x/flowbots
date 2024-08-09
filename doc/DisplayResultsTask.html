@@ -84,7 +84,6 @@
     <li ><a href="#method-i-execute">#execute</a>
     <li ><a href="#method-i-format_analysis">#format_analysis</a>
     <li ><a href="#method-i-format_file_info">#format_file_info</a>
-    <li ><a href="#method-i-retrieve_analysis_result">#retrieve_analysis_result</a>
     <li ><a href="#method-i-retrieve_current_textfile">#retrieve_current_textfile</a>
   </ul>
 </div>
@@ -99,6 +98,8 @@
 
   <section class="description">
     
+<p>This task displays the results of the text processing workflow.</p>
+
   </section>
 
   <section id="5Buntitled-5D" class="documentation-section">
@@ -120,16 +121,22 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Executes the task.</p>
+
+<p>@return [void]</p>
 
           <div class="method-source-code" id="execute-source">
-            <pre><span class="ruby-comment"># File lib/tasks/display_results_task.rb, line 7</span>
+            <pre><span class="ruby-comment"># File lib/tasks/display_results_task.rb, line 11</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">execute</span>
   <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-string">&quot;Starting DisplayResultsTask&quot;</span>
 
+  <span class="ruby-comment"># Retrieve the Textfile object from Redis.</span>
   <span class="ruby-identifier">textfile</span> = <span class="ruby-identifier">retrieve_current_textfile</span>
+
+  <span class="ruby-comment"># Retrieve the analysis result from the Textfile.</span>
   <span class="ruby-identifier">analysis_result</span> = <span class="ruby-identifier">textfile</span>.<span class="ruby-identifier">analysis</span>
 
+  <span class="ruby-comment"># Display the results in a formatted way.</span>
   <span class="ruby-identifier">display_results</span>(<span class="ruby-identifier">textfile</span>, <span class="ruby-identifier">analysis_result</span>)
 
   <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-string">&quot;DisplayResultsTask completed&quot;</span>
@@ -155,17 +162,26 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Displays the results of the text processing workflow.</p>
+
+<p>@param textfile [Textfile] The <a href="Textfile.html"><code>Textfile</code></a> object. @param analysis_result [String] The analysis result.</p>
+
+<p>@return [void]</p>
 
           <div class="method-source-code" id="display_results-source">
-            <pre><span class="ruby-comment"># File lib/tasks/display_results_task.rb, line 29</span>
+            <pre><span class="ruby-comment"># File lib/tasks/display_results_task.rb, line 49</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">display_results</span>(<span class="ruby-identifier">textfile</span>, <span class="ruby-identifier">analysis_result</span>)
+  <span class="ruby-comment"># Format the file information and analysis result.</span>
   <span class="ruby-identifier">file_info</span> = <span class="ruby-identifier">format_file_info</span>(<span class="ruby-identifier">textfile</span>)
   <span class="ruby-identifier">analysis</span> = <span class="ruby-identifier">format_analysis</span>(<span class="ruby-identifier">analysis_result</span>)
 
-  <span class="ruby-identifier">puts</span> <span class="ruby-constant">BoxUI</span>.<span class="ruby-identifier">side_by_side_boxes</span>(<span class="ruby-identifier">file_info</span>, <span class="ruby-identifier">analysis</span>,
-                                <span class="ruby-value">title1:</span> <span class="ruby-string">&quot;File Information&quot;</span>,
-                                <span class="ruby-value">title2:</span> <span class="ruby-string">&quot;LLM Analysis Result&quot;</span>)
+  <span class="ruby-comment"># Display the formatted information in side-by-side boxes.</span>
+  <span class="ruby-identifier">puts</span> <span class="ruby-constant">BoxUI</span>.<span class="ruby-identifier">side_by_side_boxes</span>(
+    <span class="ruby-identifier">file_info</span>,
+    <span class="ruby-identifier">analysis</span>,
+    <span class="ruby-value">title1:</span> <span class="ruby-string">&quot;File Information&quot;</span>,
+    <span class="ruby-value">title2:</span> <span class="ruby-string">&quot;LLM Analysis Result&quot;</span>
+  )
 <span class="ruby-keyword">end</span></pre>
           </div>
         </div>
@@ -181,10 +197,14 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Formats the analysis result for display.</p>
+
+<p>@param analysis_result [String] The analysis result.</p>
+
+<p>@return [String] The formatted analysis result.</p>
 
           <div class="method-source-code" id="format_analysis-source">
-            <pre><span class="ruby-comment"># File lib/tasks/display_results_task.rb, line 51</span>
+            <pre><span class="ruby-comment"># File lib/tasks/display_results_task.rb, line 86</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">format_analysis</span>(<span class="ruby-identifier">analysis_result</span>)
   <span class="ruby-comment"># If analysis_result is a hash or has a specific structure, format it accordingly</span>
   <span class="ruby-identifier">analysis_result</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">String</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">analysis_result</span> <span class="ruby-operator">:</span> <span class="ruby-constant">JSON</span>.<span class="ruby-identifier">pretty_generate</span>(<span class="ruby-identifier">analysis_result</span>)
@@ -203,14 +223,18 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Formats the file information for display.</p>
+
+<p>@param textfile [Textfile] The <a href="Textfile.html"><code>Textfile</code></a> object.</p>
+
+<p>@return [String] The formatted file information.</p>
 
           <div class="method-source-code" id="format_file_info-source">
-            <pre><span class="ruby-comment"># File lib/tasks/display_results_task.rb, line 38</span>
+            <pre><span class="ruby-comment"># File lib/tasks/display_results_task.rb, line 68</span>
   <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">format_file_info</span>(<span class="ruby-identifier">textfile</span>)
     <span class="ruby-identifier">&lt;&lt;~INFO</span>
 <span class="ruby-value">      Filename: #{textfile.name}
-      Topics: #{textfile.topics.to_a.map(&amp;:name).join(&quot;, &quot;)}
+      Topics: #{textfile.topics.to_a.map(&amp;:name).join(&#39;, &#39;)}
 
       Content Preview:
       #{textfile.content}
@@ -225,27 +249,6 @@
 
       </div>
 
-      <div id="method-i-retrieve_analysis_result" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">retrieve_analysis_result</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-
-        <div class="method-description">
-          
-
-          <div class="method-source-code" id="retrieve_analysis_result-source">
-            <pre><span class="ruby-comment"># File lib/tasks/display_results_task.rb, line 25</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">retrieve_analysis_result</span>
-  <span class="ruby-constant">JSON</span>.<span class="ruby-identifier">parse</span>(<span class="ruby-constant">Jongleur</span><span class="ruby-operator">::</span><span class="ruby-constant">WorkerTask</span>.<span class="ruby-identifier">class_variable_get</span>(<span class="ruby-value">:@@redis</span>).<span class="ruby-identifier">get</span>(<span class="ruby-string">&quot;analysis_result&quot;</span>))
-<span class="ruby-keyword">end</span></pre>
-          </div>
-        </div>
-
-
-      </div>
-
       <div id="method-i-retrieve_current_textfile" class="method-detail ">
         <div class="method-heading">
           <span class="method-name">retrieve_current_textfile</span><span
@@ -254,10 +257,12 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Retrieves the current <a href="Textfile.html"><code>Textfile</code></a> object from Redis.</p>
+
+<p>@return [Textfile] The <a href="Textfile.html"><code>Textfile</code></a> object representing the current file.</p>
 
           <div class="method-source-code" id="retrieve_current_textfile-source">
-            <pre><span class="ruby-comment"># File lib/tasks/display_results_task.rb, line 20</span>
+            <pre><span class="ruby-comment"># File lib/tasks/display_results_task.rb, line 31</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">retrieve_current_textfile</span>
   <span class="ruby-identifier">textfile_id</span> = <span class="ruby-constant">Jongleur</span><span class="ruby-operator">::</span><span class="ruby-constant">WorkerTask</span>.<span class="ruby-identifier">class_variable_get</span>(<span class="ruby-value">:@@redis</span>).<span class="ruby-identifier">get</span>(<span class="ruby-string">&quot;current_textfile_id&quot;</span>)
   <span class="ruby-constant">Textfile</span>[<span class="ruby-identifier">textfile_id</span>]

@@ -92,6 +92,8 @@
 
   <section class="description">
     
+<p>This task performs LLM analysis on a text file using a pre-trained model.</p>
+
   </section>
 
   <section id="5Buntitled-5D" class="documentation-section">
@@ -113,14 +115,17 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Executes the task.</p>
+
+<p>@return [void]</p>
 
           <div class="method-source-code" id="execute-source">
-            <pre><span class="ruby-comment"># File lib/tasks/llm_analysis_task.rb, line 6</span>
+            <pre><span class="ruby-comment"># File lib/tasks/llm_analysis_task.rb, line 9</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">execute</span>
   <span class="ruby-constant">Flowbots</span><span class="ruby-operator">::</span><span class="ruby-constant">UI</span>.<span class="ruby-identifier">info</span> <span class="ruby-string">&quot;Starting LLMAnalysisTask&quot;</span>
 
   <span class="ruby-keyword">begin</span>
+    <span class="ruby-comment"># Create a new WorkflowAgent instance for the &quot;ironically_literal&quot; agent.</span>
     <span class="ruby-identifier">agent</span> = <span class="ruby-constant">WorkflowAgent</span>.<span class="ruby-identifier">new</span>(
       <span class="ruby-string">&quot;ironically_literal&quot;</span>,
       <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-constant">CARTRIDGE_DIR</span>, <span class="ruby-string">&quot;@b08x&quot;</span>, <span class="ruby-string">&quot;cartridges&quot;</span>, <span class="ruby-string">&quot;assistants/nlp-techniques-and-tools.yml&quot;</span>)
@@ -128,27 +133,33 @@
 
     <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-string">&quot;Created WorkflowAgent instance&quot;</span>
 
+    <span class="ruby-comment"># Load the agent&#39;s state from Redis.</span>
     <span class="ruby-identifier">agent</span>.<span class="ruby-identifier">load_state</span>
     <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-string">&quot;Loaded agent state&quot;</span>
 
+    <span class="ruby-comment"># Retrieve the Textfile object, its content, metadata, and NLP results.</span>
     <span class="ruby-identifier">textfile</span> = <span class="ruby-identifier">retrieve_current_textfile</span>
     <span class="ruby-identifier">content</span> = <span class="ruby-identifier">textfile</span>.<span class="ruby-identifier">preprocessed_content</span>
     <span class="ruby-identifier">metadata</span> = <span class="ruby-identifier">textfile</span>.<span class="ruby-identifier">metadata</span> <span class="ruby-operator">||</span> {}
     <span class="ruby-identifier">nlp_result</span> = <span class="ruby-identifier">retrieve_nlp_result</span>(<span class="ruby-identifier">textfile</span>)
 
+    <span class="ruby-comment"># Generate a prompt for the agent based on the retrieved information.</span>
     <span class="ruby-identifier">prompt</span> = <span class="ruby-identifier">generate_analysis_prompt</span>(<span class="ruby-identifier">textfile</span>, <span class="ruby-identifier">content</span>, <span class="ruby-identifier">metadata</span>, <span class="ruby-identifier">nlp_result</span>)
     <span class="ruby-identifier">analysis_result</span> = <span class="ruby-identifier">agent</span>.<span class="ruby-identifier">process</span>(<span class="ruby-identifier">prompt</span>)
 
     <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-string">&quot;Agent processing completed&quot;</span>
 
+    <span class="ruby-comment"># Save the agent&#39;s state to Redis.</span>
     <span class="ruby-identifier">agent</span>.<span class="ruby-identifier">save_state</span>
     <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-string">&quot;Saved agent state&quot;</span>
 
+    <span class="ruby-comment"># Store the analysis result in the Textfile.</span>
     <span class="ruby-identifier">store_analysis_result</span>(<span class="ruby-identifier">textfile</span>, <span class="ruby-identifier">analysis_result</span>)
     <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-string">&quot;Stored analysis result&quot;</span>
 
     <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-string">&quot;LLMAnalysisTask completed&quot;</span>
   <span class="ruby-keyword">rescue</span> <span class="ruby-constant">StandardError</span> <span class="ruby-operator">=&gt;</span> <span class="ruby-identifier">e</span>
+    <span class="ruby-comment"># Log an error message if an exception occurs during the task execution.</span>
     <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">error</span> <span class="ruby-node">&quot;Error in LLMAnalysisTask: #{e.message}&quot;</span>
     <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">error</span> <span class="ruby-identifier">e</span>.<span class="ruby-identifier">backtrace</span>.<span class="ruby-identifier">join</span>(<span class="ruby-string">&quot;\n&quot;</span>)
     <span class="ruby-identifier">raise</span>
@@ -175,16 +186,20 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Formats the NLP results for display in the prompt.</p>
+
+<p>@param nlp_result [Array] The NLP results for the segments of the <a href="Textfile.html"><code>Textfile</code></a>.</p>
+
+<p>@return [String] The formatted NLP results.</p>
 
           <div class="method-source-code" id="format_nlp_result-source">
-            <pre><span class="ruby-comment"># File lib/tasks/llm_analysis_task.rb, line 91</span>
+            <pre><span class="ruby-comment"># File lib/tasks/llm_analysis_task.rb, line 128</span>
   <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">format_nlp_result</span>(<span class="ruby-identifier">nlp_result</span>)
     <span class="ruby-identifier">nlp_result</span>.<span class="ruby-identifier">first</span>(<span class="ruby-value">10</span>).<span class="ruby-identifier">map</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">segment</span><span class="ruby-operator">|</span>
       <span class="ruby-identifier">&lt;&lt;~SEGMENT</span>
 <span class="ruby-value">        Segment: &quot;#{segment[:text]}&quot;
-        Parts of Speech: #{segment[:tagged][:pos].to_a.first(5).map { |word, pos| &quot;#{word}(#{pos})&quot; }.join(&quot;, &quot;)}
-        Named Entities: #{segment[:tagged][:ner].to_a.first(5).map { |word, ner| &quot;#{word}(#{ner})&quot; }.join(&quot;, &quot;)}
+        Parts of Speech: #{segment[:tagged][:pos].to_a.first(5).map { |word, pos| &quot;#{word}(#{pos})&quot; }.join(&#39;, &#39;)}
+        Named Entities: #{segment[:tagged][:ner].to_a.first(5).map { |word, ner| &quot;#{word}(#{ner})&quot; }.join(&#39;, &#39;)}
 </span><span class="ruby-identifier">      SEGMENT</span>
     <span class="ruby-keyword">end</span>.<span class="ruby-identifier">join</span>(<span class="ruby-string">&quot;\n&quot;</span>)
   <span class="ruby-keyword">end</span></pre>
@@ -202,10 +217,14 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Generates a prompt for the LLM analysis agent.</p>
+
+<p>@param textfile [Textfile] The <a href="Textfile.html"><code>Textfile</code></a> object. @param content [String] The preprocessed content of the <a href="Textfile.html"><code>Textfile</code></a>. @param metadata [Hash] The metadata of the <a href="Textfile.html"><code>Textfile</code></a>. @param nlp_result [Array] The NLP results for the segments of the <a href="Textfile.html"><code>Textfile</code></a>.</p>
+
+<p>@return [String] The prompt for the agent.</p>
 
           <div class="method-source-code" id="generate_analysis_prompt-source">
-            <pre><span class="ruby-comment"># File lib/tasks/llm_analysis_task.rb, line 68</span>
+            <pre><span class="ruby-comment"># File lib/tasks/llm_analysis_task.rb, line 100</span>
   <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">generate_analysis_prompt</span>(<span class="ruby-identifier">textfile</span>, <span class="ruby-identifier">content</span>, <span class="ruby-identifier">metadata</span>, <span class="ruby-identifier">nlp_result</span>)
     <span class="ruby-identifier">&lt;&lt;~PROMPT</span>
 <span class="ruby-value">      Greetings, Language Model! We have an exciting task for you today. We&#39;re analyzing a document, and we need your expertise to provide insights. Here&#39;s what we have:
@@ -242,10 +261,12 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Retrieves the current <a href="Textfile.html"><code>Textfile</code></a> object from Redis.</p>
+
+<p>@return [Textfile] The <a href="Textfile.html"><code>Textfile</code></a> object representing the current file.</p>
 
           <div class="method-source-code" id="retrieve_current_textfile-source">
-            <pre><span class="ruby-comment"># File lib/tasks/llm_analysis_task.rb, line 46</span>
+            <pre><span class="ruby-comment"># File lib/tasks/llm_analysis_task.rb, line 59</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">retrieve_current_textfile</span>
   <span class="ruby-identifier">textfile_id</span> = <span class="ruby-constant">Jongleur</span><span class="ruby-operator">::</span><span class="ruby-constant">WorkerTask</span>.<span class="ruby-identifier">class_variable_get</span>(<span class="ruby-value">:@@redis</span>).<span class="ruby-identifier">get</span>(<span class="ruby-string">&quot;current_textfile_id&quot;</span>)
   <span class="ruby-constant">Textfile</span>[<span class="ruby-identifier">textfile_id</span>]
@@ -264,10 +285,12 @@
         </div>
 
         <div class="method-description">
-          <p>def retrieve_preprocessed_content  Jongleur::WorkerTask.class_variable_get(:@@redis).get(“preprocessed_content”) end</p>
+          <p>Retrieves the file metadata from Redis.</p>
+
+<p>@return [Hash] The file metadata.</p>
 
           <div class="method-source-code" id="retrieve_file_metadata-source">
-            <pre><span class="ruby-comment"># File lib/tasks/llm_analysis_task.rb, line 55</span>
+            <pre><span class="ruby-comment"># File lib/tasks/llm_analysis_task.rb, line 74</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">retrieve_file_metadata</span>
   <span class="ruby-constant">JSON</span>.<span class="ruby-identifier">parse</span>(<span class="ruby-constant">Jongleur</span><span class="ruby-operator">::</span><span class="ruby-constant">WorkerTask</span>.<span class="ruby-identifier">class_variable_get</span>(<span class="ruby-value">:@@redis</span>).<span class="ruby-identifier">get</span>(<span class="ruby-string">&quot;file_metadata&quot;</span>) <span class="ruby-operator">||</span> <span class="ruby-string">&quot;{}&quot;</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -285,10 +308,14 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Retrieves the NLP results for the segments of the <a href="Textfile.html"><code>Textfile</code></a>.</p>
+
+<p>@param textfile [Textfile] The <a href="Textfile.html"><code>Textfile</code></a> object.</p>
+
+<p>@return [Array] An array of NLP results for each segment.</p>
 
           <div class="method-source-code" id="retrieve_nlp_result-source">
-            <pre><span class="ruby-comment"># File lib/tasks/llm_analysis_task.rb, line 59</span>
+            <pre><span class="ruby-comment"># File lib/tasks/llm_analysis_task.rb, line 83</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">retrieve_nlp_result</span>(<span class="ruby-identifier">textfile</span>)
   <span class="ruby-identifier">textfile</span>.<span class="ruby-identifier">retrieve_segments</span>.<span class="ruby-identifier">map</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">segment</span><span class="ruby-operator">|</span>
     {
@@ -306,16 +333,20 @@
       <div id="method-i-store_analysis_result" class="method-detail ">
         <div class="method-heading">
           <span class="method-name">store_analysis_result</span><span
-            class="method-args">(textfile,result)</span>
+            class="method-args">(textfile, result)</span>
           <span class="method-click-advice">click to toggle source</span>
         </div>
 
         <div class="method-description">
-          
+          <p>Stores the analysis result in the <a href="Textfile.html"><code>Textfile</code></a>.</p>
+
+<p>@param textfile [Textfile] The <a href="Textfile.html"><code>Textfile</code></a> object. @param result [String] The analysis result from the LLM agent.</p>
+
+<p>@return [void]</p>
 
           <div class="method-source-code" id="store_analysis_result-source">
-            <pre><span class="ruby-comment"># File lib/tasks/llm_analysis_task.rb, line 101</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">store_analysis_result</span>(<span class="ruby-identifier">textfile</span>,<span class="ruby-identifier">result</span>)
+            <pre><span class="ruby-comment"># File lib/tasks/llm_analysis_task.rb, line 144</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">store_analysis_result</span>(<span class="ruby-identifier">textfile</span>, <span class="ruby-identifier">result</span>)
   <span class="ruby-identifier">textfile</span>.<span class="ruby-identifier">update</span>(<span class="ruby-value">analysis:</span> <span class="ruby-identifier">result</span>)
   <span class="ruby-comment"># Jongleur::WorkerTask.class_variable_get(:@@redis).set(&quot;analysis_result&quot;, result.to_json)</span>
 <span class="ruby-keyword">end</span></pre>

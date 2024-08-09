@@ -98,6 +98,8 @@
 
   <section class="description">
     
+<p>This class provides a command-line interface (<a href="CLI.html"><code>CLI</code></a>) for interacting with the <a href="../Flowbots.html"><code>Flowbots</code></a> application.</p>
+
   </section>
 
   <section id="5Buntitled-5D" class="documentation-section">
@@ -119,10 +121,12 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Defines whether the <a href="CLI.html"><code>CLI</code></a> should exit with a non-zero status code when an error occurs.</p>
+
+<p>@return [Boolean] True if the <a href="CLI.html"><code>CLI</code></a> should exit on errors, false otherwise.</p>
 
           <div class="method-source-code" id="exit_on_failure-3F-source">
-            <pre><span class="ruby-comment"># File lib/cli.rb, line 8</span>
+            <pre><span class="ruby-comment"># File lib/cli.rb, line 13</span>
 <span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">exit_on_failure?</span>
   <span class="ruby-keyword">true</span>
 <span class="ruby-keyword">end</span></pre>
@@ -147,20 +151,27 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Processes a text file using the text processing workflow.</p>
+
+<p>@param file [String] The path to the text file.</p>
+
+<p>@return [void]</p>
 
           <div class="method-source-code" id="process_text-source">
-            <pre><span class="ruby-comment"># File lib/cli.rb, line 64</span>
+            <pre><span class="ruby-comment"># File lib/cli.rb, line 112</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">process_text</span>(<span class="ruby-identifier">file</span>)
   <span class="ruby-identifier">pastel</span> = <span class="ruby-constant">Pastel</span>.<span class="ruby-identifier">new</span>
 
+  <span class="ruby-comment"># Check if the specified file exists.</span>
   <span class="ruby-keyword">unless</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exist?</span>(<span class="ruby-identifier">file</span>)
     <span class="ruby-identifier">say</span> <span class="ruby-identifier">pastel</span>.<span class="ruby-identifier">red</span>(<span class="ruby-node">&quot;File not found: #{file}&quot;</span>)
     <span class="ruby-identifier">exit</span>
   <span class="ruby-keyword">end</span>
 
+  <span class="ruby-comment"># Display a message indicating the start of text processing.</span>
   <span class="ruby-identifier">say</span> <span class="ruby-identifier">pastel</span>.<span class="ruby-identifier">green</span>(<span class="ruby-node">&quot;Processing file: #{file}&quot;</span>)
 
+  <span class="ruby-comment"># Process the text file and handle potential errors.</span>
   <span class="ruby-keyword">begin</span>
     <span class="ruby-identifier">workflow</span> = <span class="ruby-constant">TextProcessingWorkflow</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">file</span>)
     <span class="ruby-identifier">workflow</span>.<span class="ruby-identifier">run</span>
@@ -183,20 +194,27 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Trains a topic model using text files in the specified folder.</p>
+
+<p>@param folder [String] The path to the folder containing the text files.</p>
+
+<p>@return [void]</p>
 
           <div class="method-source-code" id="train_topic_model-source">
-            <pre><span class="ruby-comment"># File lib/cli.rb, line 44</span>
+            <pre><span class="ruby-comment"># File lib/cli.rb, line 80</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">train_topic_model</span>(<span class="ruby-identifier">folder</span>)
   <span class="ruby-identifier">pastel</span> = <span class="ruby-constant">Pastel</span>.<span class="ruby-identifier">new</span>
 
+  <span class="ruby-comment"># Check if the specified folder exists.</span>
   <span class="ruby-keyword">unless</span> <span class="ruby-constant">Dir</span>.<span class="ruby-identifier">exist?</span>(<span class="ruby-identifier">folder</span>)
     <span class="ruby-identifier">say</span> <span class="ruby-identifier">pastel</span>.<span class="ruby-identifier">red</span>(<span class="ruby-node">&quot;Folder not found: #{folder}&quot;</span>)
     <span class="ruby-identifier">exit</span>
   <span class="ruby-keyword">end</span>
 
+  <span class="ruby-comment"># Display a message indicating the start of topic model training.</span>
   <span class="ruby-identifier">say</span> <span class="ruby-identifier">pastel</span>.<span class="ruby-identifier">green</span>(<span class="ruby-node">&quot;Training topic model using files in: #{folder}&quot;</span>)
 
+  <span class="ruby-comment"># Train the topic model and handle potential errors.</span>
   <span class="ruby-keyword">begin</span>
     <span class="ruby-identifier">workflow</span> = <span class="ruby-constant">TopicModelTrainerWorkflow</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">folder</span>)
     <span class="ruby-identifier">workflow</span>.<span class="ruby-identifier">run</span>
@@ -219,10 +237,12 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Displays the <a href="../Flowbots.html"><code>Flowbots</code></a> <a href="CLI.html#method-i-version"><code>version</code></a> and Ruby environment information.</p>
+
+<p>@return [void]</p>
 
           <div class="method-source-code" id="version-source">
-            <pre><span class="ruby-comment"># File lib/cli.rb, line 15</span>
+            <pre><span class="ruby-comment"># File lib/cli.rb, line 30</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">version</span>
   <span class="ruby-identifier">say</span> <span class="ruby-node">&quot;flowbots/#{VERSION} #{RUBY_DESCRIPTION}&quot;</span>
 <span class="ruby-keyword">end</span></pre>
@@ -240,19 +260,25 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Lists available <a href="CLI.html#method-i-workflows"><code>workflows</code></a>, allows the user to select one, and runs it.</p>
+
+<p>@return [void]</p>
 
           <div class="method-source-code" id="workflows-source">
-            <pre><span class="ruby-comment"># File lib/cli.rb, line 20</span>
+            <pre><span class="ruby-comment"># File lib/cli.rb, line 42</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">workflows</span>
   <span class="ruby-identifier">pastel</span> = <span class="ruby-constant">Pastel</span>.<span class="ruby-identifier">new</span>
 
+  <span class="ruby-comment"># Create a new Workflows instance.</span>
   <span class="ruby-identifier">workflows</span> = <span class="ruby-constant">Workflows</span>.<span class="ruby-identifier">new</span>
 
+  <span class="ruby-comment"># List and select a workflow from the available options.</span>
   <span class="ruby-identifier">selected_workflow</span> = <span class="ruby-identifier">workflows</span>.<span class="ruby-identifier">list_and_select</span>
 
+  <span class="ruby-comment"># Exit if no workflow is selected.</span>
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">selected_workflow</span>
 
+  <span class="ruby-comment"># Run the selected workflow and handle potential errors.</span>
   <span class="ruby-keyword">begin</span>
     <span class="ruby-identifier">workflows</span>.<span class="ruby-identifier">run</span>(<span class="ruby-identifier">selected_workflow</span>)
     <span class="ruby-identifier">say</span> <span class="ruby-identifier">pastel</span>.<span class="ruby-identifier">green</span>(<span class="ruby-string">&quot;Workflow completed successfully&quot;</span>)
@@ -263,6 +289,7 @@
   <span class="ruby-keyword">rescue</span> <span class="ruby-constant">StandardError</span> <span class="ruby-operator">=&gt;</span> <span class="ruby-identifier">e</span>
     <span class="ruby-constant">ExceptionHandler</span>.<span class="ruby-identifier">handle_exception</span>(<span class="ruby-keyword">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">name</span>, <span class="ruby-identifier">e</span>)
   <span class="ruby-keyword">ensure</span>
+    <span class="ruby-comment"># Shut down Flowbots after the workflow execution.</span>
     <span class="ruby-constant">Flowbots</span>.<span class="ruby-identifier">shutdown</span>
   <span class="ruby-keyword">end</span>
 <span class="ruby-keyword">end</span></pre>

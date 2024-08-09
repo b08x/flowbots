@@ -90,6 +90,8 @@
 
   <section class="description">
     
+<p>This class represents a workflow for processing text using topic modeling.</p>
+
   </section>
 
   <section id="5Buntitled-5D" class="documentation-section">
@@ -108,7 +110,7 @@
         </div>
 
         <div class="method-description">
-        
+        <p>The path to the input file.</p>
         </div>
       </div>
       <div id="attribute-i-text_file_id" class="method-detail">
@@ -118,7 +120,7 @@
         </div>
 
         <div class="method-description">
-        
+        <p>The ID of the <a href="../Textfile.html"><code>Textfile</code></a> object representing the input file.</p>
         </div>
       </div>
     </section>
@@ -137,12 +139,19 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Initializes a <a href="TextProcessingWorkflow.html#method-c-new"><code>new</code></a> <a href="TextProcessingWorkflow.html"><code>TextProcessingWorkflow</code></a> instance.</p>
+
+<p>@param <a href="TextProcessingWorkflow.html#attribute-i-input_file_path"><code>input_file_path</code></a> [String] The path to the input file.</p>
+
+<p>@return [void]</p>
 
           <div class="method-source-code" id="new-source">
-            <pre><span class="ruby-comment"># File lib/workflows/text_processing_workflow.rb, line 8</span>
+            <pre><span class="ruby-comment"># File lib/workflows/text_processing_workflow.rb, line 18</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">initialize</span>(<span class="ruby-identifier">input_file_path</span>=<span class="ruby-keyword">nil</span>)
-  <span class="ruby-ivar">@input_file_path</span> = <span class="ruby-identifier">input_file_path</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">prompt_for_file</span> <span class="ruby-comment"># Assign or prompt</span>
+  <span class="ruby-comment"># Assigns the input file path or prompts the user for it.</span>
+  <span class="ruby-ivar">@input_file_path</span> = <span class="ruby-identifier">input_file_path</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">prompt_for_file</span>
+
+  <span class="ruby-comment"># Creates a new WorkflowOrchestrator instance.</span>
   <span class="ruby-ivar">@orchestrator</span> = <span class="ruby-constant">WorkflowOrchestrator</span>.<span class="ruby-identifier">new</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
@@ -166,20 +175,28 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Runs the text processing workflow.</p>
+
+<p>@return [void]</p>
 
           <div class="method-source-code" id="run-source">
-            <pre><span class="ruby-comment"># File lib/workflows/text_processing_workflow.rb, line 13</span>
+            <pre><span class="ruby-comment"># File lib/workflows/text_processing_workflow.rb, line 29</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">run</span>
+  <span class="ruby-comment"># Displays a message indicating the start of the workflow.</span>
   <span class="ruby-constant">Flowbots</span><span class="ruby-operator">::</span><span class="ruby-constant">UI</span>.<span class="ruby-identifier">say</span>(<span class="ruby-value">:ok</span>, <span class="ruby-string">&quot;Setting Up Text Processing Workflow&quot;</span>)
   <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-string">&quot;Setting Up Text Processing Workflow&quot;</span>
 
+  <span class="ruby-comment"># Sets up the workflow graph and stores the input file path in Redis.</span>
   <span class="ruby-identifier">setup_workflow</span>
   <span class="ruby-identifier">store_input_file_path</span>
 
+  <span class="ruby-comment"># Displays a message indicating the start of the workflow execution.</span>
   <span class="ruby-constant">Flowbots</span><span class="ruby-operator">::</span><span class="ruby-constant">UI</span>.<span class="ruby-identifier">info</span> <span class="ruby-string">&quot;Running Text Processing Workflow&quot;</span>
+
+  <span class="ruby-comment"># Runs the workflow using the WorkflowOrchestrator.</span>
   <span class="ruby-ivar">@orchestrator</span>.<span class="ruby-identifier">run_workflow</span>
 
+  <span class="ruby-comment"># Displays a message indicating the completion of the workflow.</span>
   <span class="ruby-constant">Flowbots</span><span class="ruby-operator">::</span><span class="ruby-constant">UI</span>.<span class="ruby-identifier">say</span>(<span class="ruby-value">:ok</span>, <span class="ruby-string">&quot;Text Processing Workflow completed&quot;</span>)
   <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-string">&quot;Text Processing Workflow completed&quot;</span>
 <span class="ruby-keyword">end</span></pre>
@@ -204,15 +221,23 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Prompts the user for the input file path.</p>
+
+<p>@return [String] The path to the input file.</p>
 
           <div class="method-source-code" id="prompt_for_file-source">
-            <pre><span class="ruby-comment"># File lib/workflows/text_processing_workflow.rb, line 29</span>
+            <pre><span class="ruby-comment"># File lib/workflows/text_processing_workflow.rb, line 54</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">prompt_for_file</span>
+  <span class="ruby-comment"># Uses the `gum` command to prompt the user for a file.</span>
   <span class="ruby-identifier">get_file_path</span> = <span class="ruby-string">`gum file`</span>.<span class="ruby-identifier">chomp</span>.<span class="ruby-identifier">strip</span>
+
+  <span class="ruby-comment"># Constructs the full file path.</span>
   <span class="ruby-identifier">file_path</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-identifier">get_file_path</span>)
+
+  <span class="ruby-comment"># Raises an error if the file does not exist.</span>
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">FlowbotError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-string">&quot;File not found&quot;</span>, <span class="ruby-string">&quot;FILENOTFOUND&quot;</span>) <span class="ruby-keyword">unless</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exist?</span>(<span class="ruby-identifier">file_path</span>)
 
+  <span class="ruby-comment"># Returns the file path.</span>
   <span class="ruby-identifier">file_path</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
@@ -229,13 +254,17 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Sets up the workflow graph.</p>
+
+<p>@return [void]</p>
 
           <div class="method-source-code" id="setup_workflow-source">
-            <pre><span class="ruby-comment"># File lib/workflows/text_processing_workflow.rb, line 37</span>
+            <pre><span class="ruby-comment"># File lib/workflows/text_processing_workflow.rb, line 71</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">setup_workflow</span>
+  <span class="ruby-comment"># Logs a message indicating the start of workflow setup.</span>
   <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-string">&quot;Setting up workflow&quot;</span>
 
+  <span class="ruby-comment"># Defines the workflow graph, specifying the order of tasks.</span>
   <span class="ruby-identifier">workflow_graph</span> = {
     <span class="ruby-value">FileLoaderTask:</span> [<span class="ruby-value">:PreprocessTextFileTask</span>],
     <span class="ruby-value">PreprocessTextFileTask:</span> [<span class="ruby-value">:TextTaggerTask</span>],
@@ -248,7 +277,10 @@
     <span class="ruby-value">DisplayResultsTask:</span> []
   }
 
+  <span class="ruby-comment"># Defines the workflow using the WorkflowOrchestrator.</span>
   <span class="ruby-ivar">@orchestrator</span>.<span class="ruby-identifier">define_workflow</span>(<span class="ruby-identifier">workflow_graph</span>)
+
+  <span class="ruby-comment"># Logs a message indicating the completion of workflow setup.</span>
   <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-string">&quot;Workflow setup completed&quot;</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
@@ -265,14 +297,21 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Stores the input file path in Redis.</p>
+
+<p>@return [void]</p>
 
           <div class="method-source-code" id="store_input_file_path-source">
-            <pre><span class="ruby-comment"># File lib/workflows/text_processing_workflow.rb, line 56</span>
+            <pre><span class="ruby-comment"># File lib/workflows/text_processing_workflow.rb, line 98</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">store_input_file_path</span>
+  <span class="ruby-comment"># Stores the input file path in Redis.</span>
   <span class="ruby-constant">Jongleur</span><span class="ruby-operator">::</span><span class="ruby-constant">WorkerTask</span>.<span class="ruby-identifier">class_variable_get</span>(<span class="ruby-value">:@@redis</span>).<span class="ruby-identifier">set</span>(<span class="ruby-string">&quot;input_file_path&quot;</span>, <span class="ruby-ivar">@input_file_path</span>)
+
+  <span class="ruby-comment"># Loads the input file using the FileLoader.</span>
   <span class="ruby-identifier">file_loader</span> = <span class="ruby-constant">Flowbots</span><span class="ruby-operator">::</span><span class="ruby-constant">FileLoader</span>.<span class="ruby-identifier">new</span>(<span class="ruby-ivar">@input_file_path</span>)
   <span class="ruby-identifier">textfile</span> = <span class="ruby-identifier">file_loader</span>.<span class="ruby-identifier">file_data</span>
+
+  <span class="ruby-comment"># Stores the Textfile ID in Redis.</span>
   <span class="ruby-constant">Jongleur</span><span class="ruby-operator">::</span><span class="ruby-constant">WorkerTask</span>.<span class="ruby-identifier">class_variable_get</span>(<span class="ruby-value">:@@redis</span>).<span class="ruby-identifier">set</span>(<span class="ruby-string">&quot;current_textfile_id&quot;</span>, <span class="ruby-identifier">textfile</span>.<span class="ruby-identifier">id</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>

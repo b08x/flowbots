@@ -86,6 +86,8 @@
 
   <section class="description">
     
+<p>This task trains a topic model using filtered segments from multiple batches.</p>
+
   </section>
 
   <section id="5Buntitled-5D" class="documentation-section">
@@ -107,28 +109,45 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Executes the task.</p>
+
+<p>@return [void]</p>
 
           <div class="method-source-code" id="execute-source">
-            <pre><span class="ruby-comment"># File lib/tasks/train_topic_model_task.rb, line 5</span>
+            <pre><span class="ruby-comment"># File lib/tasks/train_topic_model_task.rb, line 9</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">execute</span>
+  <span class="ruby-comment"># Retrieve the current batch ID from Redis.</span>
   <span class="ruby-identifier">batch_id</span> = <span class="ruby-constant">Jongleur</span><span class="ruby-operator">::</span><span class="ruby-constant">WorkerTask</span>.<span class="ruby-identifier">class_variable_get</span>(<span class="ruby-value">:@@redis</span>).<span class="ruby-identifier">get</span>(<span class="ruby-string">&quot;current_batch_id&quot;</span>)
   <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-node">&quot;Processing TrainTopicModelTask for batch #{batch_id}&quot;</span>
 
+  <span class="ruby-comment"># Retrieve filtered segments from Redis.</span>
   <span class="ruby-identifier">filtered_segments</span> = <span class="ruby-constant">JSON</span>.<span class="ruby-identifier">parse</span>(<span class="ruby-constant">Jongleur</span><span class="ruby-operator">::</span><span class="ruby-constant">WorkerTask</span>.<span class="ruby-identifier">class_variable_get</span>(<span class="ruby-value">:@@redis</span>).<span class="ruby-identifier">get</span>(<span class="ruby-string">&quot;filtered_segments&quot;</span>) <span class="ruby-operator">||</span> <span class="ruby-string">&quot;[]&quot;</span>)
 
-  <span class="ruby-comment"># Accumulate filtered segments across batches</span>
+  <span class="ruby-comment"># Accumulate filtered segments across batches.</span>
   <span class="ruby-identifier">all_filtered_segments</span> = <span class="ruby-constant">JSON</span>.<span class="ruby-identifier">parse</span>(<span class="ruby-constant">Jongleur</span><span class="ruby-operator">::</span><span class="ruby-constant">WorkerTask</span>.<span class="ruby-identifier">class_variable_get</span>(<span class="ruby-value">:@@redis</span>).<span class="ruby-identifier">get</span>(<span class="ruby-string">&quot;all_filtered_segments&quot;</span>) <span class="ruby-operator">||</span> <span class="ruby-string">&quot;[]&quot;</span>)
   <span class="ruby-identifier">all_filtered_segments</span> <span class="ruby-operator">+=</span> <span class="ruby-identifier">filtered_segments</span>
   <span class="ruby-constant">Jongleur</span><span class="ruby-operator">::</span><span class="ruby-constant">WorkerTask</span>.<span class="ruby-identifier">class_variable_get</span>(<span class="ruby-value">:@@redis</span>).<span class="ruby-identifier">set</span>(<span class="ruby-string">&quot;all_filtered_segments&quot;</span>, <span class="ruby-identifier">all_filtered_segments</span>.<span class="ruby-identifier">to_json</span>)
 
-  <span class="ruby-comment"># Only train the model on the last batch</span>
-  <span class="ruby-keyword">if</span> <span class="ruby-identifier">batch_id</span>.<span class="ruby-identifier">end_with?</span>(<span class="ruby-node">&quot;_#{(Dir.glob(File.join(@input_folder, &quot;*.txt&quot;)).count.to_f / Flowbots::TopicModelTrainerWorkflow::BATCH_SIZE).ceil}&quot;</span>)
+  <span class="ruby-comment"># Only train the model on the last batch.</span>
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">batch_id</span>.<span class="ruby-identifier">end_with?</span>(
+    <span class="ruby-node">&quot;_#{(Dir.glob(
+      File.join(
+        @input_folder,
+        &#39;*.txt&#39;
+      )
+    ).count.to_f / Flowbots::TopicModelTrainerWorkflow::BATCH_SIZE).ceil}&quot;</span>
+  )
+    <span class="ruby-comment"># Create an instance of the TopicModelProcessor.</span>
     <span class="ruby-identifier">topic_processor</span> = <span class="ruby-constant">Flowbots</span><span class="ruby-operator">::</span><span class="ruby-constant">TopicModelProcessor</span>.<span class="ruby-identifier">instance</span>
+
+    <span class="ruby-comment"># Train the topic model using the accumulated filtered segments.</span>
     <span class="ruby-identifier">topic_processor</span>.<span class="ruby-identifier">train_model</span>(<span class="ruby-identifier">all_filtered_segments</span>)
+
+    <span class="ruby-comment"># Log and display a success message.</span>
     <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-string">&quot;Topic model training completed for all batches&quot;</span>
     <span class="ruby-constant">Flowbots</span><span class="ruby-operator">::</span><span class="ruby-constant">UI</span>.<span class="ruby-identifier">say</span>(<span class="ruby-value">:ok</span>, <span class="ruby-string">&quot;Topic model training completed for all batches&quot;</span>)
   <span class="ruby-keyword">else</span>
+    <span class="ruby-comment"># Log and display a message indicating that filtered segments have been accumulated.</span>
     <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-node">&quot;Accumulated filtered segments for batch #{batch_id}&quot;</span>
     <span class="ruby-constant">Flowbots</span><span class="ruby-operator">::</span><span class="ruby-constant">UI</span>.<span class="ruby-identifier">say</span>(<span class="ruby-value">:ok</span>, <span class="ruby-node">&quot;Accumulated filtered segments for batch #{batch_id}&quot;</span>)
   <span class="ruby-keyword">end</span>

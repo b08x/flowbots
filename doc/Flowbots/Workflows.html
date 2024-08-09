@@ -93,6 +93,8 @@
 
   <section class="description">
     
+<p>This class manages workflows in the <a href="../Flowbots.html"><code>Flowbots</code></a> application.</p>
+
   </section>
 
   <section id="5Buntitled-5D" class="documentation-section">
@@ -114,10 +116,12 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Initializes a <a href="Workflows.html#method-c-new"><code>new</code></a> <a href="Workflows.html"><code>Workflows</code></a> instance.</p>
+
+<p>@return [void]</p>
 
           <div class="method-source-code" id="new-source">
-            <pre><span class="ruby-comment"># File lib/workflows.rb, line 7</span>
+            <pre><span class="ruby-comment"># File lib/workflows.rb, line 10</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">initialize</span>
   <span class="ruby-ivar">@prompt</span> = <span class="ruby-constant">TTY</span><span class="ruby-operator">::</span><span class="ruby-constant">Prompt</span>.<span class="ruby-identifier">new</span>
 <span class="ruby-keyword">end</span></pre>
@@ -142,10 +146,12 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Loads all workflow files from the WORKFLOW_DIR directory.</p>
+
+<p>@return [void]</p>
 
           <div class="method-source-code" id="load_workflows-source">
-            <pre><span class="ruby-comment"># File lib/workflows.rb, line 36</span>
+            <pre><span class="ruby-comment"># File lib/workflows.rb, line 50</span>
 <span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">load_workflows</span>
   <span class="ruby-identifier">workflows_to_load</span> = {}
   <span class="ruby-identifier">user_workflow_dir</span> = <span class="ruby-keyword">if</span> <span class="ruby-constant">IN_CONTAINER</span>
@@ -163,7 +169,7 @@
       <span class="ruby-identifier">workflows_to_load</span>[<span class="ruby-constant">File</span>.<span class="ruby-identifier">basename</span>(<span class="ruby-identifier">file</span>)] = <span class="ruby-identifier">file</span>
     <span class="ruby-keyword">end</span>
   <span class="ruby-keyword">end</span>
-  <span class="ruby-identifier">workflows_to_load</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">_workflow_name</span>, <span class="ruby-identifier">file</span><span class="ruby-operator">|</span>
+  <span class="ruby-identifier">workflows_to_load</span>.<span class="ruby-identifier">each_value</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">file</span><span class="ruby-operator">|</span>
     <span class="ruby-keyword">begin</span>
       <span class="ruby-identifier">require</span> <span class="ruby-identifier">file</span>
     <span class="ruby-keyword">rescue</span> <span class="ruby-constant">StandardError</span> <span class="ruby-operator">=&gt;</span> <span class="ruby-identifier">e</span>
@@ -195,10 +201,12 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Lists available workflows and allows the user to select one.</p>
+
+<p>@return [String, nil] The name of the selected workflow, or nil if no workflow is selected.</p>
 
           <div class="method-source-code" id="list_and_select-source">
-            <pre><span class="ruby-comment"># File lib/workflows.rb, line 11</span>
+            <pre><span class="ruby-comment"># File lib/workflows.rb, line 17</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">list_and_select</span>
   <span class="ruby-identifier">workflows</span> = <span class="ruby-identifier">get_workflows</span>
   <span class="ruby-identifier">display_workflows</span>(<span class="ruby-identifier">workflows</span>)
@@ -218,10 +226,14 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Runs the specified workflow.</p>
+
+<p>@param workflow_name [String] The name of the workflow to <a href="Workflows.html#method-i-run"><code>run</code></a>.</p>
+
+<p>@return [void]</p>
 
           <div class="method-source-code" id="run-source">
-            <pre><span class="ruby-comment"># File lib/workflows.rb, line 17</span>
+            <pre><span class="ruby-comment"># File lib/workflows.rb, line 28</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">run</span>(<span class="ruby-identifier">workflow_name</span>)
   <span class="ruby-identifier">workflow_file</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-constant">WORKFLOW_DIR</span>, <span class="ruby-node">&quot;#{workflow_name}.rb&quot;</span>)
 
@@ -259,10 +271,14 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Displays a list of available workflows in a table format.</p>
+
+<p>@param workflows [Array] An array of workflow names and descriptions.</p>
+
+<p>@return [void]</p>
 
           <div class="method-source-code" id="display_workflows-source">
-            <pre><span class="ruby-comment"># File lib/workflows.rb, line 73</span>
+            <pre><span class="ruby-comment"># File lib/workflows.rb, line 95</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">display_workflows</span>(<span class="ruby-identifier">workflows</span>)
   <span class="ruby-keyword">if</span> <span class="ruby-identifier">workflows</span>.<span class="ruby-identifier">empty?</span>
     <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">warn</span> <span class="ruby-node">&quot;No workflows found in #{WORKFLOW_DIR}&quot;</span>
@@ -290,10 +306,14 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Extracts the description of a workflow from its file.</p>
+
+<p>@param file [String] The path to the workflow file.</p>
+
+<p>@return [String] The workflow description.</p>
 
           <div class="method-source-code" id="extract_workflow_description-source">
-            <pre><span class="ruby-comment"># File lib/workflows.rb, line 92</span>
+            <pre><span class="ruby-comment"># File lib/workflows.rb, line 124</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">extract_workflow_description</span>(<span class="ruby-identifier">file</span>)
   <span class="ruby-identifier">first_line</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">open</span>(<span class="ruby-identifier">file</span>, <span class="ruby-operator">&amp;</span><span class="ruby-value">:readline</span>).<span class="ruby-identifier">strip</span>
   <span class="ruby-identifier">first_line</span>.<span class="ruby-identifier">start_with?</span>(<span class="ruby-string">&quot;# Description:&quot;</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">first_line</span>[<span class="ruby-value">14</span><span class="ruby-operator">..</span><span class="ruby-value">-1</span>] <span class="ruby-operator">:</span> <span class="ruby-string">&quot;No description available&quot;</span>
@@ -312,10 +332,12 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Retrieves a list of available workflows.</p>
+
+<p>@return [Array] An array of workflow names and descriptions.</p>
 
           <div class="method-source-code" id="get_workflows-source">
-            <pre><span class="ruby-comment"># File lib/workflows.rb, line 65</span>
+            <pre><span class="ruby-comment"># File lib/workflows.rb, line 82</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">get_workflows</span>
   <span class="ruby-constant">Dir</span>.<span class="ruby-identifier">glob</span>(<span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-constant">WORKFLOW_DIR</span>, <span class="ruby-string">&quot;*.rb&quot;</span>)).<span class="ruby-identifier">map</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">file</span><span class="ruby-operator">|</span>
     <span class="ruby-identifier">name</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">basename</span>(<span class="ruby-identifier">file</span>, <span class="ruby-string">&quot;.rb&quot;</span>)
@@ -337,10 +359,14 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Prompts the user to select a workflow from the list.</p>
+
+<p>@param workflows [Array] An array of workflow names and descriptions.</p>
+
+<p>@return [String, nil] The name of the selected workflow, or nil if no workflow is selected.</p>
 
           <div class="method-source-code" id="select_workflow-source">
-            <pre><span class="ruby-comment"># File lib/workflows.rb, line 87</span>
+            <pre><span class="ruby-comment"># File lib/workflows.rb, line 114</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">select_workflow</span>(<span class="ruby-identifier">workflows</span>)
   <span class="ruby-identifier">workflow_names</span> = <span class="ruby-identifier">workflows</span>.<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">w</span><span class="ruby-operator">|</span> <span class="ruby-identifier">w</span>[<span class="ruby-value">0</span>] }
   <span class="ruby-ivar">@prompt</span>.<span class="ruby-identifier">select</span>(<span class="ruby-string">&quot;Choose a workflow to run:&quot;</span>, <span class="ruby-identifier">workflow_names</span>)

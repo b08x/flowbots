@@ -13,8 +13,6 @@ class WorkflowOrchestrator
   # @return [void]
   def initialize
     @agents = {}
-    logger = Logger.new(STDOUT)
-    logger.level = Logger::DEBUG
   end
 
   # Adds an agent to the orchestrator.

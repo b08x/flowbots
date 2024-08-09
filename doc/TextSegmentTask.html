@@ -88,6 +88,8 @@
 
   <section class="description">
     
+<p>This task segments the text content of a <a href="Textfile.html"><code>Textfile</code></a> into smaller units.</p>
+
   </section>
 
   <section id="5Buntitled-5D" class="documentation-section">
@@ -109,22 +111,29 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Executes the task.</p>
+
+<p>@return [void]</p>
 
           <div class="method-source-code" id="execute-source">
-            <pre><span class="ruby-comment"># File lib/tasks/text_segment_task.rb, line 5</span>
+            <pre><span class="ruby-comment"># File lib/tasks/text_segment_task.rb, line 9</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">execute</span>
   <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-string">&quot;Starting TextSegmentTask&quot;</span>
 
+  <span class="ruby-comment"># Retrieve the Textfile object from Redis.</span>
   <span class="ruby-identifier">textfile_id</span> = <span class="ruby-constant">Jongleur</span><span class="ruby-operator">::</span><span class="ruby-constant">WorkerTask</span>.<span class="ruby-identifier">class_variable_get</span>(<span class="ruby-value">:@@redis</span>).<span class="ruby-identifier">get</span>(<span class="ruby-string">&quot;current_textfile_id&quot;</span>)
   <span class="ruby-identifier">text_file</span> = <span class="ruby-constant">Textfile</span>[<span class="ruby-identifier">textfile_id</span>]
 
-  <span class="ruby-comment"># preprocessed_content = retrieve_preprocessed_content</span>
+  <span class="ruby-comment"># Retrieve the preprocessed content from the Textfile.</span>
   <span class="ruby-identifier">preprocessed_content</span> = <span class="ruby-identifier">text_file</span>.<span class="ruby-identifier">preprocessed_content</span>
 
+  <span class="ruby-comment"># Get an instance of the TextSegmentProcessor.</span>
   <span class="ruby-identifier">text_segmenter</span> = <span class="ruby-constant">Flowbots</span><span class="ruby-operator">::</span><span class="ruby-constant">TextSegmentProcessor</span>.<span class="ruby-identifier">instance</span>
+
+  <span class="ruby-comment"># Segment the preprocessed content using the TextSegmentProcessor.</span>
   <span class="ruby-identifier">segments</span> = <span class="ruby-identifier">text_segmenter</span>.<span class="ruby-identifier">process</span>(<span class="ruby-identifier">preprocessed_content</span>, { <span class="ruby-value">clean:</span> <span class="ruby-keyword">true</span> })
 
+  <span class="ruby-comment"># Store the segmented content in the Textfile.</span>
   <span class="ruby-identifier">store_segments</span>(<span class="ruby-identifier">text_file</span>, <span class="ruby-identifier">segments</span>)
 
   <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-string">&quot;TextSegmentTask completed&quot;</span>
@@ -150,10 +159,12 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Retrieves the preprocessed content from Redis.</p>
+
+<p>@return [String] The preprocessed content.</p>
 
           <div class="method-source-code" id="retrieve_preprocessed_content-source">
-            <pre><span class="ruby-comment"># File lib/tasks/text_segment_task.rb, line 24</span>
+            <pre><span class="ruby-comment"># File lib/tasks/text_segment_task.rb, line 36</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">retrieve_preprocessed_content</span>
   <span class="ruby-identifier">content</span> = <span class="ruby-constant">Jongleur</span><span class="ruby-operator">::</span><span class="ruby-constant">WorkerTask</span>.<span class="ruby-identifier">class_variable_get</span>(<span class="ruby-value">:@@redis</span>).<span class="ruby-identifier">get</span>(<span class="ruby-string">&quot;preprocessed_content&quot;</span>)
   <span class="ruby-keyword">if</span> <span class="ruby-identifier">content</span>.<span class="ruby-identifier">nil?</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">content</span>.<span class="ruby-identifier">empty?</span>
@@ -178,10 +189,14 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Stores the segmented content in the <a href="Textfile.html"><code>Textfile</code></a>.</p>
+
+<p>@param text_file [Textfile] The <a href="Textfile.html"><code>Textfile</code></a> object. @param segments [Array] The segmented content.</p>
+
+<p>@return [void]</p>
 
           <div class="method-source-code" id="store_segments-source">
-            <pre><span class="ruby-comment"># File lib/tasks/text_segment_task.rb, line 35</span>
+            <pre><span class="ruby-comment"># File lib/tasks/text_segment_task.rb, line 53</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">store_segments</span>(<span class="ruby-identifier">text_file</span>, <span class="ruby-identifier">segments</span>)
   <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-node">&quot;Storing #{segments.length} segments for file: #{text_file.name}&quot;</span>
   <span class="ruby-identifier">text_file</span>.<span class="ruby-identifier">add_segments</span>(<span class="ruby-identifier">segments</span>)
