@@ -13,7 +13,7 @@ class LlmAnalysisTask < Jongleur::WorkerTask
       # Create a new WorkflowAgent instance for the "ironically_literal" agent.
       agent = WorkflowAgent.new(
         "ironically_literal",
-        File.join(CARTRIDGE_DIR, "@b08x", "cartridges", "assistants/nlp-techniques-and-tools.yml")
+        File.join(CARTRIDGE_DIR, "@b08x", "cartridges", "assistants/steve.yml")
       )
 
       logger.debug "Created WorkflowAgent instance"
@@ -40,6 +40,9 @@ class LlmAnalysisTask < Jongleur::WorkerTask
 
       # Store the analysis result in the Textfile.
       store_analysis_result(textfile, analysis_result)
+
+      write_markdown_report(analysis_result)
+
       logger.debug "Stored analysis result"
 
       logger.info "LLMAnalysisTask completed"
@@ -144,5 +147,22 @@ class LlmAnalysisTask < Jongleur::WorkerTask
   def store_analysis_result(textfile, result)
     textfile.update(analysis: result)
     # Jongleur::WorkerTask.class_variable_get(:@@redis).set("analysis_result", result.to_json)
+  end
+
+  # Writes the exception report to a markdown file.
+  #
+  # @param report [String] The exception report.
+  # @param exception_details [Hash] A hash containing exception details.
+  #
+  # @return [void]
+  def write_markdown_report(result)
+    timestamp = Time.now.strftime("%Y%m%d_%H%M%S")
+    filename = "llm_analysis_task_#{timestamp}.md"
+    dir_path = File.expand_path("../../llm_analysis", __dir__)
+    FileUtils.mkdir_p(dir_path)
+    file_path = File.join(dir_path, filename)
+
+    File.write(file_path, result)
+    logger.info("Exception report written to: #{file_path}")
   end
 end

@@ -120,7 +120,7 @@ class Textfile < Ohm::Model
     new_topics.each do |word|
       topics.add(Topic.create(name: word))
     rescue StandardError => e
-      logger.warn "#{e.message}"
+      logger.warn e.message.to_s
     end
 
     # Saves the updated Textfile object.
@@ -215,9 +215,9 @@ class Segment < Ohm::Model
   def add_topics(new_topics)
     # Iterates through each new topic name and creates a new Topic object.
     new_topics.each do |topic|
-      next if Topic.find(name: word).first
+      next if Topic.find(name: topic).first
 
-      topic = Topic.create(name: word, segment: self)
+      Topic.create(name: topic, segment: self)
       topics.push(topic)
     end
 

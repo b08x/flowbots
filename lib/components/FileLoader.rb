@@ -19,6 +19,7 @@ module Flowbots
     # @return [void]
     def initialize(file_path)
       file_type = classify_file(file_path)
+
       extracted_text = extract_text(file_type, file_path)
       @file_data = store_file_data(file_path, extracted_text)
     end
@@ -31,8 +32,16 @@ module Flowbots
     #
     # @return [Symbol] The file type, e.g., :text, :pdf, :image, etc.
     def classify_file(file_path)
-      mime = MimeMagic.by_path(file_path)
-      case mime.type
+      begin
+        mime = MimeMagic.by_magic(file_path)
+      rescue StandardError => e
+        logger.debug "Unable to determine mime by magic alone, attempting by_path"
+        mime = MimeMagic.by_path(file_path)
+      end
+
+      case mime&.type
+      when /^json/
+        :json
       when /^text/
         :text
       when %r{^application/pdf}
@@ -69,12 +78,34 @@ module Flowbots
     # @return [String] The extracted text content.
     def extract_text(file_type, file_path)
       case file_type
+      when :json
+        extract_text_json(file_path)
       when :text
         File.read(file_path)
+      when :unknown
+        # File.read(file_path)
+        extract_text_json(file_path)
+        exit
       when :pdf
         parse_pdf(file_path)
       else
         raise NotImplementedError, "Unsupported file type: #{@file_type}"
+      end
+    end
+
+    def extract_text_json(file_path)
+      begin
+        json_data = JSON.parse(File.read(file_path))
+        text = json_data["results"]["channels"][0]['alternatives'][0]['transcript']
+        puts json_data
+        return text
+        exit
+      rescue JSON::ParserError => e
+        puts "Error parsing JSON: #{e.message}"
+        return nil
+      rescue StandardError => e
+        puts "An error occurred: #{e.message}"
+        return nil
       end
     end
 

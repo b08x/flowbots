@@ -23,6 +23,7 @@ module Flowbots
         begin
           report = exception_handler.process_exception(classname, exception)
         rescue APIError => e
+          Flowbots::UI.info "API exception in ExceptionAgent: #{e.message}"
           logger.error("API exception in ExceptionAgent: #{e.message}")
           report = exception_handler.fallback_exception_report(classname, exception)
         end
