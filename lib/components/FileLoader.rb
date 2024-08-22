@@ -40,8 +40,6 @@ module Flowbots
       end
 
       case mime&.type
-      when /^json/
-        :json
       when /^text/
         :text
       when %r{^application/pdf}
@@ -52,6 +50,8 @@ module Flowbots
         :video
       when /^audio/
         :audio
+      when /^json/
+        :json
       else
         :unknown
       end
@@ -78,14 +78,13 @@ module Flowbots
     # @return [String] The extracted text content.
     def extract_text(file_type, file_path)
       case file_type
-      when :json
-        extract_text_json(file_path)
+      # when :json
+      #   extract_text_json(file_path)
       when :text
         File.read(file_path)
       when :unknown
-        # File.read(file_path)
-        extract_text_json(file_path)
-        exit
+        File.read(file_path)
+        # extract_text_json(file_path)
       when :pdf
         parse_pdf(file_path)
       else

@@ -102,7 +102,7 @@ class LlmAnalysisTask < Jongleur::WorkerTask
   # @return [String] The prompt for the agent.
   def generate_analysis_prompt(textfile, content, metadata, nlp_result)
     <<~PROMPT
-      Greetings, Language Model! We have an exciting task for you today. We're analyzing a document, and we need your expertise to provide insights. Here's what we have:
+      Greetings, Language Model! We have an exciting task for you today. We're analyzing an AI Agent Chat session, and we need your expertise to provide insights. Here's what we have:
 
       Document Name: #{textfile.name}
 
