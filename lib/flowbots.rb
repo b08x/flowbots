@@ -50,6 +50,12 @@ class RedisConnection
   attr_reader :redis
 end
 
+begin
+  Ohm.redis = Redic.new("redis://localhost:6379/0")
+rescue Ohm::Error => e
+  Flowbots::ExceptionHandler.handle_exception(e)
+end
+
 # Orchestrator and Agent are core components of the Flowbots architecture.
 require_relative "components/WorkflowOrchestrator"
 require_relative "components/ExceptionHandler"
@@ -69,12 +75,6 @@ require_relative "processors/TopicModelProcessor"
 
 require "workflows"
 require "tasks"
-
-begin
-  Ohm.redis = Redic.new("redis://localhost:6379/0")
-rescue Ohm::Error => e
-  Flowbots::ExceptionHandler.handle_exception(e)
-end
 
 module Flowbots
   def self.shutdown
@@ -133,7 +133,8 @@ end
 Flowbots::UI.say(:ok, "Flowbots initialized")
 
 # Display a welcome message.
-puts UIBox.info_box("Hey! It's Flowbots!")
+puts Flowbots::UI::Box.info_box("Hey! It's Flowbots!")
+
 sleep 1
 
 # print TTY::Cursor.clear_screen_up

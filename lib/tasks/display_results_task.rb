@@ -40,7 +40,7 @@ class DisplayResultsTask < Task
       Topics: #{textfile.topics.to_a.map(&:name).join(', ')}
 
       Content Preview:
-      #{textfile.content[0..500]}...
+      #{textfile.content}
 
       Total Segments: #{textfile.segments.count}
       Total Words: #{textfile.lemmas.count}

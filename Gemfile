@@ -70,3 +70,7 @@ gem "scalpel", "~> 0.2.1"
 gem "gokdok", "~> 0.4.2"
 
 gem "shale", "~> 1.1"
+
+gem "paint", "~> 2.3"
+
+gem "color", "~> 1.8"

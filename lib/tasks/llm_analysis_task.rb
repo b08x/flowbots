@@ -3,6 +3,7 @@
 
 # This task performs LLM analysis on a text file using a pre-trained model.
 class LlmAnalysisTask < Jongleur::WorkerTask
+  include InputRetrieval
   # Executes the task.
   #
   # @return [void]
@@ -23,13 +24,14 @@ class LlmAnalysisTask < Jongleur::WorkerTask
       logger.debug "Loaded agent state"
 
       # Retrieve the Textfile object, its content, metadata, and NLP results.
-      textfile = retrieve_current_textfile
+      textfile = retrieve_input
       content = textfile.preprocessed_content
       metadata = textfile.metadata || {}
       nlp_result = retrieve_nlp_result(textfile)
 
       # Generate a prompt for the agent based on the retrieved information.
       prompt = generate_analysis_prompt(textfile, content, metadata, nlp_result)
+
       analysis_result = agent.process(prompt)
 
       logger.debug "Agent processing completed"
@@ -56,13 +58,17 @@ class LlmAnalysisTask < Jongleur::WorkerTask
 
   private
 
+  def retrieve_input
+    retrieve_textfile
+  end
+
   # Retrieves the current Textfile object from Redis.
   #
   # @return [Textfile] The Textfile object representing the current file.
-  def retrieve_current_textfile
-    textfile_id = Jongleur::WorkerTask.class_variable_get(:@@redis).get("current_textfile_id")
-    Textfile[textfile_id]
-  end
+  # def retrieve_current_textfile
+  #   textfile_id = Jongleur::WorkerTask.class_variable_get(:@@redis).get("current_textfile_id")
+  #   Textfile[textfile_id]
+  # end
 
   # # Retrieves the preprocessed content from Redis.
   # #
