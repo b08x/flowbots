@@ -134,6 +134,6 @@ Flowbots::UI.say(:ok, "Flowbots initialized")
 puts UIBox.info_box("Hey! It's Flowbots!")
 sleep 1
 
-print TTY::Cursor.clear_screen_up
+# print TTY::Cursor.clear_screen_up
 
 require "cli"

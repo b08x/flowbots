@@ -13,7 +13,7 @@ class LlmAnalysisTask < Jongleur::WorkerTask
       # Create a new WorkflowAgent instance for the "ironically_literal" agent.
       agent = WorkflowAgent.new(
         "ironically_literal",
-        File.join(CARTRIDGE_DIR, "@b08x", "cartridges", "assistants/steve.yml")
+        File.join(CARTRIDGE_DIR, "@b08x", "cartridges", "assistants/antisteve.yml")
       )
 
       logger.debug "Created WorkflowAgent instance"
@@ -100,9 +100,31 @@ class LlmAnalysisTask < Jongleur::WorkerTask
   # @param nlp_result [Array] The NLP results for the segments of the Textfile.
   #
   # @return [String] The prompt for the agent.
+  # def generate_analysis_prompt(textfile, content, metadata, nlp_result)
+  #   <<~PROMPT
+  #     Greetings, Here's what we have:
+
+  #     Document Name: #{textfile.name}
+
+  #     Content:
+  #     #{content}
+
+  #     NLP Analysis:
+  #     #{format_nlp_result(nlp_result)}
+
+  #     Based on this information, could you please:
+  #     1. Summarize the main points of the document.
+  #     2. Identify any key themes or concepts not captured in the metadata.
+  #     3. Suggest any additional metadata that might be relevant.
+  #     4. Provide any interesting insights or observations about the document's content or structure.
+  #     5. If applicable, note any potential areas for further research or analysis.
+
+  #     Please structure your response in a clear, concise manner. Thank you!
+  #   PROMPT
+  # end
   def generate_analysis_prompt(textfile, content, metadata, nlp_result)
     <<~PROMPT
-      Greetings, Language Model! We have an exciting task for you today. We're analyzing an AI Agent Chat session, and we need your expertise to provide insights. Here's what we have:
+      Greetings, Here's what we have:
 
       Document Name: #{textfile.name}
 
@@ -111,15 +133,6 @@ class LlmAnalysisTask < Jongleur::WorkerTask
 
       NLP Analysis:
       #{format_nlp_result(nlp_result)}
-
-      Based on this information, could you please:
-      1. Summarize the main points of the document.
-      2. Identify any key themes or concepts not captured in the metadata.
-      3. Suggest any additional metadata that might be relevant.
-      4. Provide any interesting insights or observations about the document's content or structure.
-      5. If applicable, note any potential areas for further research or analysis.
-
-      Please structure your response in a clear, concise manner. Thank you!
     PROMPT
   end
 
