@@ -26,7 +26,7 @@ class PreprocessTextFileTask < Task
     rescue StandardError => e
       logger.error "Error in grammar processing: #{e.message}"
       logger.error e.backtrace.join("\n")
-      Flowbots::UI.exception("#{e.message}")
+      UI.exception("#{e.message}")
       @textfile.update(preprocessed_content: "", metadata: {})
     end
 

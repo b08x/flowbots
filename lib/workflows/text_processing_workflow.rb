@@ -28,7 +28,7 @@ module Flowbots
     # @return [void]
     def run
       # Displays a message indicating the start of the workflow.
-      Flowbots::UI.say(:ok, "Setting Up Text Processing Workflow")
+      UI.say(:ok, "Setting Up Text Processing Workflow")
       logger.info "Setting Up Text Processing Workflow"
 
       # Sets up the workflow graph and stores the input file path in Redis.
@@ -36,13 +36,13 @@ module Flowbots
       store_input_file_path
 
       # Displays a message indicating the start of the workflow execution.
-      Flowbots::UI.info "Running Text Processing Workflow"
+      UI.info "Running Text Processing Workflow"
 
       # Runs the workflow using the WorkflowOrchestrator.
       @orchestrator.run_workflow
 
       # Displays a message indicating the completion of the workflow.
-      Flowbots::UI.say(:ok, "Text Processing Workflow completed")
+      UI.say(:ok, "Text Processing Workflow completed")
       logger.info "Text Processing Workflow completed"
     end
 

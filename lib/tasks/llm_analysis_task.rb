@@ -8,7 +8,7 @@ class LlmAnalysisTask < Jongleur::WorkerTask
   #
   # @return [void]
   def execute
-    Flowbots::UI.info "Starting LLMAnalysisTask"
+    UI.info "Starting LLMAnalysisTask"
 
     begin
       # Create a new WorkflowAgent instance for the "ironically_literal" agent.

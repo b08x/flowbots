@@ -57,7 +57,7 @@ module Flowbots
       ensure_model_exists
 
       logger.info "Training topic model"
-      Flowbots::UI.say(:ok, "Training topic model")
+      UI.say(:ok, "Training topic model")
 
       documents.each do |doc|
         words = doc.split if doc.instance_of?(String)
@@ -93,7 +93,7 @@ module Flowbots
       end
 
       logger.info "Model training completed"
-      Flowbots::UI.say(:ok, "Model training completed")
+      UI.say(:ok, "Model training completed")
 
       save_model
     end
@@ -134,11 +134,11 @@ module Flowbots
     #
     # @return [void]
     def load_existing_model
-      Flowbots::UI.info "Loading existing model from #{@model_path}"
+      UI.info "Loading existing model from #{@model_path}"
       begin
         @model = Tomoto::LDA.load(@model_path)
         logger.debug "Model loading completed"
-        Flowbots::UI.say(:ok, "Topic model loading completed")
+        UI.say(:ok, "Topic model loading completed")
       rescue StandardError => e
         logger.error "Failed to load existing model: #{e.message}"
         raise FlowbotError.new("Failed to load topic model", "MODEL_LOAD_ERROR", details: e.message)
@@ -164,7 +164,7 @@ module Flowbots
     # @return [void]
     def save_model
       logger.info "Attempting to save model to #{TOPIC_MODEL_PATH}"
-      Flowbots::UI.say(:ok, "Attempting to save topic model")
+      UI.say(:ok, "Attempting to save topic model")
 
       begin
         # Check if the directory exists, create it if it doesn't
@@ -192,7 +192,7 @@ module Flowbots
         @model.save(TOPIC_MODEL_PATH)
 
         logger.info "Model successfully saved to #{TOPIC_MODEL_PATH}"
-        Flowbots::UI.say(:ok, "Topic model saved successfully")
+        UI.say(:ok, "Topic model saved successfully")
       rescue Tomoto::Error => e
         logger.error "Tomoto gem error while saving model: #{e.message}"
         raise FlowbotError.new(

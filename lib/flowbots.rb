@@ -1,70 +1,38 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require "jongleur"
+# Standard library
 require "json"
+require "yaml"
+
+# Third-party gems
+require "jongleur"
 require "nano-bots"
+require "ohm"
+require "ohm/contrib"
 require "parallel"
 require "pry"
 require "pry-stack_explorer"
 require "redis"
 require "ruby-spacy"
+require "scalpel"
 require "thor"
 require "treetop"
-require "yaml"
-require "scalpel"
 
-module Flowbots
-  autoload :VERSION, "version"
-  autoload :ThorExt, "thor_ext"
-end
-
-require "ohm"
-require "ohm/contrib"
-
-require "logging"
+# Internal requires
+require_relative "flowbots/errors"
+require_relative "version"
+require_relative "thor_ext"
+require_relative "logging"
 
 include Logging
 
-require "ui"
-
-WORKFLOW_DIR = File.expand_path("workflows", __dir__)
-TASK_DIR = File.expand_path("tasks", __dir__)
-GRAMMAR_DIR = File.expand_path("grammars", __dir__)
-
-CARTRIDGE_DIR = File.expand_path("../nano-bots/cartridges/", __dir__)
-
-# Configuration for Redis connection
-REDIS_CONFIG = {
-  host: "#{ENV.fetch('REDIS_HOST', nil)}",
-  port: 6379,
-  db: 15
-}
-
-# Define a class to manage Redis connection
-class RedisConnection
-  def initialize
-    @redis = Redis.new(REDIS_CONFIG)
-  end
-
-  attr_reader :redis
-end
-
-begin
-  Ohm.redis = Redic.new("redis://localhost:6379/0")
-rescue Ohm::Error => e
-  Flowbots::ExceptionHandler.handle_exception(e)
-end
-
-# Orchestrator and Agent are core components of the Flowbots architecture.
 require_relative "components/WorkflowOrchestrator"
 require_relative "components/ExceptionHandler"
-
 require_relative "components/InputRetrieval"
 require_relative "components/RedisKeys"
 require_relative "components/OhmModels"
 require_relative "components/FileLoader"
-
 require_relative "processors/GrammarProcessor"
 require_relative "processors/TextProcessor"
 require_relative "processors/TextSegmentProcessor"
@@ -73,49 +41,30 @@ require_relative "processors/NLPProcessor"
 require_relative "processors/TextTaggerProcessor"
 require_relative "processors/TopicModelProcessor"
 
-require "workflows"
-require "tasks"
+require_relative "ui"
+require_relative "workflows"
+require_relative "tasks"
 
-module Flowbots
-  def self.shutdown
-    # Perform any necessary cleanup
-    Ohm.redis.quit
-    stop_running_workflows
-    logger.info "Flowbots shut down gracefully"
+WORKFLOW_DIR = File.expand_path("workflows", __dir__)
+TASK_DIR = File.expand_path("tasks", __dir__)
+GRAMMAR_DIR = File.expand_path("grammars", __dir__)
+CARTRIDGE_DIR = File.expand_path("../nano-bots/cartridges/", __dir__)
+
+# Define a class to manage Redis connection
+class RedisConnection
+  # Redis Configuration
+  REDIS_CONFIG = {
+    host: ENV.fetch("REDIS_HOST", "localhost"),
+    port: 6379,
+    db: 15
+  }.freeze
+
+  def initialize
+    @redis = Redis.new(REDIS_CONFIG)
   end
 
-  def self.stop_running_workflows
-    logger.info "All workflows stopped"
-  end
-
-  class FlowbotError < StandardError
-    attr_reader :error_code, :details
-
-    def initialize(message, error_code, details={})
-      super(message)
-      @error_code = error_code
-      @details = details
-    end
-  end
-
-  class WorkflowError < FlowbotError; end
-  class AgentError < FlowbotError; end
-  class ConfigurationError < FlowbotError; end
-  class APIError < FlowbotError; end
-  # Add more specific error classes as needed
+  attr_reader :redis
 end
-
-# from Monadic-Chat, MonadicApp class:
-# return true if we are inside a docker container
-def in_container?
-  File.file?("/.dockerenv")
-end
-
-IN_CONTAINER = in_container?
-BATCH = FalseClass
-
-Flowbots::Workflows.load_workflows
-Flowbots::Task.load_tasks
 
 # Jongleur::WorkerTask is a class that defines a task to be executed by Jongleur.
 class Jongleur::WorkerTask
@@ -129,14 +78,53 @@ class Jongleur::WorkerTask
   end
 end
 
-# Display a message indicating that Flowbots has been initialized.
-Flowbots::UI.say(:ok, "Flowbots initialized")
+module Flowbots
+  IN_CONTAINER = File.file?("/.dockerenv")
+  BATCH = false
 
-# Display a welcome message.
-puts Flowbots::UI::Box.info_box("Hey! It's Flowbots!")
+  class << self
+    def initialize
+      setup_redis
+      load_components
+      setup_ui
+    end
+
+    def shutdown
+      Ohm.redis.quit
+      stop_running_workflows
+      logger.info "Flowbots shut down gracefully"
+    end
+
+    private
+
+    def setup_redis
+      Ohm.redis = Redic.new("redis://localhost:6379/0")
+    rescue Ohm::Error => e
+      ExceptionHandler.handle_exception(e)
+    end
+
+    def load_components
+      Workflows.load_workflows
+      Task.load_tasks
+    end
+
+    def setup_ui
+      CLI::UI::StdoutRouter.enable
+    end
+
+    def stop_running_workflows
+      logger.info "All workflows stopped"
+    end
+  end
+end
+
+# Initialize Flowbots
+Flowbots.initialize
+
+# Display initialization message
+UI.say(:ok, "Flowbots initialized")
+puts UI::Box.info_box("Hey! It's Flowbots!")
 
 sleep 1
 
-# print TTY::Cursor.clear_screen_up
-
-require "cli"
+require_relative "cli"

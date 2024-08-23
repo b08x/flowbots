@@ -26,7 +26,7 @@ class DisplayResultsTask < Task
     file_info = format_file_info(textfile)
     analysis = format_analysis(analysis_result)
 
-    puts BoxUI.side_by_side_boxes(
+    puts UI::Box.comparison_box(
       file_info,
       analysis,
       title1: "File Information",

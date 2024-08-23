@@ -23,7 +23,7 @@ module Flowbots
         begin
           report = exception_handler.process_exception(classname, exception)
         rescue APIError => e
-          Flowbots::UI.info "API exception in ExceptionAgent: #{e.message}"
+          UI.info "API exception in ExceptionAgent: #{e.message}"
           logger.error("API exception in ExceptionAgent: #{e.message}")
           report = exception_handler.fallback_exception_report(classname, exception)
         end
@@ -52,7 +52,7 @@ module Flowbots
       def notify_exception(report)
         # Implement notification logic here
         # This could be sending an email, posting to a Slack channel, etc.
-        Flowbots::UI.exception report
+        UI.exception report
         logger.warn "Exception Notification:"
         logger.warn report
         logger.info "A detailed Markdown report has been generated in the exception_reports directory."

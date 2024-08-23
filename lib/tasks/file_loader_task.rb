@@ -19,7 +19,7 @@ class FileLoaderTask < Task
     store_textfile_id(text_file.id)
 
     logger.info "Loaded Textfile with ID: #{text_file.id}"
-    Flowbots::UI.say(:ok, "Loaded Textfile with ID: #{text_file.id}")
+    UI.say(:ok, "Loaded Textfile with ID: #{text_file.id}")
   end
 
   private

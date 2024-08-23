@@ -1,24 +1,6 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-class Task < Ohm::Model
-  include InputRetrieval
-
-  attribute :name
-  attribute :status
-  attribute :result
-  attribute :start_time
-  attribute :end_time
-  attribute :predecessors
-
-  index :name
-  index :status
-
-  def execute
-    raise NotImplementedError, "#{self.class.name}#execute must be implemented in subclass"
-  end
-end
-
 module Flowbots
   # This module encapsulates tasks used in Flowbots workflows.
   class Task

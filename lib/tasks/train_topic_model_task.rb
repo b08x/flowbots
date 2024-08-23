@@ -36,11 +36,11 @@ class TrainTopicModelTask < Jongleur::WorkerTask
 
       # Log and display a success message.
       logger.info "Topic model training completed for all batches"
-      Flowbots::UI.say(:ok, "Topic model training completed for all batches")
+      UI.say(:ok, "Topic model training completed for all batches")
     else
       # Log and display a message indicating that filtered segments have been accumulated.
       logger.info "Accumulated filtered segments for batch #{batch_id}"
-      Flowbots::UI.say(:ok, "Accumulated filtered segments for batch #{batch_id}")
+      UI.say(:ok, "Accumulated filtered segments for batch #{batch_id}")
     end
   end
 end

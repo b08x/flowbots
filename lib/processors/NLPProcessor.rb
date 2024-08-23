@@ -66,12 +66,12 @@ module Flowbots
 
         # Logs a message indicating successful NLP model loading.
         logger.debug "NLP model loaded successfully"
-        Flowbots::UI.say(:ok, "NLP model loaded successfully")
+        UI.say(:ok, "NLP model loaded successfully")
       rescue StandardError => e
         # Logs an error message if NLP model loading fails.
         logger.error "Error loading NLP model: #{e.message}"
         logger.error e.backtrace.join("\n")
-        Flowbots::UI.say(:error, "Error loading NLP model: #{e.message}")
+        UI.say(:error, "Error loading NLP model: #{e.message}")
         raise
       end
     end

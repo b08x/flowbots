@@ -33,7 +33,7 @@ module Flowbots
         raise FileNotFoundError, "Workflow file not found: #{workflow_file}"
       end
 
-      Flowbots::UI.info "Running workflow: #{workflow_name}"
+      UI.info "Running workflow: #{workflow_name}"
 
       workflow_class = workflow_name.split("_").map(&:capitalize).join
       workflow = Flowbots.const_get(workflow_class).new
@@ -68,10 +68,10 @@ module Flowbots
         begin
           require file
         rescue StandardError => e
-          Flowbots::UI.error "Unable to load workflow #{e.message}"
+          UI.error "Unable to load workflow #{e.message}"
           logger.fatal "Unable to load workflow #{e.message}"
         end
-        Flowbots::UI.info "Loaded workflow file: #{file}"
+        UI.info "Loaded workflow file: #{file}"
         logger.debug "Loaded workflow file: #{file}"
       end
     end

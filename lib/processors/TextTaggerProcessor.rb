@@ -142,12 +142,12 @@ module Flowbots
 
       # Logs a message indicating successful EngTagger loading.
       logger.debug "EngTagger loaded successfully"
-      Flowbots::UI.say(:ok, "EngTagger loaded successfully")
+      UI.say(:ok, "EngTagger loaded successfully")
     rescue StandardError => e
       # Logs an error message if EngTagger loading fails.
       logger.error "Error loading EngTagger: #{e.message}"
       logger.error e.backtrace.join("\n")
-      Flowbots::UI.say(:error, "Error loading EngTagger: #{e.message}")
+      UI.say(:error, "Error loading EngTagger: #{e.message}")
       raise
     end
   end

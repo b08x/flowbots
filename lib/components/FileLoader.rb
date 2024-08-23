@@ -93,19 +93,17 @@ module Flowbots
     end
 
     def extract_text_json(file_path)
-      begin
-        json_data = JSON.parse(File.read(file_path))
-        text = json_data["results"]["channels"][0]['alternatives'][0]['transcript']
-        puts json_data
-        return text
-        exit
-      rescue JSON::ParserError => e
-        puts "Error parsing JSON: #{e.message}"
-        return nil
-      rescue StandardError => e
-        puts "An error occurred: #{e.message}"
-        return nil
-      end
+      json_data = JSON.parse(File.read(file_path))
+      text = json_data["results"]["channels"][0]["alternatives"][0]["transcript"]
+      puts json_data
+      return text
+      exit
+    rescue JSON::ParserError => e
+      puts "Error parsing JSON: #{e.message}"
+      nil
+    rescue StandardError => e
+      puts "An error occurred: #{e.message}"
+      nil
     end
 
     # Stores the file data in the database.
@@ -122,7 +120,7 @@ module Flowbots
       return file
 
       logger.info "Stored file data for: #{file_path}"
-      Flowbots::UI.say(:ok, "Stored file data for: #{file_path}")
+      UI.say(:ok, "Stored file data for: #{file_path}")
     end
   end
 end

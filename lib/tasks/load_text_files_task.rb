@@ -18,7 +18,7 @@ class LoadTextFilesTask < Task
       logger.debug "Loaded file: #{file_path}"
     rescue StandardError => e
       logger.error "Error loading file #{file_path}: #{e.message}"
-      Flowbots::UI.say(:error, "Failed to load file: #{file_path}")
+      UI.say(:error, "Failed to load file: #{file_path}")
       raise
     end
   end

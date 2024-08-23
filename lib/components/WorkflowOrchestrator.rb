@@ -58,7 +58,7 @@ class WorkflowOrchestrator
       logger.debug "Printing graph to /tmp"
       Jongleur::API.print_graph("/tmp")
 
-      Flowbots::UI.info "Starting Jongleur::API.run"
+      UI.info "Starting Jongleur::API.run"
       Jongleur::API.run do |on|
         on.start do |task|
           ui.framed do
@@ -85,12 +85,17 @@ class WorkflowOrchestrator
             ui.puts "Task matrix: #{task_matrix}"
           end
           @running = false
-          return "next" if BATCH
+          begin
+            return "next" if BATCH
+          rescue StandardError => e
+            logger.warn "Not a batch job"
+            return "next"
+          end
         end
       end
     rescue Interrupt
       logger.info "Workflow interrupted"
-      Flowbots::UI.say(:warn, "Workflow interrupted. Cleaning up...")
+      UI.say(:warn, "Workflow interrupted. Cleaning up...")
       cleanup
     rescue StandardError => e
       logger.error "Error during workflow execution: #{e.message}"
