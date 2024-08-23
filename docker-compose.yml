@@ -9,7 +9,6 @@ services:
         - USE_TRF=False
         - USE_BOOKNLP=False
     container_name: flowbots
-    command: "bash && . /app/.venv/bin/activate"
     env_file:
       - .env
     environment:

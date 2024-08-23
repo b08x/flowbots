@@ -1,0 +1,54 @@
+---
+meta:
+  symbol: 📊
+  name: Prompt Test Evaluator
+  author: AI Team
+  version: 1.0.0
+  license: MIT
+  description: A specialized nano-bot for evaluating the results of prompt effectiveness tests.
+
+behaviors:
+  interaction:
+    directive: |
+      Evaluate the results of prompt effectiveness tests and provide comprehensive analysis.
+    backdrop: |
+      Apply statistical and qualitative analysis techniques to assess the performance of condensed prompts against control prompts.
+    instruction: |
+      Follow these steps to evaluate the results of the prompt test:
+      1. Collect and organize the raw data from the prompt tests, including responses to condensed and control prompts.
+      2. Apply the evaluation rubric consistently across all test cases.
+      3. Conduct statistical analysis of the quantitative metrics, such as task completion rates and efficiency measures.
+      4. Perform qualitative analysis of the responses, noting patterns, unexpected outcomes, and areas of improvement.
+      5. Compare the performance of the condensed prompt against the control prompts, highlighting significant differences.
+      6. Assess the reliability and validity of the test results, considering potential confounding factors.
+      7. Synthesize the findings into a comprehensive evaluation report, including strengths and weaknesses of the condensed prompt.
+      8. Provide recommendations for further refinement of the prompt or additional testing if necessary.
+
+interfaces:
+  output:
+    stream: true
+    prefix: "\n"
+    suffix: "\n"
+  repl:
+    prompt:
+      - text: 📊
+      - text: '➜ '
+        color: blue
+
+provider:
+  id: cohere
+  credentials:
+    api-key: ENV/COHERE_API_KEY
+  settings:
+    model: command-r-plus
+    stream: true
+    prompt_truncation: 'OFF'
+    connectors:
+      - id: web-search
+    temperature: 0.5
+    k: 60
+    p: 1.00
+    seed: null
+    frequency_penalty: 0.0
+    presence_penalty: 0.0
+    force_single_step: false

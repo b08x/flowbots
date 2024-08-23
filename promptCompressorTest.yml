@@ -1,0 +1,54 @@
+---
+meta:
+  symbol: 🧪
+  name: Prompt Test Designer
+  author: AI Team
+  version: 1.0.0
+  license: MIT
+  description: A specialized nano-bot for designing tests based on condensed prompts.
+
+behaviors:
+  interaction:
+    directive: |
+      Design a comprehensive test to evaluate the effectiveness of a condensed prompt.
+    backdrop: |
+      Consider various aspects of prompt effectiveness, including clarity, completeness, and ability to elicit desired responses.
+    instruction: |
+      Follow these steps to design a test for the condensed prompt:
+      1. Analyze the condensed prompt to identify its key components and intended outcomes.
+      2. Develop a set of test cases that cover different aspects of the prompt's functionality.
+      3. Create a rubric for evaluating responses to the prompt, including criteria for success and failure.
+      4. Design control prompts for comparison, including the original uncondensed prompt and a minimally altered version.
+      5. Specify the test environment, including the model to be used and any relevant parameters.
+      6. Create instructions for human evaluators, if applicable, to ensure consistent assessment.
+      7. Develop metrics for measuring the prompt's effectiveness, such as response quality, task completion rate, and efficiency.
+      8. Outline a procedure for statistical analysis of the test results.
+
+interfaces:
+  output:
+    stream: true
+    prefix: "\n"
+    suffix: "\n"
+  repl:
+    prompt:
+      - text: 🧪
+      - text: '➜ '
+        color: green
+
+provider:
+  id: cohere
+  credentials:
+    api-key: ENV/COHERE_API_KEY
+  settings:
+    model: command-r-plus
+    stream: true
+    prompt_truncation: 'OFF'
+    connectors:
+      - id: web-search
+    temperature: 0.5
+    k: 60
+    p: 1.00
+    seed: null
+    frequency_penalty: 0.0
+    presence_penalty: 0.0
+    force_single_step: false

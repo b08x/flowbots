@@ -2,7 +2,6 @@
 /.yardoc
 /_yardoc/
 /coverage/
-/doc/
 /pkg/
 /site/
 /spec/reports/
@@ -10,13 +9,6 @@
 /Gemfile.lock
 /characters/
 /docker/data/
-/docs/agenta/
-/docs/FlowiseDocs/
-/docs/inspect_ai/
-/docs/Jongleur/
-/docs/langfuse-docs/
-/docs/dify-docs/
-/docs/ruby-nano-bots/
 .env
 /docker/.env/
 /log/
@@ -34,3 +26,7 @@ flowbots.json
 /.vendor/
 /.docs/
 *.text.json
+.gh_pages
+llm_analysis/
+exception_reports/
+job.md

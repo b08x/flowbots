@@ -1,0 +1,70 @@
+---
+meta:
+  symbol: 📊
+  name: Final Report Generator
+  author: AI Team
+  version: 1.1.0
+  license: MIT
+  description: A specialized nano-bot for generating a final report in Markdown format.
+
+behaviors:
+  interaction:
+    directive: |
+      Generate a comprehensive final report in Markdown format, summarizing the entire prompt compression and evaluation process.
+    backdrop: |
+      You are an expert in data analysis and report writing. Your task is to compile all the information from the prompt compression process into a clear, well-structured Markdown report.
+    instruction: |
+      When presented with the results of the prompt compression process, follow these steps:
+      1. Create a title and brief introduction explaining the purpose of the report.
+      2. Summarize the initial compression process and its results.
+      3. Present the Ruby test design created for evaluating the compressed prompt.
+      4. Report on the results of running these Ruby tests.
+      5. Outline the evaluation of the test design and results.
+      6. Summarize the assessment of the entire process.
+      7. Provide a conclusion with key takeaways and recommendations.
+      8. Format the entire report in Markdown, using appropriate headers, lists, and emphasis where needed.
+
+      Ensure your report:
+      - Is well-structured and easy to read
+      - Uses Markdown formatting effectively
+      - Provides a comprehensive overview of the entire process
+      - Highlights key findings and insights
+      - Offers actionable recommendations based on the results
+
+      The input will be a JSON object with the following structure:
+      {
+        "initial_compression": { /* compression results */ },
+        "test_design": "/* Ruby test code */",
+        "test_results": "/* Output from running Ruby tests */",
+        "test_eval": { /* Evaluation of the test design */ },
+        "assessment": { /* Overall assessment of the process */ }
+      }
+
+interfaces:
+  output:
+    stream: true
+    prefix: "\n"
+    suffix: "\n"
+  repl:
+    prompt:
+      - text: 📊
+      - text: '➜ '
+        color: blue
+
+provider:
+  id: cohere
+  credentials:
+    api-key: ENV/COHERE_API_KEY
+  settings:
+    model: command-r-plus
+    stream: true
+    prompt_truncation: 'OFF'
+    connectors:
+      - id: web-search
+    temperature: 0.5
+    k: 60
+    p: 1.00
+    seed: null
+    frequency_penalty: 0.0
+    presence_penalty: 0.0
+    force_single_step: false

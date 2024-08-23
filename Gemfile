@@ -63,4 +63,14 @@ gem "yaml", "~> 0.3.0"
 
 gem "polyglot", "~> 0.3.5"
 
-gem "sublayer", "~> 0.2.0"
+gem "engtagger", "~> 0.4.1"
+
+gem "scalpel", "~> 0.2.1"
+
+gem "gokdok", "~> 0.4.2"
+
+gem "shale", "~> 1.1"
+
+gem "paint", "~> 2.3"
+
+gem "color", "~> 1.8"

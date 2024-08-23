@@ -1,13 +1,17 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require 'json'
-require 'fileutils'
+require "json"
+require "fileutils"
 
 require_relative 'WorkflowAgent'
 
 module Flowbots
+  # This class handles exceptions in the Flowbots application.
   class ExceptionAgent < WorkflowAgent
+    # Initializes a new instance of the ExceptionAgent class.
+    #
+    # @return [void]
     def initialize
       logger.debug "Initializing ExceptionAgent"
       begin
@@ -22,16 +26,22 @@ module Flowbots
 
         logger.info "ExceptionAgent initialized successfully"
       rescue StandardError => e
-        logger.error "Error initializing ExceptionAgent: #{e.message}"
-        logger.error e.backtrace.join("\n")
-        raise # Re-raise the exception after logging
+        logger.error "#{e.message}"
+      ensure
+        UI.say(:error, "#{e}")
       end
     end
 
+    # Processes an exception and generates a report.
+    #
+    # @param classname [String] The name of the class where the exception occurred.
+    # @param exception [Exception] The exception object.
+    #
+    # @return [String] The formatted exception report.
     def process_exception(classname, exception)
       logger.debug "Processing exception for class: #{classname}"
       exception_details = {
-        classname: classname,
+        classname:,
         message: exception.message,
         backtrace: exception.backtrace&.join("\n")
       }
@@ -61,30 +71,40 @@ module Flowbots
 
     private
 
+    # Loads the file structure from the flowbots.json file.
+    #
+    # @return [Hash] The file structure.
     def load_file_structure
-      file_path = File.expand_path('../../../flowbots.json', __FILE__)
-      logger.debug "Loading file structure from: #{file_path}"
+      file_path = File.expand_path("../../flowbots.json", __dir__)
       JSON.parse(File.read(file_path))
     rescue StandardError => e
       logger.error "Error loading file structure: #{e.message}"
       {}
     end
 
+    # Extracts relevant files from the exception backtrace.
+    #
+    # @param exception [Exception] The exception object.
+    #
+    # @return [Hash] A hash of relevant file names and their content.
     def extract_relevant_files(exception)
       logger.debug "Extracting relevant files for exception"
       relevant_files = {}
       exception.backtrace.each do |trace_line|
-        file_path = trace_line.split(':').first
+        file_path = trace_line.split(":").first
         file_name = File.basename(file_path)
-        file_info = @file_structure['files'].find { |f| f['filename'] == file_name }
-        if file_info && !relevant_files.key?(file_name)
-          relevant_files[file_name] = file_info['content']
-        end
+        file_info = @file_structure["files"].find { |f| f["filename"] == file_name }
+        relevant_files[file_name] = file_info["content"] if file_info && !relevant_files.key?(file_name)
       end
       logger.debug "Extracted #{relevant_files.keys.size} relevant files"
       relevant_files
     end
 
+    # Generates a prompt for the exception handler agent.
+    #
+    # @param exception_details [Hash] A hash containing exception details.
+    #
+    # @return [String] The prompt for the agent.
     def generate_exception_prompt(exception_details)
       logger.debug "Generating exception prompt"
 
@@ -104,6 +124,12 @@ module Flowbots
       PROMPT
     end
 
+    # Formats the exception report based on the agent's response.
+    #
+    # @param agent_response [String] The response from the exception handler agent.
+    # @param exception_details [Hash] A hash containing exception details.
+    #
+    # @return [String] The formatted exception report.
     def format_exception_report(agent_response, exception_details)
       logger.debug "Formatting exception report"
 
@@ -127,6 +153,11 @@ module Flowbots
       REPORT
     end
 
+    # Generates a fallback exception report if the agent fails to generate a report.
+    #
+    # @param exception_details [Hash] A hash containing exception details.
+    #
+    # @return [String] The fallback exception report.
     def fallback_exception_report(exception_details)
       logger.debug "Generating fallback exception report"
 
@@ -158,12 +189,18 @@ module Flowbots
       REPORT
     end
 
+    # Writes the exception report to a markdown file.
+    #
+    # @param report [String] The exception report.
+    # @param exception_details [Hash] A hash containing exception details.
+    #
+    # @return [void]
     def write_markdown_report(report, exception_details)
       logger.debug "Writing markdown report"
-      
+
       timestamp = Time.now.strftime("%Y%m%d_%H%M%S")
       filename = "exception_report_#{timestamp}.md"
-      dir_path = File.expand_path('../../../exception_reports', __FILE__)
+      dir_path = File.expand_path("../../exception_reports", __dir__)
       FileUtils.mkdir_p(dir_path)
       file_path = File.join(dir_path, filename)
 

@@ -1,11 +1,18 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-module Flowbots
-  class PreprocessTextFileTask < Jongleur::WorkerTask
-    def perform
-      grammar_processor = GrammarProcessor.new('markdown_yaml')
-      parse_result = grammar_processor.parse(sourcefile.content)
+class PreprocessTextFileTask < Task
+  include InputRetrieval
+
+  def execute
+    logger.info "Starting PreprocessTextFileTask"
+
+    @textfile = retrieve_input
+
+    begin
+      grammar_processor = Flowbots::GrammarProcessor.new("markdown_yaml")
+      parse_result = grammar_processor.parse(@textfile.content)
+      logger.debug "Parse result: #{parse_result.inspect}"
 
       if parse_result
         sourcefile.update(
@@ -14,21 +21,36 @@ module Flowbots
         )
         "Successfully preprocessed file: #{sourcefile.path}"
       else
-        sourcefile.update(
-          preprocessed_content: sourcefile.content,
-          metadata: {}
-        )
-        "Failed to parse the document with custom grammar: #{sourcefile.path}"
+        logger.error "Failed to parse the document with custom grammar"
+        @textfile.update(preprocessed_content: "", metadata: {})
       end
+    rescue StandardError => e
+      logger.error "Error in grammar processing: #{e.message}"
+      logger.error e.backtrace.join("\n")
+      UI.exception("#{e.message}")
+      @textfile.update(preprocessed_content: "", metadata: {})
     end
 
     private
 
-    def extract_metadata(yaml_front_matter)
-      YAML.safe_load(yaml_front_matter)
-    rescue StandardError => e
-      logger.error "Error parsing YAML front matter: #{e.message}"
-      {}
-    end
+  private
+
+  def retrieve_input
+    retrieve_textfile
+  end
+
+  def extract_metadata(yaml_front_matter)
+    return {} if yaml_front_matter.empty?
+
+    YAML.safe_load(yaml_front_matter)
+  rescue StandardError => e
+    logger.error "Error parsing YAML front matter: #{e.message}"
+    {}
+  end
+
+  def store_preprocessed_data(content, metadata)
+    @textfile.update(preprocessed_content: content, metadata:)
+    logger.debug "Stored preprocessed content (first 100 chars): #{content[0..100]}"
+    logger.debug "Stored metadata: #{metadata.inspect}"
   end
 end

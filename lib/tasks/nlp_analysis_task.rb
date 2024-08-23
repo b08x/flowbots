@@ -1,50 +1,62 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-module Flowbots
-  class NlpAnalysisTask < Jongleur::WorkerTask
-    def perform
-      nlp_processor = NLPProcessor.instance
+# This task performs natural language processing (NLP) analysis on the segments of a text file.
+class NlpAnalysisTask < Task
+  include InputRetrieval
 
-      sourcefile.segments.each do |segment|
-        processed_tokens = nlp_processor.process(segment, pos: true, dep: true, ner: true, tag: true)
+  def execute
+    logger.info "Starting NlpAnalysisTask"
 
-        tagged = {
-          pos: {}, dep: {}, ner: {}, tag: {}
-        }
+    textfile = retrieve_input
+    nlp_processor = Flowbots::NLPProcessor.instance
 
-        processed_tokens.each do |token|
-          word = token[:word]
-          tagged[:pos][word] = token[:pos]
-          tagged[:dep][word] = token[:dep]
-          tagged[:ner][word] = token[:ner]
-          tagged[:tag][word] = token[:tag]
+    lemma_counts = Hash.new(0)
 
-          Word.create(
-            word: word,
-            pos: token[:pos],
-            tag: token[:tag],
-            dep: token[:dep],
-            ner: token[:ner],
-            sourcefile: sourcefile,
-            segment: segment
-          )
-        end
-
-        segment.update(tagged: tagged)
-      end
-
-      "Performed NLP analysis for file: #{sourcefile.path}"
+    textfile.retrieve_segments.each do |segment|
+      processed_tokens = nlp_processor.process(segment, pos: true, dep: true, ner: true, tag: true, lemma: true)
+      update_segment_with_nlp_data(segment, processed_tokens, lemma_counts)
     end
+
+    add_lemmas_to_textfile(textfile, lemma_counts)
+
+    logger.info "NlpAnalysisTask completed"
   end
 
-  class Word < Ohm::Model
-    attribute :word
-    attribute :pos
-    attribute :tag
-    attribute :dep
-    attribute :ner
-    reference :sourcefile, 'Flowbots::Sourcefile'
-    reference :segment, 'Flowbots::Segment'
+  private
+
+  def retrieve_input
+    retrieve_textfile
+  end
+
+  def update_segment_with_nlp_data(segment, processed_tokens, lemma_counts)
+    tagged = { pos: {}, dep: {}, ner: {}, tag: {} }
+    processed_tokens.each do |token|
+      word = token[:word]
+      tagged[:pos][word] = token[:pos]
+      tagged[:dep][word] = token[:dep]
+      tagged[:ner][word] = token[:ner]
+      tagged[:tag][word] = token[:tag]
+
+      lemma_key = [token[:lemma], token[:pos]]
+      lemma_counts[lemma_key] += 1
+    end
+
+    segment.update(tagged:)
+    add_words_to_segment(segment, processed_tokens)
+  end
+
+  def add_words_to_segment(segment, processed_tokens)
+    words = processed_tokens.map do |token|
+      { word: token[:word], pos: token[:pos], tag: token[:tag], dep: token[:dep], ner: token[:ner] }
+    end
+    segment.add_words(words)
+  end
+
+  def add_lemmas_to_textfile(textfile, lemma_counts)
+    lemmas_data = lemma_counts.map do |(lemma, pos), count|
+      { lemma:, pos:, count: }
+    end
+    textfile.add_lemmas(lemmas_data)
   end
 end

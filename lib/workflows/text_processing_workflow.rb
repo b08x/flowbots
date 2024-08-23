@@ -2,105 +2,110 @@
 # frozen_string_literal: true
 
 module Flowbots
+  # This class represents a workflow for processing text using topic modeling.
   class TextProcessingWorkflow
-    attr_reader :input_file_path, :workflow
+    # The path to the input file.
+    attr_reader :input_file_path
 
+    # The ID of the Textfile object representing the input file.
+    attr_reader :text_file_id
+
+    # Initializes a new TextProcessingWorkflow instance.
+    #
+    # @param input_file_path [String] The path to the input file.
+    #
+    # @return [void]
     def initialize(input_file_path=nil)
+      # Assigns the input file path or prompts the user for it.
       @input_file_path = input_file_path || prompt_for_file
+
+      # Creates a new WorkflowOrchestrator instance.
       @orchestrator = WorkflowOrchestrator.new
     end
 
+    # Runs the text processing workflow.
+    #
+    # @return [void]
     def run
-      Flowbots::UI.say(:ok, "Setting Up Text Processing Workflow")
+      # Displays a message indicating the start of the workflow.
+      UI.say(:ok, "Setting Up Text Processing Workflow")
       logger.info "Setting Up Text Processing Workflow"
 
-      Flowbots.ensure_indices
-      Flowbots.verify_indices
+      # Sets up the workflow graph and stores the input file path in Redis.
       setup_workflow
       define_tasks
       process_input_file
 
-      Flowbots::UI.info "Running Text Processing Workflow"
-      @orchestrator.run_workflow(@workflow)
+      # Displays a message indicating the start of the workflow execution.
+      UI.info "Running Text Processing Workflow"
 
-      Flowbots::UI.say(:ok, "Text Processing Workflow completed")
+      # Runs the workflow using the WorkflowOrchestrator.
+      @orchestrator.run_workflow
+
+      # Displays a message indicating the completion of the workflow.
+      UI.say(:ok, "Text Processing Workflow completed")
       logger.info "Text Processing Workflow completed"
     end
 
     private
 
-    def setup_workflow
-      @workflow = Workflow.create(
-        name: "TextProcessingWorkflow",
-        status: "started",
-        start_time: Time.now.to_s,
-        is_batch_workflow: false,
-        workflow_type: "text_processing"
-      )
-      logger.debug "Workflow created: #{@workflow.inspect}"
-    end
-
-    def define_tasks
-      tasks = [
-        'Flowbots::FileLoaderTask',
-        'Flowbots::PreprocessTextFileTask',
-        'Flowbots::TextSegmentTask',
-        'Flowbots::TokenizeSegmentsTask',
-        'Flowbots::NlpAnalysisTask',
-        'Flowbots::TopicModelingTask',
-        'Flowbots::LlmAnalysisTask',
-        'Flowbots::DisplayResultsTask'
-      ]
-
-      workflow_graph = {}
-      tasks.each_with_index do |task, index|
-        if index < tasks.length - 1
-          workflow_graph[task] = [tasks[index + 1]]
-        else
-          workflow_graph[task] = []
-        end
-      end
-
-      @orchestrator.define_workflow(workflow_graph)
-      logger.debug "Tasks defined and added to workflow"
-    end
-
-    def process_input_file
-      logger.debug "Processing input file: #{@input_file_path}"
-      logger.debug "Workflow: #{@workflow.inspect}"
-
-      begin
-        sourcefile = Sourcefile.find_or_create_by_path(@input_file_path)
-        logger.debug "Sourcefile created or found: #{sourcefile.inspect}"
-
-        raise FlowbotError.new("Failed to create or find Sourcefile", "SOURCEFILE_ERROR") if sourcefile.nil?
-
-        sourcefile.add_to_workflow(@workflow)
-        logger.debug "Sourcefile added to workflow"
-
-        @workflow.update(current_file_id: sourcefile.id)
-        logger.debug "Updated workflow with current file ID: #{sourcefile.id}"
-      rescue Ohm::IndexNotFound => e
-        logger.error "Ohm index not found: #{e.message}"
-        raise FlowbotError.new("Database index error: #{e.message}", "OHM_INDEX_ERROR")
-      rescue Ohm::Error => e
-        logger.error "Ohm error: #{e.message}"
-        logger.error "Workflow ID: #{@workflow.id}"
-        logger.error "Sourcefile: #{sourcefile.inspect}" if defined?(sourcefile)
-        raise FlowbotError.new("Database error: #{e.message}", "OHM_ERROR")
-      rescue StandardError => e
-        logger.error "Error processing input file: #{e.message}"
-        logger.error e.backtrace.join("\n")
-        raise FlowbotError.new("Error processing input file: #{e.message}", "FILE_PROCESSING_ERROR")
-      end
-    end
-
+    # Prompts the user for the input file path.
+    #
+    # @return [String] The path to the input file.
     def prompt_for_file
+      # Uses the `gum` command to prompt the user for a file.
       get_file_path = `gum file`.chomp.strip
+
+      # Constructs the full file path.
       file_path = File.join(get_file_path)
+
+      # Raises an error if the file does not exist.
       raise FlowbotError.new("File not found", "FILENOTFOUND") unless File.exist?(file_path)
 
+      # Returns the file path.
       file_path
+    end
+
+    # Sets up the workflow graph.
+    #
+    # @return [void]
+    def setup_workflow
+      # Logs a message indicating the start of workflow setup.
+      logger.debug "Setting up workflow"
+
+      # Defines the workflow graph, specifying the order of tasks.
+      workflow_graph = {
+        FileLoaderTask: [:PreprocessTextFileTask],
+        PreprocessTextFileTask: [:TextTaggerTask],
+        TextTaggerTask: [:TextSegmentTask],
+        TextSegmentTask: [:TextTokenizeTask],
+        TextTokenizeTask: [:NlpAnalysisTask],
+        NlpAnalysisTask: [:TopicModelingTask],
+        TopicModelingTask: [:LlmAnalysisTask],
+        LlmAnalysisTask: [:DisplayResultsTask],
+        DisplayResultsTask: []
+      }
+
+      # Defines the workflow using the WorkflowOrchestrator.
+      @orchestrator.define_workflow(workflow_graph)
+
+      # Logs a message indicating the completion of workflow setup.
+      logger.debug "Workflow setup completed"
+    end
+
+    # Stores the input file path in Redis.
+    #
+    # @return [void]
+    def store_input_file_path
+      # Stores the input file path in Redis.
+      Jongleur::WorkerTask.class_variable_get(:@@redis).set("input_file_path", @input_file_path)
+
+      # Loads the input file using the FileLoader.
+      file_loader = Flowbots::FileLoader.new(@input_file_path)
+      textfile = file_loader.file_data
+
+      # Stores the Textfile ID in Redis.
+      Jongleur::WorkerTask.class_variable_get(:@@redis).set("current_textfile_id", textfile.id)
     end
   end
 end

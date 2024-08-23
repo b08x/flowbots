@@ -11,20 +11,21 @@ module Flowbots
     def initialize(input_folder_path=nil)
       @input_folder_path = input_folder_path || prompt_for_folder
       @orchestrator = WorkflowOrchestrator.new
+      Object.const_set(:BATCH, true) # Redefines the constant
     end
 
     def run
-      Flowbots::UI.say(:ok, "Setting Up Topic Model Trainer Workflow")
+      UI.say(:ok, "Setting Up Topic Model Trainer Workflow")
       logger.info "Setting Up Topic Model Trainer Workflow"
 
       begin
         setup_workflow
         flush_redis_cache
         process_files
-        Flowbots::UI.say(:ok, "Topic Model Trainer Workflow completed")
+        UI.say(:ok, "Topic Model Trainer Workflow completed")
         logger.info "Topic Model Trainer Workflow completed"
       rescue StandardError => e
-        Flowbots::UI.say(:error, "Error in Topic Model Trainer Workflow: #{e.message}")
+        UI.say(:error, "Error in Topic Model Trainer Workflow: #{e.message}")
         logger.error "Error in Topic Model Trainer Workflow: #{e.message}"
         logger.error e.backtrace.join("\n")
       end
@@ -71,7 +72,7 @@ module Flowbots
         batch_start = i * BATCH_SIZE
         batch_files = all_file_paths[batch_start, BATCH_SIZE]
 
-        Flowbots::UI.say(:ok, "Processing batch #{i + 1} of #{num_batches}")
+        UI.say(:ok, "Processing batch #{i + 1} of #{num_batches}")
         logger.info "Processing batch #{i + 1} of #{num_batches}"
 
         process_batch(batch_files)
@@ -92,7 +93,7 @@ module Flowbots
 
       if all_filtered_segments.empty?
         logger.warn "No filtered segments available for topic modeling"
-        Flowbots::UI.say(:warn, "No filtered segments available for topic modeling")
+        UI.say(:warn, "No filtered segments available for topic modeling")
         return
       end
 
@@ -100,7 +101,7 @@ module Flowbots
 
       if cleaned_segments.empty?
         logger.warn "No cleaned segments available for topic modeling after filtering"
-        Flowbots::UI.say(:warn, "No cleaned segments available for topic modeling after filtering")
+        UI.say(:warn, "No cleaned segments available for topic modeling after filtering")
         return
       end
 
@@ -109,7 +110,7 @@ module Flowbots
       topic_processor = Flowbots::TopicModelProcessor.instance
       topic_processor.train_model(cleaned_segments)
       logger.info "Topic model training completed for all files"
-      Flowbots::UI.say(:ok, "Topic model training completed for all files")
+      UI.say(:ok, "Topic model training completed for all files")
     end
 
     def clean_segments_for_modeling(segments)

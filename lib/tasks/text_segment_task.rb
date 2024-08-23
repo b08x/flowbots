@@ -1,23 +1,33 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-module Flowbots
-  class TextSegmentTask < Jongleur::WorkerTask
-    def perform
-      text_segmenter = TextSegmentProcessor.instance
-      segments = text_segmenter.process(sourcefile.preprocessed_content, { clean: true })
+# This task segments the text content of a Textfile into smaller units.
+class TextSegmentTask < Task
+  include InputRetrieval
 
-      segments.each do |segment_text|
-        Segment.create(text: segment_text, sourcefile: sourcefile)
-      end
+  def execute
+    logger.info "Starting TextSegmentTask"
 
-      "Created #{segments.length} segments for file: #{sourcefile.path}"
-    end
+    textfile = retrieve_input
+    preprocessed_content = textfile.preprocessed_content
+
+    text_segmenter = Flowbots::TextSegmentProcessor.instance
+    segments = text_segmenter.process(preprocessed_content, { clean: true })
+
+    store_segments(textfile, segments)
+
+    logger.info "TextSegmentTask completed"
   end
 
-  class Segment < Ohm::Model
-    attribute :text
-    reference :sourcefile, 'Flowbots::Sourcefile'
-    collection :words, 'Flowbots::Word'
+  private
+
+  def retrieve_input
+    retrieve_textfile
+  end
+
+  def store_segments(textfile, segments)
+    logger.info "Storing #{segments.length} segments for file: #{textfile.name}"
+    textfile.add_segments(segments)
+    logger.debug "Segments stored successfully"
   end
 end

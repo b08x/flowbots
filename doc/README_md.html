@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="UTF-8">
+
+<title>README - flowbots v0.1</title>
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "./";
+  var index_rel_prefix = "./";
+</script>
+
+<script src="./js/navigation.js" defer></script>
+<script src="./js/search.js" defer></script>
+<script src="./js/search_index.js" defer></script>
+<script src="./js/searcher.js" defer></script>
+<script src="./js/darkfish.js" defer></script>
+
+<link href="./css/fonts.css" rel="stylesheet">
+<link href="./css/rdoc.css" rel="stylesheet">
+
+
+<body id="top" role="document" class="file">
+<nav role="navigation">
+  <div id="project-navigation">
+    <div id="home-section" role="region" title="Quick navigation" class="nav-section">
+  <h2>
+    <a href="./index.html" rel="home">Home</a>
+  </h2>
+
+  <div id="table-of-contents-navigation">
+    <a href="./table_of_contents.html#pages">Pages</a>
+    <a href="./table_of_contents.html#classes">Classes</a>
+    <a href="./table_of_contents.html#methods">Methods</a>
+  </div>
+</div>
+
+    <div id="search-section" role="search" class="project-section initially-hidden">
+  <form action="#" method="get" accept-charset="utf-8">
+    <div id="search-field-wrapper">
+      <input id="search-field" role="combobox" aria-label="Search"
+             aria-autocomplete="list" aria-controls="search-results"
+             type="text" name="search" placeholder="Search" spellcheck="false"
+             title="Type to search, Up and Down to navigate, Enter to load">
+    </div>
+
+    <ul id="search-results" aria-label="Search Results"
+        aria-busy="false" aria-expanded="false"
+        aria-atomic="false" class="initially-hidden"></ul>
+  </form>
+</div>
+
+  </div>
+
+  
+<div class="nav-section">
+  <h3>Table of Contents</h3>
+
+  <ul class="link-list" role="directory">
+    <li><a href="#label-Flowbots-3A+Prompt+Compression+and+Evaluation+Workflow">Flowbots: Prompt Compression and Evaluation Workflow</a>
+    <li><a href="#label-Features">Features</a>
+    <li><a href="#label-Prerequisites">Prerequisites</a>
+    <li><a href="#label-Installation">Installation</a>
+    <li><a href="#label-Usage">Usage</a>
+    <li><a href="#label-Components">Components</a>
+    <li><a href="#label-WorkflowAgent">WorkflowAgent</a>
+    <li><a href="#label-WorkflowOrchestrator">WorkflowOrchestrator</a>
+    <li><a href="#label-Tasks">Tasks</a>
+    <li><a href="#label-Workflow">Workflow</a>
+    <li><a href="#label-Configuration">Configuration</a>
+    <li><a href="#label-Output">Output</a>
+    <li><a href="#label-Error+Handling">Error Handling</a>
+    <li><a href="#label-Extending+the+Workflow">Extending the Workflow</a>
+    <li><a href="#label-Contributing">Contributing</a>
+    <li><a href="#label-License">License</a>
+  </ul>
+</div>
+
+
+  <div id="project-metadata">
+    
+<div id="fileindex-section" class="nav-section">
+  <h3>Pages</h3>
+
+  <ul class="link-list">
+    <li><a href="./LICENSE.html">LICENSE</a>
+    <li><a href="./README_md.html">README</a>
+  </ul>
+</div>
+
+  </div>
+</nav>
+
+<main role="main" aria-label="Page README.md">
+
+<h1 id="label-Flowbots-3A+Prompt+Compression+and+Evaluation+Workflow"><a href="Flowbots.html"><code>Flowbots</code></a>: Prompt Compression and Evaluation Workflow<span><a href="#label-Flowbots-3A+Prompt+Compression+and+Evaluation+Workflow">&para;</a> <a href="#top">&uarr;</a></span></h1>
+
+<p><a href="Flowbots.html"><code>Flowbots</code></a> is a Ruby-based workflow orchestration system designed for compressing, testing, and evaluating AI prompts. It uses a combination of nano-bots, Redis for state management, and a series of interconnected tasks to process and analyze prompts.</p>
+
+<h2 id="label-Features">Features<span><a href="#label-Features">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Prompt compression</p>
+</li><li>
+<p>Automated test generation and execution</p>
+</li><li>
+<p>Evaluation of compressed prompts</p>
+</li><li>
+<p>Assessment of test results</p>
+</li><li>
+<p>Final report generation in Markdown format</p>
+</li><li>
+<p>Workflow orchestration with <a href="Jongleur.html"><code>Jongleur</code></a></p>
+</li><li>
+<p>State persistence using Redis</p>
+</li></ul>
+
+<h2 id="label-Prerequisites">Prerequisites<span><a href="#label-Prerequisites">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Ruby 2.7+</p>
+</li><li>
+<p>Redis server</p>
+</li><li>
+<p>Nano-bots gem</p>
+</li><li>
+<p><a href="Jongleur.html"><code>Jongleur</code></a> gem</p>
+</li><li>
+<p>dotenv gem</p>
+</li><li>
+<p>yad (for GUI input, can be replaced with alternative input method)</p>
+</li></ul>
+
+<h2 id="label-Installation">Installation<span><a href="#label-Installation">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ol><li>
+<p>Clone the repository</p>
+</li><li>
+<p>Install dependencies: <code>bundle install</code></p>
+</li><li>
+<p>Set up your environment variables in <code>docker/.env</code></p>
+</li></ol>
+
+<h2 id="label-Usage">Usage<span><a href="#label-Usage">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>Run the main script:</p>
+
+<pre class="ruby"><span class="ruby-identifier">ruby</span> <span class="ruby-identifier">path</span><span class="ruby-operator">/</span><span class="ruby-identifier">to</span><span class="ruby-operator">/</span><span class="ruby-identifier">your</span><span class="ruby-operator">/</span><span class="ruby-identifier">script</span>.<span class="ruby-identifier">rb</span>
+</pre>
+
+<p>The workflow will guide you through the following steps: 1. Enter a prompt for compression 2. Compress the prompt 3. Generate and run tests for the compressed prompt 4. Evaluate the test results 5. Assess the overall performance 6. Generate a final report</p>
+
+<h2 id="label-Components">Components<span><a href="#label-Components">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<h3 id="label-WorkflowAgent"><a href="WorkflowAgent.html"><code>WorkflowAgent</code></a><span><a href="#label-WorkflowAgent">&para;</a> <a href="#top">&uarr;</a></span></h3>
+
+<p>Manages individual nano-bot agents for different tasks in the workflow.</p>
+
+<h3 id="label-WorkflowOrchestrator"><a href="WorkflowOrchestrator.html"><code>WorkflowOrchestrator</code></a><span><a href="#label-WorkflowOrchestrator">&para;</a> <a href="#top">&uarr;</a></span></h3>
+
+<p>Orchestrates the entire workflow, managing the execution of tasks and the overall flow of the process.</p>
+
+<h3 id="label-Tasks">Tasks<span><a href="#label-Tasks">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p><code>CompressionTask</code>: Compresses the input prompt</p>
+</li><li>
+<p><code>CompressionTestTask</code>: Generates tests for the compressed prompt</p>
+</li><li>
+<p><code>RunRubyTestsTask</code>: Executes the generated Ruby tests</p>
+</li><li>
+<p><code>CompressionTestEvalTask</code>: Evaluates the test results</p>
+</li><li>
+<p><code>CompressionTestAssessmentTask</code>: Assesses the overall performance</p>
+</li><li>
+<p><code>FinalReportTask</code>: Generates a final report in Markdown format</p>
+</li></ul>
+
+<h2 id="label-Workflow">Workflow<span><a href="#label-Workflow">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>The workflow is defined in the <code>workflow_graph</code> variable, which specifies the order of task execution:</p>
+<ol><li>
+<p>CompressionTask</p>
+</li><li>
+<p>CompressionTestTask</p>
+</li><li>
+<p>RunRubyTestsTask</p>
+</li><li>
+<p>CompressionTestEvalTask</p>
+</li><li>
+<p>CompressionTestAssessmentTask</p>
+</li><li>
+<p>FinalReportTask</p>
+</li></ol>
+
+<pre>sequenceDiagram
+    participant User
+    participant TextProcessingWorkflow
+    participant WorkflowOrchestrator
+    participant UI
+    participant Logger
+    participant Redis
+    participant FileSystem
+
+    User-&gt;&gt;TextProcessingWorkflow: initialize(input_file_path)
+    alt input_file_path is nil
+        TextProcessingWorkflow-&gt;&gt;TextProcessingWorkflow: prompt_for_file()
+        TextProcessingWorkflow-&gt;&gt;FileSystem: Check file existence
+        FileSystem--&gt;&gt;TextProcessingWorkflow: File exists/not exists
+        alt File not found
+            TextProcessingWorkflow-&gt;&gt;TextProcessingWorkflow: Raise FlowbotError
+        end
+    end
+    TextProcessingWorkflow-&gt;&gt;WorkflowOrchestrator: new()
+
+    User-&gt;&gt;TextProcessingWorkflow: run()
+    TextProcessingWorkflow-&gt;&gt;UI: say(:ok, &quot;Setting Up Text Processing Workflow&quot;)
+    TextProcessingWorkflow-&gt;&gt;Logger: info(&quot;Setting Up Text Processing Workflow&quot;)
+
+    TextProcessingWorkflow-&gt;&gt;TextProcessingWorkflow: setup_workflow()
+    TextProcessingWorkflow-&gt;&gt;Logger: debug(&quot;Setting up workflow&quot;)
+    TextProcessingWorkflow-&gt;&gt;WorkflowOrchestrator: define_workflow(workflow_graph)
+    TextProcessingWorkflow-&gt;&gt;Logger: debug(&quot;Workflow setup completed&quot;)
+
+    TextProcessingWorkflow-&gt;&gt;TextProcessingWorkflow: store_input_file_path()
+    TextProcessingWorkflow-&gt;&gt;Redis: set(&quot;input_file_path&quot;, @input_file_path)
+
+    TextProcessingWorkflow-&gt;&gt;UI: info(&quot;Running Text Processing Workflow&quot;)
+    TextProcessingWorkflow-&gt;&gt;WorkflowOrchestrator: run_workflow()
+
+    WorkflowOrchestrator-&gt;&gt;FileLoaderTask: execute()
+    FileLoaderTask-&gt;&gt;PreprocessTextFileTask: execute()
+    PreprocessTextFileTask-&gt;&gt;TextSegmentTask: execute()
+    TextSegmentTask-&gt;&gt;TextTokenizeTask: execute()
+    TextTokenizeTask-&gt;&gt;NlpAnalysisTask: execute()
+    NlpAnalysisTask-&gt;&gt;TopicModelingTask: execute()
+    TopicModelingTask-&gt;&gt;LlmAnalysisTask: execute()
+    LlmAnalysisTask-&gt;&gt;DisplayResultsTask: execute()
+
+    TextProcessingWorkflow-&gt;&gt;UI: say(:ok, &quot;Text Processing Workflow completed&quot;)
+    TextProcessingWorkflow-&gt;&gt;Logger: info(&quot;Text Processing Workflow completed&quot;)</pre>
+
+<h2 id="label-Configuration">Configuration<span><a href="#label-Configuration">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Nano-bot cartridges are stored in the <code>CARTRIDGE_DIR</code> directory</p>
+</li><li>
+<p>Redis is used for state management (configured to use database 15 by default)</p>
+</li></ul>
+
+<h2 id="label-Output">Output<span><a href="#label-Output">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>The final output is a Markdown report saved as <code>final_report.md</code> in the current directory.</p>
+
+<h2 id="label-Error+Handling">Error Handling<span><a href="#label-Error+Handling">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>Each task includes basic error handling, logging errors to a logger instance.</p>
+
+<h2 id="label-Extending+the+Workflow">Extending the Workflow<span><a href="#label-Extending+the+Workflow">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>To add new tasks or modify the workflow:</p>
+<ol><li>
+<p>Create a new task class inheriting from <code>Jongleur::WorkerTask</code></p>
+</li><li>
+<p>Add the new task to the <code>workflow_graph</code></p>
+</li><li>
+<p>Create appropriate nano-bot cartridges for new tasks</p>
+</li></ol>
+
+<h2 id="label-Contributing">Contributing<span><a href="#label-Contributing">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>Contributions to <a href="Flowbots.html"><code>Flowbots</code></a> are welcome. Please ensure you follow the existing code style and include tests for new features.</p>
+
+<h2 id="label-License">License<span><a href="#label-License">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>[Specify your license here]</p>
+
+</main>
+
+
+
+<footer id="validator-badges" role="contentinfo">
+  <p><a href="https://validator.w3.org/check/referer">Validate</a>
+  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.4.0.
+  <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
+</footer>
+

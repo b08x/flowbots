@@ -1,36 +1,64 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-class WorkflowOrchestrator
-  class << self
-    def cleanup
-      # Add any necessary cleanup logic here
-      logger.info "Cleaning up WorkflowOrchestrator"
-    end
-  end
+require_relative "WorkflowAgent"
 
+# This class orchestrates the execution of workflows in the Flowbots application.
+class WorkflowOrchestrator
+  # The base directory for cartridges.
+  CARTRIDGE_BASE_DIR = File.expand_path("../../nano-bots/cartridges", __dir__)
+
+  # Initializes a new WorkflowOrchestrator instance.
+  #
+  # @return [void]
   def initialize
     @tasks = []
     @agents = {}
-    @workflow = nil
-    @debug_log = []
   end
 
-  def define_workflow(workflow_graph)
-    @tasks = workflow_graph.keys
-    Jongleur::API.add_task_graph(workflow_graph)
-    logger.info "Workflow defined with #{@tasks.length} tasks"
+  # Adds an agent to the orchestrator.
+  #
+  # @param role [String] The role of the agent.
+  # @param cartridge_file [String] The name of the cartridge file.
+  # @param author [String] The author of the cartridge.
+  #
+  # @return [void]
+  def add_agent(role, cartridge_file, author: "@b08x")
+    logger.debug "Adding agent: #{role}"
+    cartridge_path = File.join(CARTRIDGE_BASE_DIR, author, "cartridges", cartridge_file)
+
+    unless File.exist?(cartridge_path)
+      logger.error "Cartridge file not found: \"#{cartridge_path}\""
+      raise "Cartridge file not found: \"#{cartridge_path}\""
+    end
+
+    @agents[role] = WorkflowAgent.new(role, cartridge_path)
+    logger.debug "Agent added: #{role}"
   end
 
-  def run_workflow(workflow)
-    @workflow = workflow
-    logger.info("Starting workflow execution for #{@workflow.name}")
+  # Defines a workflow using the given definition.
+  #
+  # @param workflow_definition [Hash] The workflow definition.
+  #
+  # @return [void]
+  def define_workflow(workflow_definition)
+    logger.debug "Defining workflow"
+    logger.debug "Workflow definition: #{workflow_definition}"
+    Jongleur::API.add_task_graph(workflow_definition)
+    logger.debug "Workflow defined"
+  end
 
-    @workflow.update(status: "running")
+  # Runs the defined workflow.
+  #
+  # @return [void]
+  def run_workflow
+    logger.info "Starting workflow execution"
+    @running = true
 
     begin
       ensure_jongleur_initialized
 
+      UI.info "Starting Jongleur::API.run"
       Jongleur::API.run do |on|
         on.start do |task|
           logger.info("Starting task: #{task}")
@@ -45,13 +73,21 @@ class WorkflowOrchestrator
         end
 
         on.completed do |task_matrix|
-          logger.info("Workflow completed")
-          logger.debug("Task matrix: #{task_matrix}")
-          @workflow.update(status: "completed", end_time: Time.now.to_s)
+          puts "Workflow completed"
+          logger.info "Task matrix: #{task_matrix}"
+          @running = false
+          begin
+            return "next" if BATCH
+          rescue StandardError => e
+            logger.warn "Not a batch job"
+            return "next"
+          end
         end
       end
-
-      logger.info("Workflow execution finished")
+    rescue Interrupt
+      logger.info "Workflow interrupted"
+      UI.say(:warn, "Workflow interrupted. Cleaning up...")
+      cleanup
     rescue StandardError => e
       logger.error("Error during workflow execution: #{e.message}")
       logger.error(e.backtrace.join("\n"))
@@ -60,62 +96,12 @@ class WorkflowOrchestrator
     end
   end
 
-  private
-
-  def setup_agents
-    logger.info("Setting up agents")
-    @agents[:task_manager] = WorkflowAgent.new("task_manager", File.join(CARTRIDGE_BASE_DIR, "@b08x", "cartridges", "task_manager.yml"))
-    @agents[:exception_handler] = WorkflowAgent.new("exception_handler", File.join(CARTRIDGE_BASE_DIR, "@b08x", "cartridges", "exception_handler.yml"))
-    logger.info("Agents setup completed")
-  end
-
-  def define_jongleur_workflow
-    logger.info("Defining Jongleur workflow")
-    workflow_graph = {}
-
-    @tasks.each_with_index do |task, index|
-      if index < @tasks.length - 1
-        workflow_graph[task] = [@tasks[index + 1]]
-      else
-        workflow_graph[task] = []
-      end
-    end
-
-    Jongleur::API.add_task_graph(workflow_graph)
-    logger.info("Jongleur workflow defined")
-  end
-
-  def ensure_jongleur_initialized
-    unless Jongleur::API.class_variable_defined?(:@@task_graph)
-      logger.warn("Initializing missing @@task_graph in Jongleur::API")
-      Jongleur::API.class_variable_set(:@@task_graph, {})
-    end
-
-    unless Jongleur::API.class_variable_defined?(:@@task_matrix)
-      logger.warn("Initializing missing @@task_matrix in Jongleur::API")
-      Jongleur::API.class_variable_set(:@@task_matrix, {})
-    end
-  end
-
-  def handle_error(error, task)
-    logger.error("Error in task #{task}: #{error.message}")
-    error_input = "Error in task #{task}: #{error.message}"
-    error_response = @agents[:exception_handler].process(error_input)
-    logger.info("Error handler response: #{error_response}")
-  end
-
-  def to_camel_case(string)
-    string.split("_").map(&:capitalize).join
-  end
-
-  def log(message, level = :debug)
-    timestamp = Time.now.strftime("%Y-%m-%d %H:%M:%S")
-    log_entry = "#{timestamp} - #{message}"
-    @debug_log << log_entry
-    logger.send(level, message)
-  end
-
-  def dump_debug_log
-    File.write("workflow_debug_log_#{Time.now.to_i}.txt", @debug_log.join("\n"))
+  # Performs cleanup operations for the workflow.
+  #
+  # @return [void]
+  def cleanup
+    # Perform any necessary cleanup for the workflow
+    Jongleur::API.trap_quit_signals
+    # Add any other cleanup operations here
   end
 end
