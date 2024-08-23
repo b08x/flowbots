@@ -2,28 +2,26 @@
 # frozen_string_literal: true
 
 # This task tokenizes the segments of a text file.
-class TokenizeSegmentsTask < Jongleur::WorkerTask
-  # Executes the task.
-  #
-  # @return [void]
-  def execute
-    # Retrieve the current Textfile object from Redis.
-    textfile_id = Jongleur::WorkerTask.class_variable_get(:@@redis).get("current_textfile_id")
-    text_file = Textfile[textfile_id]
+class TokenizeSegmentsTask < Task
+  include InputRetrieval
 
-    # Get an instance of the TextTokenizeProcessor.
+  def execute
+    logger.info "Starting TokenizeSegmentsTask"
+
+    textfile = retrieve_input
     text_tokenizer = Flowbots::TextTokenizeProcessor.instance
 
-    # Iterate through each segment of the Textfile.
-    text_file.retrieve_segments.each do |segment|
-      # Tokenize the segment's text using the TextTokenizeProcessor.
+    textfile.retrieve_segments.each do |segment|
       tokens = text_tokenizer.process(segment.text, { clean: true })
-
-      # Update the segment with the tokenized data.
       segment.update(tokens:)
-
-      # Save the updated segment.
-      segment.save
     end
+
+    logger.info "TokenizeSegmentsTask completed"
+  end
+
+  private
+
+  def retrieve_input
+    retrieve_textfile
   end
 end

@@ -2,29 +2,33 @@
 # frozen_string_literal: true
 
 # This task loads a text file and stores its ID in Redis.
-class FileLoaderTask < Jongleur::WorkerTask
-  # Executes the task.
-  #
-  # @return [void]
+class FileLoaderTask < Task
   def execute
-    # Retrieve the input file path from Redis.
-    input_file_path = Jongleur::WorkerTask.class_variable_get(:@@redis).get("input_file_path")
+    logger.info "Starting FileLoaderTask"
 
-    # Create a new FileLoader instance to process the file.
+    input_file_path = retrieve_input
+
     file_processor = Flowbots::FileLoader.new(input_file_path)
+    text_file = file_processor.file_data
 
-    # Get the ID of the loaded Textfile.
-    text_file_id = file_processor.file_data.id
-
-    # If the Textfile ID is nil, raise an error.
-    if text_file_id.nil?
-      logger.error "Failed to load Textfile with ID: #{text_file_id}"
+    if text_file.nil? || text_file.id.nil?
+      logger.error "Failed to load Textfile"
       raise FlowbotError.new("Textfile not found", "FILENOTFOUND")
     end
 
-    # Log a success message and display it to the user.
-    logger.info "Loaded Textfile with ID: #{text_file_id}"
-    Flowbots::UI.say(:ok, "Loaded Textfile with ID: #{text_file_id}")
-    ui.space
+    store_textfile_id(text_file.id)
+
+    logger.info "Loaded Textfile with ID: #{text_file.id}"
+    Flowbots::UI.say(:ok, "Loaded Textfile with ID: #{text_file.id}")
+  end
+
+  private
+
+  def retrieve_input
+    retrieve_file_path
+  end
+
+  def store_textfile_id(id)
+    RedisKeys.set(RedisKeys::CURRENT_TEXTFILE_ID, id)
   end
 end

@@ -32,9 +32,6 @@ WORKFLOW_DIR = File.expand_path("workflows", __dir__)
 TASK_DIR = File.expand_path("tasks", __dir__)
 GRAMMAR_DIR = File.expand_path("grammars", __dir__)
 
-require "workflows"
-require "tasks"
-
 CARTRIDGE_DIR = File.expand_path("../nano-bots/cartridges/", __dir__)
 
 # Configuration for Redis connection
@@ -57,6 +54,8 @@ end
 require_relative "components/WorkflowOrchestrator"
 require_relative "components/ExceptionHandler"
 
+require_relative "components/InputRetrieval"
+require_relative "components/RedisKeys"
 require_relative "components/OhmModels"
 require_relative "components/FileLoader"
 
@@ -67,6 +66,9 @@ require_relative "processors/TextTokenizeProcessor"
 require_relative "processors/NLPProcessor"
 require_relative "processors/TextTaggerProcessor"
 require_relative "processors/TopicModelProcessor"
+
+require "workflows"
+require "tasks"
 
 begin
   Ohm.redis = Redic.new("redis://localhost:6379/0")

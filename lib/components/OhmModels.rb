@@ -25,7 +25,6 @@ class Textfile < Ohm::Model
   include Ohm::DataTypes
   include Ohm::Callbacks
 
-  # Defines attributes for the Textfile model.
   attribute :name
   attribute :path
   attribute :extension
@@ -38,19 +37,35 @@ class Textfile < Ohm::Model
 
   attribute :batch
 
-  # Defines sets and lists for relationships with other models.
   set :topics, :Topic
   list :segments, :Segment
   list :words, :Word
 
-  # Defines unique indexes for the title and path attributes.
   unique :path
 
-  # Defines indexes for the title, path, batch, and analysis attributes.
   index :title
   index :path
   index :batch
   index :analysis
+
+  def self.current
+    textfile_id = Jongleur::WorkerTask.class_variable_get(:@@redis).get("current_textfile_id")
+    self[textfile_id]
+  end
+
+  def add_segment(text)
+    segment = Segment.create(text:, textfile: self)
+    segments.push(segment)
+    save
+    segment
+  end
+
+  def add_word(word_data)
+    word = Word.create(word_data.merge(textfile: self))
+    words.push(word)
+    save
+    word
+  end
 
   # Finds or creates a Textfile object based on the provided file path and attributes.
   #
@@ -195,17 +210,21 @@ class Segment < Ohm::Model
   include Ohm::DataTypes
   include Ohm::Callbacks
 
-  # Defines attributes for the Segment model.
   attribute :text
   attribute :tokens, Type::Array
   attribute :tagged, Type::Hash
 
-  # Defines a list for the relationship with Word objects.
   list :words, :Word
 
-  # Defines references to the parent Textfile and Topic objects.
   reference :textfile, :Textfile
   reference :topic, :Topic
+
+  def add_word(word_data)
+    word = Word.create(word_data.merge(segment: self))
+    words.push(word)
+    save
+    word
+  end
 
   # Adds new topics to the Segment object.
   #

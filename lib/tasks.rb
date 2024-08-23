@@ -2,16 +2,21 @@
 # frozen_string_literal: true
 
 class Task < Ohm::Model
-  # Defines the attributes of a Task model.
+  include InputRetrieval
+
   attribute :name
   attribute :status
   attribute :result
   attribute :start_time
   attribute :end_time
+  attribute :predecessors
 
-  # Defines indexes for efficient retrieval of tasks.
   index :name
   index :status
+
+  def execute
+    raise NotImplementedError, "#{self.class.name}#execute must be implemented in subclass"
+  end
 end
 
 module Flowbots

@@ -2,22 +2,15 @@
 # frozen_string_literal: true
 
 # This task displays the results of the text processing workflow.
-class DisplayResultsTask < Jongleur::WorkerTask
-  include Logging
+class DisplayResultsTask < Task
+  include InputRetrieval
 
-  # Executes the task.
-  #
-  # @return [void]
   def execute
     logger.info "Starting DisplayResultsTask"
 
-    # Retrieve the Textfile object from Redis.
-    textfile = retrieve_current_textfile
-
-    # Retrieve the analysis result from the Textfile.
+    textfile = retrieve_input
     analysis_result = textfile.analysis
 
-    # Display the results in a formatted way.
     display_results(textfile, analysis_result)
 
     logger.info "DisplayResultsTask completed"
@@ -25,33 +18,14 @@ class DisplayResultsTask < Jongleur::WorkerTask
 
   private
 
-  # Retrieves the current Textfile object from Redis.
-  #
-  # @return [Textfile] The Textfile object representing the current file.
-  def retrieve_current_textfile
-    textfile_id = Jongleur::WorkerTask.class_variable_get(:@@redis).get("current_textfile_id")
-    Textfile[textfile_id]
+  def retrieve_input
+    retrieve_textfile
   end
 
-  # # Retrieves the analysis result from Redis.
-  # #
-  # # @return [Hash] The analysis result.
-  # def retrieve_analysis_result
-  #   JSON.parse(Jongleur::WorkerTask.class_variable_get(:@@redis).get("analysis_result"))
-  # end
-
-  # Displays the results of the text processing workflow.
-  #
-  # @param textfile [Textfile] The Textfile object.
-  # @param analysis_result [String] The analysis result.
-  #
-  # @return [void]
   def display_results(textfile, analysis_result)
-    # Format the file information and analysis result.
     file_info = format_file_info(textfile)
     analysis = format_analysis(analysis_result)
 
-    # Display the formatted information in side-by-side boxes.
     puts BoxUI.side_by_side_boxes(
       file_info,
       analysis,
@@ -60,31 +34,20 @@ class DisplayResultsTask < Jongleur::WorkerTask
     )
   end
 
-  # Formats the file information for display.
-  #
-  # @param textfile [Textfile] The Textfile object.
-  #
-  # @return [String] The formatted file information.
   def format_file_info(textfile)
     <<~INFO
       Filename: #{textfile.name}
       Topics: #{textfile.topics.to_a.map(&:name).join(', ')}
 
       Content Preview:
-      #{textfile.content}
+      #{textfile.content[0..500]}...
 
       Total Segments: #{textfile.segments.count}
       Total Words: #{textfile.words.count}
     INFO
   end
 
-  # Formats the analysis result for display.
-  #
-  # @param analysis_result [String] The analysis result.
-  #
-  # @return [String] The formatted analysis result.
   def format_analysis(analysis_result)
-    # If analysis_result is a hash or has a specific structure, format it accordingly
     analysis_result.is_a?(String) ? analysis_result : JSON.pretty_generate(analysis_result)
   end
 end
