@@ -43,7 +43,7 @@ class DisplayResultsTask < Task
       #{textfile.content[0..500]}...
 
       Total Segments: #{textfile.segments.count}
-      Total Words: #{textfile.words.count}
+      Total Words: #{textfile.lemmas.count}
     INFO
   end
 

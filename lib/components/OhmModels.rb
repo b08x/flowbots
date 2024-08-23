@@ -21,7 +21,6 @@ class Topic < Ohm::Model
 end
 
 class Textfile < Ohm::Model
-  # Includes the Ohm::DataTypes and Ohm::Callbacks modules for data type handling and callback management.
   include Ohm::DataTypes
   include Ohm::Callbacks
 
@@ -39,7 +38,7 @@ class Textfile < Ohm::Model
 
   set :topics, :Topic
   list :segments, :Segment
-  list :words, :Word
+  list :lemmas, :Lemma
 
   unique :path
 
@@ -49,7 +48,7 @@ class Textfile < Ohm::Model
   index :analysis
 
   def self.current
-    textfile_id = Jongleur::WorkerTask.class_variable_get(:@@redis).get("current_textfile_id")
+    textfile_id = RedisKeys.get(RedisKeys::CURRENT_TEXTFILE_ID)
     self[textfile_id]
   end
 
@@ -60,11 +59,21 @@ class Textfile < Ohm::Model
     segment
   end
 
-  def add_word(word_data)
-    word = Word.create(word_data.merge(textfile: self))
-    words.push(word)
+  def add_lemma(lemma_data)
+    lemma = Lemma.create(lemma_data.merge(textfile: self))
+    lemmas.push(lemma)
     save
-    word
+    lemma
+  end
+
+  def add_lemmas(lemmas_data)
+    new_lemmas = lemmas_data.map do |lemma_data|
+      lemma = Lemma.create(lemma_data.merge(textfile: self))
+      lemmas.push(lemma)
+      lemma
+    end
+    save
+    new_lemmas
   end
 
   # Finds or creates a Textfile object based on the provided file path and attributes.
@@ -295,4 +304,18 @@ class Word < Ohm::Model
   # Defines an index for the word attribute.
   index :word
   # collection :vector_data, :VectorData
+end
+
+class Lemma < Ohm::Model
+  include Ohm::DataTypes
+  include Ohm::Callbacks
+
+  attribute :lemma
+  attribute :pos
+  attribute :count, Type::Integer
+
+  reference :textfile, :Textfile
+
+  index :lemma
+  index :pos
 end
