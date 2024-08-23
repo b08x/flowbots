@@ -79,11 +79,8 @@ class WorkflowOrchestrator
         end
 
         on.completed do |task_matrix|
-          ui.framed do
-            ui.puts "Workflow completed"
-            ui.space
-            ui.puts "Task matrix: #{task_matrix}"
-          end
+          puts "Workflow completed"
+          logger.info "Task matrix: #{task_matrix}"
           @running = false
           begin
             return "next" if BATCH

@@ -26,7 +26,7 @@ class DisplayResultsTask < Task
     file_info = format_file_info(textfile)
     analysis = format_analysis(analysis_result)
 
-    puts UI::Box.comparison_box(
+    puts UI::ScrollableBox.side_by_side_boxes(
       file_info,
       analysis,
       title1: "File Information",

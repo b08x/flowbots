@@ -1,11 +1,10 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-
 module Sublayer
   module Actions
     class WriteXMLFileAction < Base
-      require 'builder'
+      require "builder"
 
       def initialize(data:, file_path:)
         @data = data
@@ -14,7 +13,7 @@ module Sublayer
 
       def call
         xml = Builder::XmlMarkup.new(indent: 2)
-        xml.instruct! :xml, version: '1.0', encoding: 'UTF-8'
+        xml.instruct! :xml, version: "1.0", encoding: "UTF-8"
 
         # Assuming @data is a hash and converting it into XML format
         xml.data do
@@ -23,9 +22,7 @@ module Sublayer
           end
         end
 
-        File.open(@file_path, 'wb') do |file|
-          file.write(xml.target!)
-        end
+        File.binwrite(@file_path, xml.target!)
       end
     end
   end

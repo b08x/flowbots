@@ -43,7 +43,11 @@ module UI
 
   def header
     CLI::UI::StdoutRouter.enable
-    CLI::UI::Frame.open("Flowbots", color: :green)
+    CLI::UI::Frame.open("Flowbots", color: :magenta)
+  end
+
+  def footer
+    CLI::UI::Frame.close("Alright")
   end
 
   def main_menu

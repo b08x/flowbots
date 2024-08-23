@@ -67,12 +67,15 @@ class WorkflowAgent
     logger.debug "Processing input for #{@role}: #{input}"
 
     pastel = Pastel.new
+    puts UI::Box.eval_result_box(
+      @bot.eval(input) do |content, fragment, finished, meta|
+        @response = content unless content.nil?
+        pastel.blue(fragment) unless fragment.nil?
+        sleep 0.025
+      end
+    )
 
-    @bot.eval(input) do |content, fragment, finished, meta|
-      @response = content unless content.nil?
-      print pastel.blue(fragment) unless fragment.nil?
-      sleep 0.025
-    end
+    sleep(2)
 
     # UI.info(@response)
     update_state(@response)

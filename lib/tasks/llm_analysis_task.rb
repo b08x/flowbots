@@ -8,6 +8,8 @@ class LlmAnalysisTask < Jongleur::WorkerTask
   #
   # @return [void]
   def execute
+    UI.footer
+
     UI.info "Starting LLMAnalysisTask"
 
     begin

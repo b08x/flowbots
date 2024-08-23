@@ -15,7 +15,7 @@ module UI
 
       box1 = TTY::Box.frame(width:, title: { top_left: title1 }, padding: 1) { text1 }
       box2 = TTY::Box.frame(width:, title: { top_left: title2 }, padding: 1) { text2 }
-      box1 + "\n" + box2
+      box1 + box2
     end
 
     def eval_result_box(result, title: "Evaluation Result")

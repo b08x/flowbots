@@ -9,9 +9,9 @@ module UI
     module_function
 
     def side_by_side_boxes(text1, text2, title1: "Box 1", title2: "Box 2")
-      screen_width = TTY::Screen.width
+      screen_width = TTY::Screen.width / 1.25
       screen_height = TTY::Screen.height
-      box_width = (screen_width / 2) - 2
+      box_width = (screen_width / 2.5) - 2
       box_height = screen_height - 4 # Leave some space for prompts
 
       box1 = create_scrollable_box(text1, box_width, box_height, title1)
@@ -22,7 +22,7 @@ module UI
 
     private
 
-    def create_scrollable_box(text, width, height, title)
+    def self.create_scrollable_box(text, width, height, title)
       lines = text.split("\n")
       total_pages = (lines.length.to_f / (height - 2)).ceil
       {
@@ -35,7 +35,7 @@ module UI
       }
     end
 
-    def display_boxes(box1, box2, box_height)
+    def self.display_boxes(box1, box2, box_height)
       loop do
         system("clear") || system("cls")
         print_boxes(box1, box2, box_height)
@@ -57,7 +57,7 @@ module UI
       end
     end
 
-    def print_boxes(box1, box2, box_height)
+    def self.print_boxes(box1, box2, box_height)
       start_line1 = (box1[:current_page] - 1) * (box_height - 2)
       start_line2 = (box2[:current_page] - 1) * (box_height - 2)
 
@@ -74,7 +74,7 @@ module UI
       puts box1_frame.split("\n").zip(box2_frame.split("\n")).map { |a, b| "#{a}  #{b}" }.join("\n")
     end
 
-    def print_navigation_info(box1, box2)
+    def self.print_navigation_info(box1, box2)
       puts "Box 1: Page #{box1[:current_page]}/#{box1[:total_pages]} (A/D to navigate)"
       puts "Box 2: Page #{box2[:current_page]}/#{box2[:total_pages]} (J/L to navigate)"
       puts "Press Q to exit"
