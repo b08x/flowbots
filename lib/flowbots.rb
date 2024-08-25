@@ -86,7 +86,6 @@ module Flowbots
     def initialize
       setup_redis
       load_components
-      setup_ui
     end
 
     def shutdown
@@ -106,10 +105,6 @@ module Flowbots
     def load_components
       Workflows.load_workflows
       Task.load_tasks
-    end
-
-    def setup_ui
-      CLI::UI::StdoutRouter.enable
     end
 
     def stop_running_workflows

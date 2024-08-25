@@ -30,24 +30,20 @@ module UI
 
   def info(text)
     header
-    CLI::UI::Frame.open("Information") do
-      puts text
+    box = TTY::Box.frame(width: TITLE_WIDTH, title: {top_left: " Information "}, padding: 1) do
+      text
     end
-  end
-
-  def exception(text)
-    CLI::UI::Frame.open("Exception Message", color: :red) do
-      puts text
-    end
+    puts box
   end
 
   def header
-    CLI::UI::StdoutRouter.enable
-    CLI::UI::Frame.open("Flowbots", color: :magenta)
+    box = TTY::Box.frame(width: TITLE_WIDTH, title: {top_left: " Flowbots "}, style: {fg: :magenta})
+    puts box
   end
 
   def footer
-    CLI::UI::Frame.close("Alright")
+    box = TTY::Box.frame(width: TITLE_WIDTH, title: {bottom_right: " Alright "})
+    puts box
   end
 
   def main_menu

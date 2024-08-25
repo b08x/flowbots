@@ -17,169 +17,139 @@ Flowbots is an advanced text processing and analysis system that combines the po
 
 ### Class Diagram
 
-```plantuml
-@startuml
+```mermaid
+classDiagram
+    class CLI {
+        +version()
+        +workflows()
+        +train_topic_model(folder)
+        +process_text(file)
+    }
 
-skinparam backgroundColor #2F4F4F
-skinparam participant {
-    BackgroundColor #2F4F4F
-    BorderColor #DAA520
-    FontColor #DAA520
-}
-skinparam actor {
-    BackgroundColor #2F4F4F
-    BorderColor #DAA520
-    FontColor #DAA520
-}
-skinparam database {
-    BackgroundColor #2F4F4F
-    BorderColor #DAA520
-    FontColor #DAA520
-}
-skinparam arrow {
-    Color #DAA520
-    FontColor #87CEEB
-}
-skinparam note {
-    BackgroundColor #2F4F4F
-    BorderColor #DAA520
-    FontColor #87CEEB
-}
-skinparam sequence {
-    LifeLineBorderColor #DAA520
-    LifeLineBackgroundColor #2F4F4F
-}
-skinparam title {
-    FontColor #DAA520
-}
+    class Workflows {
+        -prompt: TTY::Prompt
+        +list_and_select()
+        +run(workflow_name)
+        -get_workflows()
+        -display_workflows(workflows)
+        -select_workflow(workflows)
+        -extract_workflow_description(file)
+    }
 
-class CLI {
-    + version()
-    + workflows()
-    + train_topic_model(folder: String)
-    + process_text(file: String)
-}
+    class WorkflowOrchestrator {
+        -agents: Map
+        +add_agent(role, cartridge_file)
+        +define_workflow(workflow_definition)
+        +run_workflow()
+    }
 
-class Workflows {
-    + list_and_select(): String
-    + run(workflow_name: String)
-}
+    class WorkflowAgent {
+        -role: String
+        -state: Map
+        -bot: NanoBot
+        +process(input)
+        +save_state()
+        +load_state()
+    }
 
-abstract class WorkflowOrchestrator {
-    - tasks: List<Task>
-    + add_task(task: Task)
-    + define_workflow(workflow_definition: Hash)
-    + run_workflow()
-}
+    class Task {
+        <<abstract>>
+        +execute()
+    }
 
-abstract class Task {
-    + execute()
-}
+    class TextProcessingWorkflow {
+        -input_file_path: String
+        -orchestrator: WorkflowOrchestrator
+        +run()
+    }
 
-class FileLoaderTask {
-    + execute()
-}
+    class TopicModelTrainerWorkflow {
+        -input_folder_path: String
+        -orchestrator: WorkflowOrchestrator
+        +run()
+    }
 
-class PreprocessTextFileTask {
-    + execute()
-}
+    class TextProcessor {
+        <<abstract>>
+        +process(text)
+    }
 
-class TextSegmentTask {
-    + execute()
-}
+    class NLPProcessor {
+        -nlp_model: Object
+        +process(segment, options)
+    }
 
-class TokenizeSegmentsTask {
-    + execute()
-}
+    class TopicModelProcessor {
+        -model_path: String
+        -model: Object
+        -model_params: Map
+        +load_or_create_model()
+        +train_model(documents, iterations)
+        +infer_topics(document)
+    }
 
-class NlpAnalysisTask {
-    + execute()
-}
+    class FileLoader {
+        -file_data: Textfile
+        +initialize(file_path)
+    }
 
-class TopicModelingTask {
-    + execute()
-}
+    class Textfile {
+        +path: String
+        +name: String
+        +content: String
+        +preprocessed_content: String
+        +metadata: Map
+        +topics: Set~Topic~
+        +segments: List~Segment~
+        +lemmas: List~Lemma~
+    }
 
-class LlmAnalysisTask {
-    + execute()
-}
+    class Segment {
+        +text: String
+        +tokens: List
+        +tagged: Map
+        +words: List~Word~
+    }
 
-class DisplayResultsTask {
-    + execute()
-}
+    class Word {
+        +word: String
+        +pos: String
+        +tag: String
+        +dep: String
+        +ner: String
+    }
 
-abstract class TextProcessor {
-    + process(text: String): String
-}
+    class Topic {
+        +name: String
+        +description: String
+        +vector: List
+    }
 
-class NLPProcessor {
-    - nlp_model: Object
-    + process(segment: String, options: Hash): Hash
-}
-
-class TopicModelProcessor {
-    - model: Object
-    + train_model(documents: List<String>)
-    + infer_topics(document: String): Hash
-}
-
-class WorkflowAgent {
-    - role: String
-    - state: Hash
-    + process(input: String): String
-    + save_state()
-    + load_state()
-}
-
-class OhmModel {
-}
-
-class Sourcefile {
-    + path: String
-    + name: String
-    + content: String
-    + preprocessed_content: String
-    + metadata: Hash
-}
-
-class Segment {
-    + text: String
-    + tokens: List<String>
-    + tagged: Hash
-}
-
-class Topic {
-    + name: String
-    + description: String
-    + vector: List<Float>
-}
-
-CLI --> Workflows : uses
-Workflows --> WorkflowOrchestrator : runs
-WorkflowOrchestrator o-- Task
-Task <|-- FileLoaderTask
-Task <|-- PreprocessTextFileTask
-Task <|-- TextSegmentTask
-Task <|-- TokenizeSegmentsTask
-Task <|-- NlpAnalysisTask
-Task <|-- TopicModelingTask
-Task <|-- LlmAnalysisTask
-Task <|-- DisplayResultsTask
-TextProcessor <|-- NLPProcessor
-TextProcessor <|-- TopicModelProcessor
-NlpAnalysisTask --> NLPProcessor : uses
-TopicModelingTask --> TopicModelProcessor : uses
-LlmAnalysisTask --> WorkflowAgent : uses
-OhmModel <|-- Sourcefile
-OhmModel <|-- Segment
-OhmModel <|-- Topic
-Task --> OhmModel : interacts with
-
-@enduml
+    CLI --> Workflows : uses
+    Workflows --> TextProcessingWorkflow : runs
+    Workflows --> TopicModelTrainerWorkflow : runs
+    TextProcessingWorkflow --> WorkflowOrchestrator : uses
+    TopicModelTrainerWorkflow --> WorkflowOrchestrator : uses
+    WorkflowOrchestrator --> WorkflowAgent : manages
+    WorkflowOrchestrator --> Task : executes
+    Task <|-- FileLoaderTask
+    Task <|-- PreprocessTextFileTask
+    Task <|-- TextSegmentTask
+    Task <|-- TokenizeSegmentsTask
+    Task <|-- NlpAnalysisTask
+    Task <|-- TopicModelingTask
+    Task <|-- LlmAnalysisTask
+    Task <|-- DisplayResultsTask
+    TextProcessor <|-- NLPProcessor
+    TextProcessor <|-- TopicModelProcessor
+    NlpAnalysisTask --> NLPProcessor : uses
+    TopicModelingTask --> TopicModelProcessor : uses
+    FileLoaderTask --> FileLoader : uses
+    Textfile "1" *-- "many" Segment
+    Segment "1" *-- "many" Word
+    Textfile "1" *-- "many" Topic
+    Textfile "1" *-- "many" Lemma
 ```
-
-
-
 
 
 # Flowbots Project Overview
@@ -290,127 +260,69 @@ The workflow system is designed to be flexible and extensible:
 
 This flexibility allows Flowbots to adapt to various text processing and analysis needs.
 
-```plantuml
-@startuml
-skinparam backgroundColor #2F4F4F
-skinparam participant {
-    BackgroundColor #2F4F4F
-    BorderColor #DAA520
-    FontColor #DAA520
-}
-skinparam actor {
-    BackgroundColor #2F4F4F
-    BorderColor #DAA520
-    FontColor #DAA520
-}
-skinparam database {
-    BackgroundColor #2F4F4F
-    BorderColor #DAA520
-    FontColor #DAA520
-}
-skinparam arrow {
-    Color #DAA520
-    FontColor #87CEEB
-}
-skinparam note {
-    BackgroundColor #2F4F4F
-    BorderColor #DAA520
-    FontColor #87CEEB
-}
-skinparam sequence {
-    LifeLineBorderColor #DAA520
-    LifeLineBackgroundColor #2F4F4F
-}
-skinparam title {
-    FontColor #DAA520
-}
+```mermaid
+sequenceDiagram
+    actor User
+    participant CLI
+    participant TextProcessingWorkflow
+    participant WorkflowOrchestrator
+    participant FileLoaderTask
+    participant PreprocessTextFileTask
+    participant TextSegmentTask
+    participant TokenizeSegmentsTask
+    participant NlpAnalysisTask
+    participant TopicModelingTask
+    participant LlmAnalysisTask
+    participant DisplayResultsTask
+    participant Redis
+    participant Textfile
 
-actor User
-participant CLI
-participant TextProcessingWorkflow
-participant FileLoaderTask
-participant PreprocessTextFileTask
-participant TextSegmentTask
-participant TokenizeSegmentsTask
-participant NlpAnalysisTask
-participant TopicModelingTask
-participant LlmAnalysisTask
-participant DisplayResultsTask
-database Redis
-
-User -> CLI : process_text(file)
-activate CLI
-
-CLI -> TextProcessingWorkflow : new(input_file_path)
-activate TextProcessingWorkflow
-
-TextProcessingWorkflow -> TextProcessingWorkflow : setup_workflow()
-TextProcessingWorkflow -> Redis : set("input_file_path", path)
-
-TextProcessingWorkflow -> FileLoaderTask : execute()
-activate FileLoaderTask
-FileLoaderTask -> Redis : get("input_file_path")
-FileLoaderTask -> FileLoaderTask : load_file()
-FileLoaderTask -> Redis : set("current_textfile_id", id)
-deactivate FileLoaderTask
-
-TextProcessingWorkflow -> PreprocessTextFileTask : execute()
-activate PreprocessTextFileTask
-PreprocessTextFileTask -> Redis : get("current_textfile_id")
-PreprocessTextFileTask -> PreprocessTextFileTask : split_content_and_metadata()
-PreprocessTextFileTask -> Redis : set("preprocessed_content", content)
-PreprocessTextFileTask -> Redis : set("file_metadata", metadata)
-deactivate PreprocessTextFileTask
-
-TextProcessingWorkflow -> TextSegmentTask : execute()
-activate TextSegmentTask
-TextSegmentTask -> Redis : get("current_textfile_id")
-TextSegmentTask -> TextSegmentTask : segment_text()
-TextSegmentTask -> Redis : update textfile segments
-deactivate TextSegmentTask
-
-TextProcessingWorkflow -> TokenizeSegmentsTask : execute()
-activate TokenizeSegmentsTask
-TokenizeSegmentsTask -> Redis : get("current_textfile_id")
-TokenizeSegmentsTask -> TokenizeSegmentsTask : tokenize_segments()
-TokenizeSegmentsTask -> Redis : update segment tokens
-deactivate TokenizeSegmentsTask
-
-TextProcessingWorkflow -> NlpAnalysisTask : execute()
-activate NlpAnalysisTask
-NlpAnalysisTask -> Redis : get("current_textfile_id")
-NlpAnalysisTask -> NlpAnalysisTask : perform_nlp_analysis()
-NlpAnalysisTask -> Redis : update segment NLP data
-deactivate NlpAnalysisTask
-
-TextProcessingWorkflow -> TopicModelingTask : execute()
-activate TopicModelingTask
-TopicModelingTask -> Redis : get("current_textfile_id")
-TopicModelingTask -> TopicModelingTask : infer_topics()
-TopicModelingTask -> Redis : store topic results
-deactivate TopicModelingTask
-
-TextProcessingWorkflow -> LlmAnalysisTask : execute()
-activate LlmAnalysisTask
-LlmAnalysisTask -> Redis : get("current_textfile_id")
-LlmAnalysisTask -> LlmAnalysisTask : generate_analysis()
-LlmAnalysisTask -> Redis : set("analysis_result", result)
-deactivate LlmAnalysisTask
-
-TextProcessingWorkflow -> DisplayResultsTask : execute()
-activate DisplayResultsTask
-DisplayResultsTask -> Redis : get("current_textfile_id")
-DisplayResultsTask -> Redis : get("analysis_result")
-DisplayResultsTask -> DisplayResultsTask : format_and_display_results()
-deactivate DisplayResultsTask
-
-TextProcessingWorkflow --> CLI : workflow completed
-deactivate TextProcessingWorkflow
-
-CLI --> User : display results
-deactivate CLI
-
-@enduml
+    User->>CLI: process_text(file)
+    activate CLI
+    CLI->>TextProcessingWorkflow: new(input_file_path)
+    activate TextProcessingWorkflow
+    TextProcessingWorkflow->>WorkflowOrchestrator: define_workflow()
+    TextProcessingWorkflow->>WorkflowOrchestrator: run_workflow()
+    activate WorkflowOrchestrator
+    WorkflowOrchestrator->>FileLoaderTask: execute()
+    activate FileLoaderTask
+    FileLoaderTask->>Redis: set("current_textfile_id", id)
+    FileLoaderTask->>Textfile: create
+    deactivate FileLoaderTask
+    WorkflowOrchestrator->>PreprocessTextFileTask: execute()
+    activate PreprocessTextFileTask
+    PreprocessTextFileTask->>Textfile: update(preprocessed_content, metadata)
+    deactivate PreprocessTextFileTask
+    WorkflowOrchestrator->>TextSegmentTask: execute()
+    activate TextSegmentTask
+    TextSegmentTask->>Textfile: add_segments()
+    deactivate TextSegmentTask
+    WorkflowOrchestrator->>TokenizeSegmentsTask: execute()
+    activate TokenizeSegmentsTask
+    TokenizeSegmentsTask->>Textfile: update segments
+    deactivate TokenizeSegmentsTask
+    WorkflowOrchestrator->>NlpAnalysisTask: execute()
+    activate NlpAnalysisTask
+    NlpAnalysisTask->>Textfile: update segments with NLP data
+    deactivate NlpAnalysisTask
+    WorkflowOrchestrator->>TopicModelingTask: execute()
+    activate TopicModelingTask
+    TopicModelingTask->>Textfile: add_topics()
+    deactivate TopicModelingTask
+    WorkflowOrchestrator->>LlmAnalysisTask: execute()
+    activate LlmAnalysisTask
+    LlmAnalysisTask->>Textfile: update(analysis)
+    deactivate LlmAnalysisTask
+    WorkflowOrchestrator->>DisplayResultsTask: execute()
+    activate DisplayResultsTask
+    DisplayResultsTask->>Textfile: retrieve data
+    DisplayResultsTask-->>User: display results
+    deactivate DisplayResultsTask
+    deactivate WorkflowOrchestrator
+    TextProcessingWorkflow-->>CLI: workflow completed
+    deactivate TextProcessingWorkflow
+    CLI-->>User: display completion message
+    deactivate CLI
 ```
 
 # Task Processors
@@ -622,5 +534,3 @@ Flowbots leverages a variety of Ruby gems to provide its functionality. Here's a
     - Usage: Writing and running tests for the application
 
 These gems provide a robust foundation for Flowbots, covering areas such as data persistence, natural language processing, command-line interfaces, HTTP communications, and more. The combination of these tools allows Flowbots to offer a comprehensive text processing and analysis system with a user-friendly interface.
-
-
