@@ -26,7 +26,7 @@ class NlpAnalysisTask < Task
   private
 
   def retrieve_input
-    retrieve_textfile
+    retrieve_file_object
   end
 
   def update_segment_with_nlp_data(segment, processed_tokens, lemma_counts)

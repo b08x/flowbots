@@ -99,7 +99,7 @@ module Flowbots
       end
 
       table = TTY::Table.new(
-        header: [PASTEL.cyan("Workflow"), PASTEL.cyan("Description")],
+        header: [UI::PASTEL.cyan("Workflow"), UI::PASTEL.cyan("Description")],
         rows: workflows
       )
 

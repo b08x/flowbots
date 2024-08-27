@@ -1,24 +1,28 @@
-#!/usr/bin/env ruby
-# frozen_string_literal: true
+# lib/tasks/text_tagger_task.rb
 
-# This task performs text tagging using a pre-trained model.
 class TextTaggerTask < Jongleur::WorkerTask
-  # Executes the task.
-  #
-  # @return [void]
+  include InputRetrieval
+
   def execute
     logger.info "Starting TextTaggerTask"
 
-    # Get an instance of the TextTaggerProcessor.
     text_tagger = Flowbots::TextTaggerProcessor.instance
+    file_object = retrieve_input
 
-    # Retrieve the Textfile object from Redis.
-    textfile = retrieve_input_text
+    if file_object.nil?
+      logger.error "Failed to retrieve FileObject"
+      raise("Failed to retrieve FileObject")
+      return
+    end
 
-    # Get the preprocessed content from the Textfile.
-    preprocessed_content = textfile.preprocessed_content
+    preprocessed_content = file_object.preprocessed_content
 
-    # Perform text tagging using the TextTaggerProcessor.
+    if preprocessed_content.nil? || preprocessed_content.empty?
+      logger.error "Preprocessed content is empty or nil for FileObject: #{file_object.id}"
+      raise("Preprocessed content is empty or nil")
+      return
+    end
+
     result = text_tagger.process(
       preprocessed_content,
       tagged_text: true,
@@ -29,58 +33,45 @@ class TextTaggerTask < Jongleur::WorkerTask
       present_tense_verbs: true
     )
 
-    # Extract additional information using the TextTaggerProcessor.
     begin
       main_topics = text_tagger.extract_main_topics(preprocessed_content)
     rescue StandardError => e
-      logger.warn "#{e.message}"
+      logger.warn "Error extracting main topics: #{e.message}"
+      main_topics = []
     end
 
     begin
       speech_acts = text_tagger.identify_speech_acts(preprocessed_content)
     rescue StandardError => e
-      logger.warn "#{e.message}"
+      logger.warn "Error identifying speech acts: #{e.message}"
+      speech_acts = []
     end
 
     begin
       transitivity = text_tagger.analyze_transitivity(preprocessed_content)
     rescue StandardError => e
-      logger.warn "#{e.message}"
+      logger.warn "Error analyzing transitivity: #{e.message}"
+      transitivity = []
     end
 
-    # Combine all results into a comprehensive result hash.
-    comprehensive_result = {
-      tagger_analysis: result,
-      main_topics:,
-      speech_acts:,
-      transitivity:
-    }
+    store_result(file_object, result, main_topics, speech_acts, transitivity)
 
-    # Store the comprehensive result in the Textfile.
-    store_result(textfile, comprehensive_result)
-
-    logger.info "TextTaggerTask completed"
+    logger.info("Text tagging completed for FileObject: #{file_object.id}")
   end
 
   private
 
-  # Retrieves the Textfile object from Redis.
-  #
-  # @return [Textfile] The Textfile object.
-  def retrieve_input_text
-    textfile_id = Jongleur::WorkerTask.class_variable_get(:@@redis).get("current_textfile_id")
-    Textfile[textfile_id]
+  def retrieve_input
+    retrieve_file_object
   end
 
-  # Stores the result in the Textfile.
-  #
-  # @param textfile [Textfile] The Textfile object.
-  # @param result [Hash] The result hash.
-  #
-  # @return [void]
-  def store_result(textfile, result)
-    textfile.update(tagged: result)
-    textfile.save
-    # Jongleur::WorkerTask.class_variable_get(:@@redis).set("text_tagger_result", result.to_json)
+  def store_result(file_object, result, main_topics, speech_acts, transitivity)
+    file_object.update(
+      tagged: result,
+      main_topics:,
+      speech_acts:,
+      transitivity:
+    )
+    logger.debug "Stored tagging result for FileObject: #{file_object.id}"
   end
 end

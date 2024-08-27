@@ -1,17 +1,15 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+# lib/workflows/topic_model_trainer_workflow.rb
+
 module Flowbots
   class TopicModelTrainerWorkflow
-    BATCH_SIZE = 10
-
-    attr_accessor :orchestrator
-    attr_reader :input_folder_path
+    attr_reader :pipeline
 
     def initialize(input_folder_path=nil)
       @input_folder_path = input_folder_path || prompt_for_folder
-      @orchestrator = WorkflowOrchestrator.new
-      Object.const_set(:BATCH, true) # Redefines the constant
+      @pipeline = UnifiedFileProcessingPipeline.new(@input_folder_path, batch_size: 10, file_types: %w[md markdown])
     end
 
     def run
@@ -19,9 +17,8 @@ module Flowbots
       logger.info "Setting Up Topic Model Trainer Workflow"
 
       begin
-        setup_workflow
-        flush_redis_cache
-        process_files
+        @pipeline.process
+        train_topic_model
         UI.say(:ok, "Topic Model Trainer Workflow completed")
         logger.info "Topic Model Trainer Workflow completed"
       rescue StandardError => e
@@ -40,52 +37,6 @@ module Flowbots
       raise FlowbotError.new("Folder not found", "FOLDERNOTFOUND") unless File.directory?(folder_path)
 
       folder_path
-    end
-
-    def setup_workflow
-      workflow_graph = {
-        LoadTextFilesTask: [:PreprocessTextFileTask],
-        PreprocessTextFileTask: [:TextSegmentTask],
-        TextSegmentTask: [:TokenizeSegmentsTask],
-        TokenizeSegmentsTask: [:NlpAnalysisTask],
-        NlpAnalysisTask: [:FilterSegmentsTask],
-        FilterSegmentsTask: [:AccumulateFilteredSegmentsTask],
-        AccumulateFilteredSegmentsTask: []
-      }
-
-      @orchestrator.define_workflow(workflow_graph)
-      logger.debug "Workflow setup completed"
-    end
-
-    def flush_redis_cache
-      redis = Jongleur::WorkerTask.class_variable_get(:@@redis)
-      redis.flushdb
-      logger.info "Redis cache flushed"
-    end
-
-    def process_files
-      all_file_paths = Dir.glob(File.join(@input_folder_path, "**{,/*/**}/*.{md,markdown}")).sort
-      total_files = all_file_paths.count
-      num_batches = (total_files.to_f / BATCH_SIZE).ceil
-
-      num_batches.times do |i|
-        batch_start = i * BATCH_SIZE
-        batch_files = all_file_paths[batch_start, BATCH_SIZE]
-
-        UI.say(:ok, "Processing batch #{i + 1} of #{num_batches}")
-        logger.info "Processing batch #{i + 1} of #{num_batches}"
-
-        process_batch(batch_files)
-      end
-
-      train_topic_model
-    end
-
-    def process_batch(batch_files)
-      batch_files.each do |file_path|
-        Jongleur::WorkerTask.class_variable_get(:@@redis).set("current_file_path", file_path)
-        @orchestrator.run_workflow
-      end
     end
 
     def train_topic_model
@@ -112,8 +63,6 @@ module Flowbots
       logger.info "Topic model training completed for all files"
       UI.say(:ok, "Topic model training completed for all files")
     end
-
-    private
 
     def clean_segments_for_modeling(segments)
       segments.reject do |segment|

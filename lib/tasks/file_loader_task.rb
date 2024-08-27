@@ -12,14 +12,14 @@ class FileLoaderTask < Task
     text_file = file_processor.file_data
 
     if text_file.nil? || text_file.id.nil?
-      logger.error "Failed to load Textfile"
-      raise FlowbotError.new("Textfile not found", "FILENOTFOUND")
+      logger.error "Failed to load FileObject"
+      raise FlowbotError.new("FileObject not found", "FILENOTFOUND")
     end
 
-    store_textfile_id(text_file.id)
+    store_FileObject_id(text_file.id)
 
-    logger.info "Loaded Textfile with ID: #{text_file.id}"
-    UI.say(:ok, "Loaded Textfile with ID: #{text_file.id}")
+    logger.info "Loaded FileObject with ID: #{text_file.id}"
+    UI.say(:ok, "Loaded FileObject with ID: #{text_file.id}")
   end
 
   private
@@ -28,7 +28,7 @@ class FileLoaderTask < Task
     retrieve_file_path
   end
 
-  def store_textfile_id(id)
-    RedisKeys.set(RedisKeys::CURRENT_TEXTFILE_ID, id)
+  def store_FileObject_id(id)
+    RedisKeys.set(RedisKeys::CURRENT_FileObject_ID, id)
   end
 end

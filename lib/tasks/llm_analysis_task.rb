@@ -61,7 +61,7 @@ class LlmAnalysisTask < Jongleur::WorkerTask
   private
 
   def retrieve_input
-    retrieve_textfile
+    retrieve_file_object
   end
 
   # Retrieves the current Textfile object from Redis.
@@ -166,7 +166,7 @@ class LlmAnalysisTask < Jongleur::WorkerTask
   #
   # @return [void]
   def store_analysis_result(textfile, result)
-    textfile.update(analysis: result)
+    textfile.update(llm_analysis: result)
     # Jongleur::WorkerTask.class_variable_get(:@@redis).set("analysis_result", result.to_json)
   end
 

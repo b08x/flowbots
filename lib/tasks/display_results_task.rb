@@ -9,7 +9,7 @@ class DisplayResultsTask < Task
     logger.info "Starting DisplayResultsTask"
 
     textfile = retrieve_input
-    analysis_result = textfile.analysis
+    analysis_result = textfile.llm_analysis
 
     display_results(textfile, analysis_result)
 
@@ -19,7 +19,7 @@ class DisplayResultsTask < Task
   private
 
   def retrieve_input
-    retrieve_textfile
+    retrieve_file_object
   end
 
   def display_results(textfile, analysis_result)

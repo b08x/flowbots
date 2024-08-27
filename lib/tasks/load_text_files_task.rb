@@ -13,13 +13,17 @@ class LoadTextFilesTask < Task
       file_loader = Flowbots::FileLoader.new(file_path)
       textfile = file_loader.file_data
 
-      store_textfile_id(textfile.id)
-
-      logger.debug "Loaded file: #{file_path}"
+      if textfile && textfile.is_a?(Textfile)
+        store_textfile_id(textfile.id)
+        logger.debug "Loaded file: #{file_path}"
+      else
+        logger.error "Failed to create Textfile object for: #{file_path}"
+        nil
+      end
     rescue StandardError => e
       logger.error "Error loading file #{file_path}: #{e.message}"
       UI.say(:error, "Failed to load file: #{file_path}")
-      raise
+      nil
     end
   end
 

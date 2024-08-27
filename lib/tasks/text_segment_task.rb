@@ -22,7 +22,7 @@ class TextSegmentTask < Task
   private
 
   def retrieve_input
-    retrieve_textfile
+    retrieve_file_object
   end
 
   def store_segments(textfile, segments)

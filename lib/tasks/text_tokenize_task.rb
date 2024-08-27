@@ -7,8 +7,8 @@ class TextTokenizeTask < Jongleur::WorkerTask
   #
   # @return [void]
   def execute
-    # Retrieve the segments from the latest Textfile.
-    segments = Textfile.latest.retrieve_segments
+    # Retrieve the segments from the latest FileObject.
+    segments = FileObject.latest.retrieve_segments
 
     # Get an instance of the TextTokenizeProcessor.
     text_tokenizer = Flowbots::TextTokenizeProcessor.instance

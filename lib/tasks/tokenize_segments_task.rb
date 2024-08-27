@@ -22,6 +22,6 @@ class TokenizeSegmentsTask < Task
   private
 
   def retrieve_input
-    retrieve_textfile
+    retrieve_file_object
   end
 end

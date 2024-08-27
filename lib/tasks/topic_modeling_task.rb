@@ -26,7 +26,7 @@ class TopicModelingTask < Task
   private
 
   def retrieve_input
-    retrieve_textfile
+    retrieve_file_object
   end
 
   def retrieve_filtered_words(textfile)
@@ -36,7 +36,7 @@ class TopicModelingTask < Task
 
   def filter_segment_words(segment)
     relevant_tags = %w[NN JJ RB]
-    tokens = segment.tagged["tokens"] || []
+    tokens = segment.tagged&.[]("pos") || []
     tokens.select { |token| relevant_tags.include?(token["tag"]) }
       .map { |token| token["word"] }
   end

@@ -43,8 +43,8 @@ module Flowbots
 
     def setup_workflow
       workflow_graph = {
-        LoadTextFilesTask: [:PreprocessTextFileTask],
-        PreprocessTextFileTask: []
+        LoadFileObjectsTask: [:PreprocessFileObjectTask],
+        PreprocessFileObjectTask: []
       }
 
       @orchestrator.define_workflow(workflow_graph)

@@ -9,7 +9,7 @@ require "httparty"
 module Flowbots
   # This class handles loading and processing text files.
   class FileLoader
-    # The Textfile object representing the loaded file.
+    # The FileObject object representing the loaded file.
     attr_accessor :file_data
 
     # Initializes a new FileLoader instance.
@@ -111,9 +111,9 @@ module Flowbots
     # @param file_path [String] The path to the file.
     # @param extracted_text [String] The extracted text content.
     #
-    # @return [Textfile] The Textfile object representing the stored file data.
+    # @return [FileObject] The FileObject object representing the stored file data.
     def store_file_data(file_path, extracted_text)
-      file = Textfile.find_or_create_by_path(
+      file = FileObject.find_or_create_by_path(
         file_path, attributes = { content: extracted_text }
       )
 

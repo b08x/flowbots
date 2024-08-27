@@ -2,10 +2,10 @@
 # frozen_string_literal: true
 
 module RedisKeys
-  CURRENT_TEXTFILE_ID = "current_textfile_id"
-  INPUT_FILE_PATH = "input_file_path"
-  PREPROCESSED_CONTENT = "preprocessed_content"
-  FILE_METADATA = "file_metadata"
+  CURRENT_FILE_OBJECT_ID = "current_file_object_id"
+  CURRENT_FILE_PATH = "current_file_path"
+  CURRENT_FILTERED_SEGMENTS = "current_filtered_segments"
+  ALL_FILTERED_SEGMENTS = "all_filtered_segments"
   CURRENT_BATCH_ID = "current_batch_id"
 
   def self.get(key)

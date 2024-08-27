@@ -27,12 +27,15 @@ require_relative "logging"
 
 include Logging
 
+require_relative "pipelines/unified_file_processing"
 require_relative "components/WorkflowOrchestrator"
 require_relative "components/ExceptionHandler"
 require_relative "components/InputRetrieval"
 require_relative "components/RedisKeys"
 require_relative "components/OhmModels"
+require_relative "components/BatchProcessor"
 require_relative "components/FileLoader"
+require_relative "components/FileDiscovery"
 require_relative "processors/GrammarProcessor"
 require_relative "processors/TextProcessor"
 require_relative "processors/TextSegmentProcessor"
