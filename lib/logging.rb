@@ -13,10 +13,10 @@ module Logging
   LOG_LEVEL = Logger::DEBUG
 
   # The maximum size of a log file in bytes.
-  LOG_MAX_SIZE = 6_145_728
+  LOG_MAX_SIZE = 2_145_728
 
   # The maximum number of log files to keep.
-  LOG_MAX_FILES = 10
+  LOG_MAX_FILES = 100
 
   # A hash to store loggers for different classes and methods.
   @loggers = {}

@@ -17,7 +17,7 @@ module Flowbots
 
     def process
       setup_workflow
-      flush_redis_cache
+      # flush_redis_cache
 
       if File.directory?(@input_path)
         process_batch

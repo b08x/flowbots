@@ -5,11 +5,12 @@ module Flowbots
   class TextProcessingWorkflow
     attr_reader :pipeline
 
-    def initialize(input_file_path=nil)
+    def initialize(input_file_path=nil, batch_mode=false)
       @input_file_path = input_file_path || prompt_for_file
+      @batch_mode = batch_mode
       @pipeline = UnifiedFileProcessingPipeline.new(
         @input_file_path,
-        batch_size: 1,
+        batch_size: batch_mode ? nil : 1,
         file_types: %w[txt md markdown]
       )
     end
@@ -20,7 +21,11 @@ module Flowbots
 
       begin
         @pipeline.process
-        perform_additional_tasks
+        if @batch_mode
+          process_batch
+        else
+          process_single_file
+        end
         UI.say(:ok, "Text Processing Workflow completed")
         logger.info "Text Processing Workflow completed"
       rescue StandardError => e
@@ -41,7 +46,37 @@ module Flowbots
       file_path
     end
 
-    def perform_additional_tasks
+    def process_batch
+      file_ids = fetch_unprocessed_file_ids
+      file_ids.each do |file_id|
+        perform_additional_tasks(file_id)
+      end
+    end
+
+    def process_single_file
+      p @input_file_path
+      puts "-----"
+      file_object = create_or_fetch_file_object(@input_file_path)
+      perform_additional_tasks(file_object.id)
+    end
+
+    def create_or_fetch_file_object(file_path)
+      # Assuming we're using ActiveRecord and there's a FileObject model
+      # This method should create a new FileObject or fetch an existing one
+      if file_path.is_a?(Hash)
+        file_path = file_path[:path]
+      end
+      FileObject.find_or_create_by_path(path: file_path)
+    end
+
+    def fetch_unprocessed_file_ids
+      # Assuming we're using ActiveRecord and there's a FileObject model
+      # This query fetches all file IDs where llm_analysis is nil or an empty string
+      ids = []
+      FileObject.all.each {|f| ids << f.id.to_i if f.llm_analysis.nil?}
+    end
+
+    def perform_additional_tasks(file_id)
       additional_tasks = {
         TextTaggerTask: [:TopicModelingTask],
         TopicModelingTask: [:LlmAnalysisTask],
