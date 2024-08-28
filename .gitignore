@@ -7,7 +7,6 @@
 /spec/reports/
 /tmp/
 /Gemfile.lock
-/characters/
 /docker/data/
 .env
 /docker/.env/
