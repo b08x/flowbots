@@ -74,12 +74,8 @@
   <ul class="link-list" role="directory">
     <li ><a href="#method-c-new">::new</a>
     <li ><a href="#method-i-clean_segments_for_modeling">#clean_segments_for_modeling</a>
-    <li ><a href="#method-i-flush_redis_cache">#flush_redis_cache</a>
-    <li ><a href="#method-i-process_batch">#process_batch</a>
-    <li ><a href="#method-i-process_files">#process_files</a>
     <li ><a href="#method-i-prompt_for_folder">#prompt_for_folder</a>
     <li ><a href="#method-i-run">#run</a>
-    <li ><a href="#method-i-setup_workflow">#setup_workflow</a>
     <li ><a href="#method-i-train_topic_model">#train_topic_model</a>
   </ul>
 </div>
@@ -94,44 +90,27 @@
 
   <section class="description">
     
+<p>This class defines a workflow for training a topic model using a collection of text files. It utilizes a <a href="UnifiedFileProcessingPipeline.html"><code>UnifiedFileProcessingPipeline</code></a> to handle the file processing and segment filtering, and then trains a topic model using the filtered segments.</p>
+
   </section>
 
   <section id="5Buntitled-5D" class="documentation-section">
 
 
-    <section class="constants-list">
-      <header>
-        <h3>Constants</h3>
-      </header>
-      <dl>
-        <dt id="BATCH_SIZE">BATCH_SIZE
-        <dd>
-      </dl>
-    </section>
 
     <section class="attribute-method-details" class="method-section">
       <header>
         <h3>Attributes</h3>
       </header>
 
-      <div id="attribute-i-input_folder_path" class="method-detail">
+      <div id="attribute-i-pipeline" class="method-detail">
         <div class="method-heading attribute-method-heading">
-          <span class="method-name">input_folder_path</span><span
+          <span class="method-name">pipeline</span><span
             class="attribute-access-type">[R]</span>
         </div>
 
         <div class="method-description">
-        
-        </div>
-      </div>
-      <div id="attribute-i-orchestrator" class="method-detail">
-        <div class="method-heading attribute-method-heading">
-          <span class="method-name">orchestrator</span><span
-            class="attribute-access-type">[RW]</span>
-        </div>
-
-        <div class="method-description">
-        
+        <p>@return [UnifiedFileProcessingPipeline] The <a href="TopicModelTrainerWorkflow.html#attribute-i-pipeline"><code>pipeline</code></a> responsible for file processing and segment filtering.</p>
         </div>
       </div>
     </section>
@@ -150,14 +129,17 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Initializes a <a href="TopicModelTrainerWorkflow.html#method-c-new"><code>new</code></a> <a href="TopicModelTrainerWorkflow.html"><code>TopicModelTrainerWorkflow</code></a> instance.</p>
+
+<p>@param input_folder_path [String, nil] The path to the folder containing the input files.  If nil, the user will be prompted to select a folder.</p>
+
+<p>@return [void]</p>
 
           <div class="method-source-code" id="new-source">
-            <pre><span class="ruby-comment"># File lib/workflows/topic_model_trainer_workflow.rb, line 11</span>
+            <pre><span class="ruby-comment"># File lib/workflows/topic_model_trainer_workflow.rb, line 18</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">initialize</span>(<span class="ruby-identifier">input_folder_path</span>=<span class="ruby-keyword">nil</span>)
   <span class="ruby-ivar">@input_folder_path</span> = <span class="ruby-identifier">input_folder_path</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">prompt_for_folder</span>
-  <span class="ruby-ivar">@orchestrator</span> = <span class="ruby-constant">WorkflowOrchestrator</span>.<span class="ruby-identifier">new</span>
-  <span class="ruby-constant">Object</span>.<span class="ruby-identifier">const_set</span>(<span class="ruby-value">:BATCH</span>, <span class="ruby-keyword">true</span>) <span class="ruby-comment"># Redefines the constant</span>
+  <span class="ruby-ivar">@pipeline</span> = <span class="ruby-constant">UnifiedFileProcessingPipeline</span>.<span class="ruby-identifier">new</span>(<span class="ruby-ivar">@input_folder_path</span>, <span class="ruby-value">batch_size:</span> <span class="ruby-value">10</span>, <span class="ruby-value">file_types:</span> <span class="ruby-node">%w[md markdown]</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
         </div>
@@ -180,22 +162,25 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Runs the topic model trainer workflow.</p>
+
+<p>Sets up the workflow, processes the files, and trains the topic model.</p>
+
+<p>@return [void]</p>
 
           <div class="method-source-code" id="run-source">
-            <pre><span class="ruby-comment"># File lib/workflows/topic_model_trainer_workflow.rb, line 17</span>
+            <pre><span class="ruby-comment"># File lib/workflows/topic_model_trainer_workflow.rb, line 28</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">run</span>
-  <span class="ruby-constant">Flowbots</span><span class="ruby-operator">::</span><span class="ruby-constant">UI</span>.<span class="ruby-identifier">say</span>(<span class="ruby-value">:ok</span>, <span class="ruby-string">&quot;Setting Up Topic Model Trainer Workflow&quot;</span>)
+  <span class="ruby-constant">UI</span>.<span class="ruby-identifier">say</span>(<span class="ruby-value">:ok</span>, <span class="ruby-string">&quot;Setting Up Topic Model Trainer Workflow&quot;</span>)
   <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-string">&quot;Setting Up Topic Model Trainer Workflow&quot;</span>
 
   <span class="ruby-keyword">begin</span>
-    <span class="ruby-identifier">setup_workflow</span>
-    <span class="ruby-identifier">flush_redis_cache</span>
-    <span class="ruby-identifier">process_files</span>
-    <span class="ruby-constant">Flowbots</span><span class="ruby-operator">::</span><span class="ruby-constant">UI</span>.<span class="ruby-identifier">say</span>(<span class="ruby-value">:ok</span>, <span class="ruby-string">&quot;Topic Model Trainer Workflow completed&quot;</span>)
+    <span class="ruby-ivar">@pipeline</span>.<span class="ruby-identifier">process</span>
+    <span class="ruby-identifier">train_topic_model</span>
+    <span class="ruby-constant">UI</span>.<span class="ruby-identifier">say</span>(<span class="ruby-value">:ok</span>, <span class="ruby-string">&quot;Topic Model Trainer Workflow completed&quot;</span>)
     <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-string">&quot;Topic Model Trainer Workflow completed&quot;</span>
   <span class="ruby-keyword">rescue</span> <span class="ruby-constant">StandardError</span> <span class="ruby-operator">=&gt;</span> <span class="ruby-identifier">e</span>
-    <span class="ruby-constant">Flowbots</span><span class="ruby-operator">::</span><span class="ruby-constant">UI</span>.<span class="ruby-identifier">say</span>(<span class="ruby-value">:error</span>, <span class="ruby-node">&quot;Error in Topic Model Trainer Workflow: #{e.message}&quot;</span>)
+    <span class="ruby-constant">UI</span>.<span class="ruby-identifier">say</span>(<span class="ruby-value">:error</span>, <span class="ruby-node">&quot;Error in Topic Model Trainer Workflow: #{e.message}&quot;</span>)
     <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">error</span> <span class="ruby-node">&quot;Error in Topic Model Trainer Workflow: #{e.message}&quot;</span>
     <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">error</span> <span class="ruby-identifier">e</span>.<span class="ruby-identifier">backtrace</span>.<span class="ruby-identifier">join</span>(<span class="ruby-string">&quot;\n&quot;</span>)
   <span class="ruby-keyword">end</span>
@@ -221,10 +206,14 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Cleans the segments for topic modeling by removing unwanted segments and words.</p>
+
+<p>@param segments [Array&lt;Array&lt;String&gt;&gt;] The segments to clean.</p>
+
+<p>@return [Array&lt;Array&lt;String&gt;&gt;] The cleaned segments.</p>
 
           <div class="method-source-code" id="clean_segments_for_modeling-source">
-            <pre><span class="ruby-comment"># File lib/workflows/topic_model_trainer_workflow.rb, line 118</span>
+            <pre><span class="ruby-comment"># File lib/workflows/topic_model_trainer_workflow.rb, line 95</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">clean_segments_for_modeling</span>(<span class="ruby-identifier">segments</span>)
   <span class="ruby-identifier">segments</span>.<span class="ruby-identifier">reject</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">segment</span><span class="ruby-operator">|</span>
     <span class="ruby-identifier">segment</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-string">&quot;tags&quot;</span>) <span class="ruby-operator">||</span> <span class="ruby-identifier">segment</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-string">&quot;title&quot;</span>) <span class="ruby-operator">||</span> <span class="ruby-identifier">segment</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-string">&quot;toc&quot;</span>)
@@ -242,88 +231,6 @@
 
       </div>
 
-      <div id="method-i-flush_redis_cache" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">flush_redis_cache</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-
-        <div class="method-description">
-          
-
-          <div class="method-source-code" id="flush_redis_cache-source">
-            <pre><span class="ruby-comment"># File lib/workflows/topic_model_trainer_workflow.rb, line 60</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">flush_redis_cache</span>
-  <span class="ruby-identifier">redis</span> = <span class="ruby-constant">Jongleur</span><span class="ruby-operator">::</span><span class="ruby-constant">WorkerTask</span>.<span class="ruby-identifier">class_variable_get</span>(<span class="ruby-value">:@@redis</span>)
-  <span class="ruby-identifier">redis</span>.<span class="ruby-identifier">flushdb</span>
-  <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-string">&quot;Redis cache flushed&quot;</span>
-<span class="ruby-keyword">end</span></pre>
-          </div>
-        </div>
-
-
-      </div>
-
-      <div id="method-i-process_batch" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">process_batch</span><span
-            class="method-args">(batch_files)</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-
-        <div class="method-description">
-          
-
-          <div class="method-source-code" id="process_batch-source">
-            <pre><span class="ruby-comment"># File lib/workflows/topic_model_trainer_workflow.rb, line 84</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">process_batch</span>(<span class="ruby-identifier">batch_files</span>)
-  <span class="ruby-identifier">batch_files</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">file_path</span><span class="ruby-operator">|</span>
-    <span class="ruby-constant">Jongleur</span><span class="ruby-operator">::</span><span class="ruby-constant">WorkerTask</span>.<span class="ruby-identifier">class_variable_get</span>(<span class="ruby-value">:@@redis</span>).<span class="ruby-identifier">set</span>(<span class="ruby-string">&quot;current_file_path&quot;</span>, <span class="ruby-identifier">file_path</span>)
-    <span class="ruby-ivar">@orchestrator</span>.<span class="ruby-identifier">run_workflow</span>
-  <span class="ruby-keyword">end</span>
-<span class="ruby-keyword">end</span></pre>
-          </div>
-        </div>
-
-
-      </div>
-
-      <div id="method-i-process_files" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">process_files</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-
-        <div class="method-description">
-          
-
-          <div class="method-source-code" id="process_files-source">
-            <pre><span class="ruby-comment"># File lib/workflows/topic_model_trainer_workflow.rb, line 66</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">process_files</span>
-  <span class="ruby-identifier">all_file_paths</span> = <span class="ruby-constant">Dir</span>.<span class="ruby-identifier">glob</span>(<span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-ivar">@input_folder_path</span>, <span class="ruby-string">&quot;**{,/*/**}/*.{md,markdown}&quot;</span>)).<span class="ruby-identifier">sort</span>
-  <span class="ruby-identifier">total_files</span> = <span class="ruby-identifier">all_file_paths</span>.<span class="ruby-identifier">count</span>
-  <span class="ruby-identifier">num_batches</span> = (<span class="ruby-identifier">total_files</span>.<span class="ruby-identifier">to_f</span> <span class="ruby-operator">/</span> <span class="ruby-constant">BATCH_SIZE</span>).<span class="ruby-identifier">ceil</span>
-
-  <span class="ruby-identifier">num_batches</span>.<span class="ruby-identifier">times</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">i</span><span class="ruby-operator">|</span>
-    <span class="ruby-identifier">batch_start</span> = <span class="ruby-identifier">i</span> <span class="ruby-operator">*</span> <span class="ruby-constant">BATCH_SIZE</span>
-    <span class="ruby-identifier">batch_files</span> = <span class="ruby-identifier">all_file_paths</span>[<span class="ruby-identifier">batch_start</span>, <span class="ruby-constant">BATCH_SIZE</span>]
-
-    <span class="ruby-constant">Flowbots</span><span class="ruby-operator">::</span><span class="ruby-constant">UI</span>.<span class="ruby-identifier">say</span>(<span class="ruby-value">:ok</span>, <span class="ruby-node">&quot;Processing batch #{i + 1} of #{num_batches}&quot;</span>)
-    <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-node">&quot;Processing batch #{i + 1} of #{num_batches}&quot;</span>
-
-    <span class="ruby-identifier">process_batch</span>(<span class="ruby-identifier">batch_files</span>)
-  <span class="ruby-keyword">end</span>
-
-  <span class="ruby-identifier">train_topic_model</span>
-<span class="ruby-keyword">end</span></pre>
-          </div>
-        </div>
-
-
-      </div>
-
       <div id="method-i-prompt_for_folder" class="method-detail ">
         <div class="method-heading">
           <span class="method-name">prompt_for_folder</span><span
@@ -332,10 +239,12 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Prompts the user to select a folder using the <code>gum file</code> command.</p>
+
+<p>@return [String] The path to the selected folder. @raises [FlowbotError] If the selected folder does not exist.</p>
 
           <div class="method-source-code" id="prompt_for_folder-source">
-            <pre><span class="ruby-comment"># File lib/workflows/topic_model_trainer_workflow.rb, line 36</span>
+            <pre><span class="ruby-comment"># File lib/workflows/topic_model_trainer_workflow.rb, line 50</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">prompt_for_folder</span>
   <span class="ruby-identifier">get_folder_path</span> = <span class="ruby-string">`gum file --directory`</span>.<span class="ruby-identifier">chomp</span>.<span class="ruby-identifier">strip</span>
   <span class="ruby-identifier">folder_path</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-identifier">get_folder_path</span>)
@@ -343,38 +252,6 @@
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">FlowbotError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-string">&quot;Folder not found&quot;</span>, <span class="ruby-string">&quot;FOLDERNOTFOUND&quot;</span>) <span class="ruby-keyword">unless</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">directory?</span>(<span class="ruby-identifier">folder_path</span>)
 
   <span class="ruby-identifier">folder_path</span>
-<span class="ruby-keyword">end</span></pre>
-          </div>
-        </div>
-
-
-      </div>
-
-      <div id="method-i-setup_workflow" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">setup_workflow</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-
-        <div class="method-description">
-          
-
-          <div class="method-source-code" id="setup_workflow-source">
-            <pre><span class="ruby-comment"># File lib/workflows/topic_model_trainer_workflow.rb, line 45</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">setup_workflow</span>
-  <span class="ruby-identifier">workflow_graph</span> = {
-    <span class="ruby-value">LoadTextFilesTask:</span> [<span class="ruby-value">:PreprocessTextFileTask</span>],
-    <span class="ruby-value">PreprocessTextFileTask:</span> [<span class="ruby-value">:TextSegmentTask</span>],
-    <span class="ruby-value">TextSegmentTask:</span> [<span class="ruby-value">:TokenizeSegmentsTask</span>],
-    <span class="ruby-value">TokenizeSegmentsTask:</span> [<span class="ruby-value">:NlpAnalysisTask</span>],
-    <span class="ruby-value">NlpAnalysisTask:</span> [<span class="ruby-value">:FilterSegmentsTask</span>],
-    <span class="ruby-value">FilterSegmentsTask:</span> [<span class="ruby-value">:AccumulateFilteredSegmentsTask</span>],
-    <span class="ruby-value">AccumulateFilteredSegmentsTask:</span> []
-  }
-
-  <span class="ruby-ivar">@orchestrator</span>.<span class="ruby-identifier">define_workflow</span>(<span class="ruby-identifier">workflow_graph</span>)
-  <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-string">&quot;Workflow setup completed&quot;</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
         </div>
@@ -390,16 +267,20 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Trains the topic model using the filtered segments from the processed files.</p>
+
+<p>Retrieves the filtered segments from Redis, cleans them, trains the topic model, and logs the progress.</p>
+
+<p>@return [void]</p>
 
           <div class="method-source-code" id="train_topic_model-source">
-            <pre><span class="ruby-comment"># File lib/workflows/topic_model_trainer_workflow.rb, line 91</span>
+            <pre><span class="ruby-comment"># File lib/workflows/topic_model_trainer_workflow.rb, line 65</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">train_topic_model</span>
   <span class="ruby-identifier">all_filtered_segments</span> = <span class="ruby-constant">JSON</span>.<span class="ruby-identifier">parse</span>(<span class="ruby-constant">Jongleur</span><span class="ruby-operator">::</span><span class="ruby-constant">WorkerTask</span>.<span class="ruby-identifier">class_variable_get</span>(<span class="ruby-value">:@@redis</span>).<span class="ruby-identifier">get</span>(<span class="ruby-string">&quot;all_filtered_segments&quot;</span>) <span class="ruby-operator">||</span> <span class="ruby-string">&quot;[]&quot;</span>)
 
   <span class="ruby-keyword">if</span> <span class="ruby-identifier">all_filtered_segments</span>.<span class="ruby-identifier">empty?</span>
     <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">warn</span> <span class="ruby-string">&quot;No filtered segments available for topic modeling&quot;</span>
-    <span class="ruby-constant">Flowbots</span><span class="ruby-operator">::</span><span class="ruby-constant">UI</span>.<span class="ruby-identifier">say</span>(<span class="ruby-value">:warn</span>, <span class="ruby-string">&quot;No filtered segments available for topic modeling&quot;</span>)
+    <span class="ruby-constant">UI</span>.<span class="ruby-identifier">say</span>(<span class="ruby-value">:warn</span>, <span class="ruby-string">&quot;No filtered segments available for topic modeling&quot;</span>)
     <span class="ruby-keyword">return</span>
   <span class="ruby-keyword">end</span>
 
@@ -407,7 +288,7 @@
 
   <span class="ruby-keyword">if</span> <span class="ruby-identifier">cleaned_segments</span>.<span class="ruby-identifier">empty?</span>
     <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">warn</span> <span class="ruby-string">&quot;No cleaned segments available for topic modeling after filtering&quot;</span>
-    <span class="ruby-constant">Flowbots</span><span class="ruby-operator">::</span><span class="ruby-constant">UI</span>.<span class="ruby-identifier">say</span>(<span class="ruby-value">:warn</span>, <span class="ruby-string">&quot;No cleaned segments available for topic modeling after filtering&quot;</span>)
+    <span class="ruby-constant">UI</span>.<span class="ruby-identifier">say</span>(<span class="ruby-value">:warn</span>, <span class="ruby-string">&quot;No cleaned segments available for topic modeling after filtering&quot;</span>)
     <span class="ruby-keyword">return</span>
   <span class="ruby-keyword">end</span>
 
@@ -416,7 +297,7 @@
   <span class="ruby-identifier">topic_processor</span> = <span class="ruby-constant">Flowbots</span><span class="ruby-operator">::</span><span class="ruby-constant">TopicModelProcessor</span>.<span class="ruby-identifier">instance</span>
   <span class="ruby-identifier">topic_processor</span>.<span class="ruby-identifier">train_model</span>(<span class="ruby-identifier">cleaned_segments</span>)
   <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-string">&quot;Topic model training completed for all files&quot;</span>
-  <span class="ruby-constant">Flowbots</span><span class="ruby-operator">::</span><span class="ruby-constant">UI</span>.<span class="ruby-identifier">say</span>(<span class="ruby-value">:ok</span>, <span class="ruby-string">&quot;Topic model training completed for all files&quot;</span>)
+  <span class="ruby-constant">UI</span>.<span class="ruby-identifier">say</span>(<span class="ruby-value">:ok</span>, <span class="ruby-string">&quot;Topic model training completed for all files&quot;</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
         </div>

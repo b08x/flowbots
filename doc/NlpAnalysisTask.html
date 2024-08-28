@@ -61,10 +61,18 @@
 <div id="parent-class-section" class="nav-section">
   <h3>Parent</h3>
 
-  <p class="link"><a href="Jongleur/WorkerTask.html">Jongleur::WorkerTask</a>
+  <p class="link"><a href="Task.html">Task</a>
 </div>
 
     
+<div id="includes-section" class="nav-section">
+  <h3>Included Modules</h3>
+
+  <ul class="link-list">
+    <li><a class="include" href="InputRetrieval.html">InputRetrieval</a>
+  </ul>
+</div>
+
     
     
 <!-- Method Quickref -->
@@ -72,8 +80,11 @@
   <h3>Methods</h3>
 
   <ul class="link-list" role="directory">
+    <li ><a href="#method-i-add_lemmas_to_textfile">#add_lemmas_to_textfile</a>
     <li ><a href="#method-i-add_words_to_segment">#add_words_to_segment</a>
     <li ><a href="#method-i-execute">#execute</a>
+    <li ><a href="#method-i-retrieve_input">#retrieve_input</a>
+    <li ><a href="#method-i-update_segment_with_nlp_data">#update_segment_with_nlp_data</a>
   </ul>
 </div>
 
@@ -112,70 +123,37 @@
         <div class="method-description">
           <p>Executes the task.</p>
 
+<p>Retrieves the <a href="FileObject.html"><code>FileObject</code></a> from Redis, processes each segment using the NLPProcessor, updates the segments with NLP data, adds lemmas to the <a href="FileObject.html"><code>FileObject</code></a>, and logs the progress.</p>
+
 <p>@return [void]</p>
 
           <div class="method-source-code" id="execute-source">
-            <pre><span class="ruby-comment"># File lib/tasks/nlp_analysis_task.rb, line 9</span>
+            <pre><span class="ruby-comment"># File lib/tasks/nlp_analysis_task.rb, line 15</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">execute</span>
-  <span class="ruby-comment"># Retrieve the Textfile object from Redis using its ID.</span>
-  <span class="ruby-identifier">textfile_id</span> = <span class="ruby-constant">Jongleur</span><span class="ruby-operator">::</span><span class="ruby-constant">WorkerTask</span>.<span class="ruby-identifier">class_variable_get</span>(<span class="ruby-value">:@@redis</span>).<span class="ruby-identifier">get</span>(<span class="ruby-string">&quot;current_textfile_id&quot;</span>)
-  <span class="ruby-identifier">text_file</span> = <span class="ruby-constant">Textfile</span>[<span class="ruby-identifier">textfile_id</span>]
+  <span class="ruby-comment"># Log the start of the task.</span>
+  <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-string">&quot;Starting NlpAnalysisTask&quot;</span>
 
-  <span class="ruby-comment"># Log a message indicating the start of NLP analysis for the current file.</span>
-  <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-node">&quot;Processing NlpAnalysisTask for file: #{text_file.name}&quot;</span>
-
+  <span class="ruby-comment"># Retrieve the FileObject from Redis.</span>
+  <span class="ruby-identifier">textfile</span> = <span class="ruby-identifier">retrieve_input</span>
   <span class="ruby-comment"># Get an instance of the NLPProcessor.</span>
   <span class="ruby-identifier">nlp_processor</span> = <span class="ruby-constant">Flowbots</span><span class="ruby-operator">::</span><span class="ruby-constant">NLPProcessor</span>.<span class="ruby-identifier">instance</span>
 
-  <span class="ruby-comment"># Iterate through each segment of the Textfile.</span>
-  <span class="ruby-identifier">text_file</span>.<span class="ruby-identifier">retrieve_segments</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">segment</span><span class="ruby-operator">|</span>
-    <span class="ruby-comment"># Log a message indicating the processing of the current segment.</span>
-    <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;Processing segment: #{segment.id}&quot;</span>
+  <span class="ruby-comment"># Initialize a hash to store lemma counts.</span>
+  <span class="ruby-identifier">lemma_counts</span> = <span class="ruby-constant">Hash</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">0</span>)
 
-    <span class="ruby-comment"># Perform NLP analysis on the segment using the NLPProcessor.</span>
-    <span class="ruby-identifier">processed_tokens</span> = <span class="ruby-identifier">nlp_processor</span>.<span class="ruby-identifier">process</span>(<span class="ruby-identifier">segment</span>, <span class="ruby-value">pos:</span> <span class="ruby-keyword">true</span>, <span class="ruby-value">dep:</span> <span class="ruby-keyword">true</span>, <span class="ruby-value">ner:</span> <span class="ruby-keyword">true</span>, <span class="ruby-value">tag:</span> <span class="ruby-keyword">true</span>)
-
-    <span class="ruby-comment"># Log the processed tokens for debugging purposes.</span>
-    <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;Processed tokens: #{processed_tokens.inspect}&quot;</span>
-
-    <span class="ruby-comment"># Check if the NLP processing returned a valid result.</span>
-    <span class="ruby-keyword">if</span> <span class="ruby-identifier">processed_tokens</span>.<span class="ruby-identifier">nil?</span> <span class="ruby-operator">||</span> <span class="ruby-operator">!</span><span class="ruby-identifier">processed_tokens</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Array</span>)
-      <span class="ruby-comment"># Log a warning message if the result is invalid.</span>
-      <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">warn</span> <span class="ruby-node">&quot;NLP processing returned invalid result for segment #{segment.id}: #{processed_tokens.inspect}&quot;</span>
-      <span class="ruby-keyword">next</span>
-    <span class="ruby-keyword">end</span>
-
-    <span class="ruby-comment"># Create a hash to store the tagged data for the segment.</span>
-    <span class="ruby-identifier">tagged</span> = {
-      <span class="ruby-value">pos:</span> {},
-      <span class="ruby-value">dep:</span> {},
-      <span class="ruby-value">ner:</span> {},
-      <span class="ruby-value">tag:</span> {}
-    }
-
-    <span class="ruby-comment"># Iterate through the processed tokens and populate the tagged data hash.</span>
-    <span class="ruby-identifier">processed_tokens</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">token</span><span class="ruby-operator">|</span>
-      <span class="ruby-identifier">word</span> = <span class="ruby-identifier">token</span>[<span class="ruby-value">:word</span>]
-      <span class="ruby-identifier">tagged</span>[<span class="ruby-value">:pos</span>][<span class="ruby-identifier">word</span>] = <span class="ruby-identifier">token</span>[<span class="ruby-value">:pos</span>]
-      <span class="ruby-identifier">tagged</span>[<span class="ruby-value">:dep</span>][<span class="ruby-identifier">word</span>] = <span class="ruby-identifier">token</span>[<span class="ruby-value">:dep</span>]
-      <span class="ruby-identifier">tagged</span>[<span class="ruby-value">:ner</span>][<span class="ruby-identifier">word</span>] = <span class="ruby-identifier">token</span>[<span class="ruby-value">:ner</span>]
-      <span class="ruby-identifier">tagged</span>[<span class="ruby-value">:tag</span>][<span class="ruby-identifier">word</span>] = <span class="ruby-identifier">token</span>[<span class="ruby-value">:tag</span>]
-    <span class="ruby-keyword">end</span>
-
-    <span class="ruby-comment"># Update the segment with the tagged data.</span>
-    <span class="ruby-identifier">segment</span>.<span class="ruby-identifier">update</span>(<span class="ruby-value">tagged:</span>)
-    <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;Updated segment #{segment.id} with tagged data: #{tagged.inspect}&quot;</span>
-
-    <span class="ruby-comment"># Add the processed words to the segment.</span>
-    <span class="ruby-identifier">add_words_to_segment</span>(<span class="ruby-identifier">segment</span>, <span class="ruby-identifier">processed_tokens</span>)
-  <span class="ruby-keyword">rescue</span> <span class="ruby-constant">StandardError</span> <span class="ruby-operator">=&gt;</span> <span class="ruby-identifier">e</span>
-    <span class="ruby-comment"># Log an error message if an exception occurs during segment processing.</span>
-    <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">error</span> <span class="ruby-node">&quot;Error processing segment #{segment.id}: #{e.message}&quot;</span>
-    <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">error</span> <span class="ruby-identifier">e</span>.<span class="ruby-identifier">backtrace</span>.<span class="ruby-identifier">join</span>(<span class="ruby-string">&quot;\n&quot;</span>)
+  <span class="ruby-comment"># Iterate through each segment of the FileObject.</span>
+  <span class="ruby-identifier">textfile</span>.<span class="ruby-identifier">retrieve_segments</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">segment</span><span class="ruby-operator">|</span>
+    <span class="ruby-comment"># Process the segment using the NLPProcessor.</span>
+    <span class="ruby-identifier">processed_tokens</span> = <span class="ruby-identifier">nlp_processor</span>.<span class="ruby-identifier">process</span>(<span class="ruby-identifier">segment</span>, <span class="ruby-value">pos:</span> <span class="ruby-keyword">true</span>, <span class="ruby-value">dep:</span> <span class="ruby-keyword">true</span>, <span class="ruby-value">ner:</span> <span class="ruby-keyword">true</span>, <span class="ruby-value">tag:</span> <span class="ruby-keyword">true</span>, <span class="ruby-value">lemma:</span> <span class="ruby-keyword">true</span>)
+    <span class="ruby-comment"># Update the segment with the processed NLP data.</span>
+    <span class="ruby-identifier">update_segment_with_nlp_data</span>(<span class="ruby-identifier">segment</span>, <span class="ruby-identifier">processed_tokens</span>, <span class="ruby-identifier">lemma_counts</span>)
   <span class="ruby-keyword">end</span>
 
-  <span class="ruby-comment"># Log a message indicating the completion of NLP analysis for the current file.</span>
-  <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-node">&quot;Completed NlpAnalysisTask for file: #{text_file.name}&quot;</span>
+  <span class="ruby-comment"># Add the accumulated lemmas to the FileObject.</span>
+  <span class="ruby-identifier">add_lemmas_to_textfile</span>(<span class="ruby-identifier">textfile</span>, <span class="ruby-identifier">lemma_counts</span>)
+
+  <span class="ruby-comment"># Log the completion of the task.</span>
+  <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-string">&quot;NlpAnalysisTask completed&quot;</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
         </div>
@@ -190,6 +168,38 @@
          <h3>Private Instance Methods</h3>
        </header>
 
+      <div id="method-i-add_lemmas_to_textfile" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">add_lemmas_to_textfile</span><span
+            class="method-args">(textfile, lemma_counts)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          <p>Adds lemmas to a <a href="FileObject.html"><code>FileObject</code></a>.</p>
+
+<p>Converts the lemma counts hash to an array of lemma data and adds it to the <a href="FileObject.html"><code>FileObject</code></a>‘s lemmas.</p>
+
+<p>@param textfile [FileObject] The <a href="FileObject.html"><code>FileObject</code></a> to add lemmas to. @param lemma_counts [Hash] A hash containing lemma counts.</p>
+
+<p>@return [void]</p>
+
+          <div class="method-source-code" id="add_lemmas_to_textfile-source">
+            <pre><span class="ruby-comment"># File lib/tasks/nlp_analysis_task.rb, line 109</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">add_lemmas_to_textfile</span>(<span class="ruby-identifier">textfile</span>, <span class="ruby-identifier">lemma_counts</span>)
+  <span class="ruby-comment"># Map the lemma counts hash to an array of lemma data.</span>
+  <span class="ruby-identifier">lemmas_data</span> = <span class="ruby-identifier">lemma_counts</span>.<span class="ruby-identifier">map</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span>(<span class="ruby-identifier">lemma</span>, <span class="ruby-identifier">pos</span>), <span class="ruby-identifier">count</span><span class="ruby-operator">|</span>
+    { <span class="ruby-value">lemma:</span>, <span class="ruby-value">pos:</span>, <span class="ruby-value">count:</span> }
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-comment"># Add the lemmas to the FileObject.</span>
+  <span class="ruby-identifier">textfile</span>.<span class="ruby-identifier">add_lemmas</span>(<span class="ruby-identifier">lemmas_data</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
       <div id="method-i-add_words_to_segment" class="method-detail ">
         <div class="method-heading">
           <span class="method-name">add_words_to_segment</span><span
@@ -198,28 +208,92 @@
         </div>
 
         <div class="method-description">
-          <p>Adds the processed words to the segment.</p>
+          <p>Adds processed words to a segment.</p>
 
-<p>@param segment [Segment] The <a href="Segment.html"><code>Segment</code></a> object. @param processed_tokens [Array] The processed tokens.</p>
+<p>Extracts word information from the processed tokens and adds it to the segment’s words.</p>
+
+<p>@param segment [Segment] The segment to add words to. @param processed_tokens [Array&lt;Hash&gt;] An array of processed tokens from the NLPProcessor.</p>
 
 <p>@return [void]</p>
 
           <div class="method-source-code" id="add_words_to_segment-source">
-            <pre><span class="ruby-comment"># File lib/tasks/nlp_analysis_task.rb, line 79</span>
+            <pre><span class="ruby-comment"># File lib/tasks/nlp_analysis_task.rb, line 92</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">add_words_to_segment</span>(<span class="ruby-identifier">segment</span>, <span class="ruby-identifier">processed_tokens</span>)
-  <span class="ruby-comment"># Create an array of words from the processed tokens.</span>
+  <span class="ruby-comment"># Map the processed tokens to an array of word data.</span>
   <span class="ruby-identifier">words</span> = <span class="ruby-identifier">processed_tokens</span>.<span class="ruby-identifier">map</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">token</span><span class="ruby-operator">|</span>
-    {
-      <span class="ruby-value">word:</span> <span class="ruby-identifier">token</span>[<span class="ruby-value">:word</span>],
-      <span class="ruby-value">pos:</span> <span class="ruby-identifier">token</span>[<span class="ruby-value">:pos</span>],
-      <span class="ruby-value">tag:</span> <span class="ruby-identifier">token</span>[<span class="ruby-value">:tag</span>],
-      <span class="ruby-value">dep:</span> <span class="ruby-identifier">token</span>[<span class="ruby-value">:dep</span>],
-      <span class="ruby-value">ner:</span> <span class="ruby-identifier">token</span>[<span class="ruby-value">:ner</span>]
-    }
+    { <span class="ruby-value">word:</span> <span class="ruby-identifier">token</span>[<span class="ruby-value">:word</span>], <span class="ruby-value">pos:</span> <span class="ruby-identifier">token</span>[<span class="ruby-value">:pos</span>], <span class="ruby-value">tag:</span> <span class="ruby-identifier">token</span>[<span class="ruby-value">:tag</span>], <span class="ruby-value">dep:</span> <span class="ruby-identifier">token</span>[<span class="ruby-value">:dep</span>], <span class="ruby-value">ner:</span> <span class="ruby-identifier">token</span>[<span class="ruby-value">:ner</span>] }
   <span class="ruby-keyword">end</span>
-
   <span class="ruby-comment"># Add the words to the segment.</span>
   <span class="ruby-identifier">segment</span>.<span class="ruby-identifier">add_words</span>(<span class="ruby-identifier">words</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-retrieve_input" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">retrieve_input</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          <p>Retrieves the input for the task, which is the current <a href="FileObject.html"><code>FileObject</code></a>.</p>
+
+<p>@return [FileObject] The current <a href="FileObject.html"><code>FileObject</code></a>.</p>
+
+          <div class="method-source-code" id="retrieve_input-source">
+            <pre><span class="ruby-comment"># File lib/tasks/nlp_analysis_task.rb, line 47</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">retrieve_input</span>
+  <span class="ruby-identifier">retrieve_file_object</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-update_segment_with_nlp_data" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">update_segment_with_nlp_data</span><span
+            class="method-args">(segment, processed_tokens, lemma_counts)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          <p>Updates a segment with NLP data.</p>
+
+<p>Extracts relevant NLP information from the processed tokens and updates the segment with tagged data, words, and lemma counts.</p>
+
+<p>@param segment [Segment] The segment to update. @param processed_tokens [Array&lt;Hash&gt;] An array of processed tokens from the NLPProcessor. @param lemma_counts [Hash] A hash to store lemma counts.</p>
+
+<p>@return [void]</p>
+
+          <div class="method-source-code" id="update_segment_with_nlp_data-source">
+            <pre><span class="ruby-comment"># File lib/tasks/nlp_analysis_task.rb, line 61</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">update_segment_with_nlp_data</span>(<span class="ruby-identifier">segment</span>, <span class="ruby-identifier">processed_tokens</span>, <span class="ruby-identifier">lemma_counts</span>)
+  <span class="ruby-comment"># Initialize a hash to store tagged data.</span>
+  <span class="ruby-identifier">tagged</span> = { <span class="ruby-value">pos:</span> {}, <span class="ruby-value">dep:</span> {}, <span class="ruby-value">ner:</span> {}, <span class="ruby-value">tag:</span> {} }
+  <span class="ruby-comment"># Iterate through the processed tokens.</span>
+  <span class="ruby-identifier">processed_tokens</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">token</span><span class="ruby-operator">|</span>
+    <span class="ruby-comment"># Extract relevant information from the token.</span>
+    <span class="ruby-identifier">word</span> = <span class="ruby-identifier">token</span>[<span class="ruby-value">:word</span>]
+    <span class="ruby-identifier">tagged</span>[<span class="ruby-value">:pos</span>][<span class="ruby-identifier">word</span>] = <span class="ruby-identifier">token</span>[<span class="ruby-value">:pos</span>]
+    <span class="ruby-identifier">tagged</span>[<span class="ruby-value">:dep</span>][<span class="ruby-identifier">word</span>] = <span class="ruby-identifier">token</span>[<span class="ruby-value">:dep</span>]
+    <span class="ruby-identifier">tagged</span>[<span class="ruby-value">:ner</span>][<span class="ruby-identifier">word</span>] = <span class="ruby-identifier">token</span>[<span class="ruby-value">:ner</span>]
+    <span class="ruby-identifier">tagged</span>[<span class="ruby-value">:tag</span>][<span class="ruby-identifier">word</span>] = <span class="ruby-identifier">token</span>[<span class="ruby-value">:tag</span>]
+
+    <span class="ruby-comment"># Increment the lemma count for the current lemma and POS tag.</span>
+    <span class="ruby-identifier">lemma_key</span> = [<span class="ruby-identifier">token</span>[<span class="ruby-value">:lemma</span>], <span class="ruby-identifier">token</span>[<span class="ruby-value">:pos</span>]]
+    <span class="ruby-identifier">lemma_counts</span>[<span class="ruby-identifier">lemma_key</span>] <span class="ruby-operator">+=</span> <span class="ruby-value">1</span>
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-comment"># Update the segment with the tagged data.</span>
+  <span class="ruby-identifier">segment</span>.<span class="ruby-identifier">update</span>(<span class="ruby-value">tagged:</span>)
+  <span class="ruby-comment"># Add the processed words to the segment.</span>
+  <span class="ruby-identifier">add_words_to_segment</span>(<span class="ruby-identifier">segment</span>, <span class="ruby-identifier">processed_tokens</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
         </div>

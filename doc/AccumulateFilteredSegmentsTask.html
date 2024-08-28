@@ -65,6 +65,14 @@
 </div>
 
     
+<div id="includes-section" class="nav-section">
+  <h3>Included Modules</h3>
+
+  <ul class="link-list">
+    <li><a class="include" href="InputRetrieval.html">InputRetrieval</a>
+  </ul>
+</div>
+
     
     
 <!-- Method Quickref -->
@@ -74,6 +82,8 @@
   <ul class="link-list" role="directory">
     <li ><a href="#method-i-clean_segments">#clean_segments</a>
     <li ><a href="#method-i-execute">#execute</a>
+    <li ><a href="#method-i-retrieve_input">#retrieve_input</a>
+    <li ><a href="#method-i-update_file_object">#update_file_object</a>
   </ul>
 </div>
 
@@ -87,7 +97,7 @@
 
   <section class="description">
     
-<p>This task accumulates filtered segments from multiple batches.</p>
+<p><a href="Task.html"><code>Task</code></a> to accumulate filtered segments from all processed files.</p>
 
   </section>
 
@@ -110,30 +120,39 @@
         </div>
 
         <div class="method-description">
-          <p>Executes the task.</p>
+          <p>Executes the task to accumulate and clean filtered segments.</p>
+
+<p>Retrieves filtered segments from Redis, cleans them, accumulates them, updates the <a href="FileObject.html"><code>FileObject</code></a> with the cleaned segments, and logs the progress.</p>
 
 <p>@return [void]</p>
 
           <div class="method-source-code" id="execute-source">
-            <pre><span class="ruby-comment"># File lib/tasks/accumulate_filtered_segments_task.rb, line 9</span>
+            <pre><span class="ruby-comment"># File lib/tasks/accumulate_filtered_segments_task.rb, line 14</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">execute</span>
-  <span class="ruby-comment"># Retrieve the current filtered segments from Redis.</span>
-  <span class="ruby-identifier">current_filtered_segments</span> = <span class="ruby-constant">JSON</span>.<span class="ruby-identifier">parse</span>(<span class="ruby-constant">Jongleur</span><span class="ruby-operator">::</span><span class="ruby-constant">WorkerTask</span>.<span class="ruby-identifier">class_variable_get</span>(<span class="ruby-value">:@@redis</span>).<span class="ruby-identifier">get</span>(<span class="ruby-string">&quot;current_filtered_segments&quot;</span>) <span class="ruby-operator">||</span> <span class="ruby-string">&quot;[]&quot;</span>)
+  <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-string">&quot;Starting AccumulateFilteredSegmentsTask&quot;</span>
 
-  <span class="ruby-comment"># Retrieve the accumulated filtered segments from Redis.</span>
-  <span class="ruby-identifier">all_filtered_segments</span> = <span class="ruby-constant">JSON</span>.<span class="ruby-identifier">parse</span>(<span class="ruby-constant">Jongleur</span><span class="ruby-operator">::</span><span class="ruby-constant">WorkerTask</span>.<span class="ruby-identifier">class_variable_get</span>(<span class="ruby-value">:@@redis</span>).<span class="ruby-identifier">get</span>(<span class="ruby-string">&quot;all_filtered_segments&quot;</span>) <span class="ruby-operator">||</span> <span class="ruby-string">&quot;[]&quot;</span>)
+  <span class="ruby-comment"># Retrieve the current filtered segments from Redis</span>
+  <span class="ruby-identifier">current_filtered_segments</span> = <span class="ruby-constant">JSON</span>.<span class="ruby-identifier">parse</span>(<span class="ruby-constant">RedisKeys</span>.<span class="ruby-identifier">get</span>(<span class="ruby-string">&quot;current_filtered_segments&quot;</span>) <span class="ruby-operator">||</span> <span class="ruby-string">&quot;[]&quot;</span>)
 
-  <span class="ruby-comment"># Clean the current filtered segments.</span>
+  <span class="ruby-comment"># Retrieve the accumulated filtered segments from Redis</span>
+  <span class="ruby-identifier">all_filtered_segments</span> = <span class="ruby-constant">JSON</span>.<span class="ruby-identifier">parse</span>(<span class="ruby-constant">RedisKeys</span>.<span class="ruby-identifier">get</span>(<span class="ruby-string">&quot;all_filtered_segments&quot;</span>) <span class="ruby-operator">||</span> <span class="ruby-string">&quot;[]&quot;</span>)
+
+  <span class="ruby-comment"># Clean the current filtered segments</span>
   <span class="ruby-identifier">cleaned_segments</span> = <span class="ruby-identifier">clean_segments</span>(<span class="ruby-identifier">current_filtered_segments</span>)
 
-  <span class="ruby-comment"># Append the cleaned segments to the accumulated filtered segments.</span>
+  <span class="ruby-comment"># Append the cleaned segments to the accumulated filtered segments</span>
   <span class="ruby-identifier">all_filtered_segments</span> <span class="ruby-operator">+=</span> <span class="ruby-identifier">cleaned_segments</span>
 
-  <span class="ruby-comment"># Store the updated accumulated filtered segments in Redis.</span>
-  <span class="ruby-constant">Jongleur</span><span class="ruby-operator">::</span><span class="ruby-constant">WorkerTask</span>.<span class="ruby-identifier">class_variable_get</span>(<span class="ruby-value">:@@redis</span>).<span class="ruby-identifier">set</span>(<span class="ruby-string">&quot;all_filtered_segments&quot;</span>, <span class="ruby-identifier">all_filtered_segments</span>.<span class="ruby-identifier">to_json</span>)
+  <span class="ruby-comment"># Store the updated accumulated filtered segments in Redis</span>
+  <span class="ruby-constant">RedisKeys</span>.<span class="ruby-identifier">set</span>(<span class="ruby-string">&quot;all_filtered_segments&quot;</span>, <span class="ruby-identifier">all_filtered_segments</span>.<span class="ruby-identifier">to_json</span>)
 
-  <span class="ruby-comment"># Log a message indicating the number of accumulated segments.</span>
+  <span class="ruby-comment"># Log a message indicating the number of accumulated segments</span>
   <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-node">&quot;Accumulated #{cleaned_segments.length} cleaned segments. Total segments: #{all_filtered_segments.length}&quot;</span>
+
+  <span class="ruby-comment"># Update the FileObject with the accumulated segments</span>
+  <span class="ruby-identifier">update_file_object</span>(<span class="ruby-identifier">cleaned_segments</span>)
+
+  <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-string">&quot;Completed AccumulateFilteredSegmentsTask&quot;</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
         </div>
@@ -156,14 +175,14 @@
         </div>
 
         <div class="method-description">
-          <p>Cleans the filtered segments by removing empty segments, segments with specific keywords, and purely numeric words.</p>
+          <p>Cleans the given segments by removing unwanted segments and words.</p>
 
-<p>@param segments [Array] The array of filtered segments.</p>
+<p>@param segments [Array&lt;Array&lt;String&gt;&gt;] The segments to clean.</p>
 
-<p>@return [Array] The cleaned array of filtered segments.</p>
+<p>@return [Array&lt;Array&lt;String&gt;&gt;] The cleaned segments.</p>
 
           <div class="method-source-code" id="clean_segments-source">
-            <pre><span class="ruby-comment"># File lib/tasks/accumulate_filtered_segments_task.rb, line 36</span>
+            <pre><span class="ruby-comment"># File lib/tasks/accumulate_filtered_segments_task.rb, line 55</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">clean_segments</span>(<span class="ruby-identifier">segments</span>)
   <span class="ruby-identifier">segments</span>.<span class="ruby-identifier">reject</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">segment</span><span class="ruby-operator">|</span>
     <span class="ruby-identifier">segment</span>.<span class="ruby-identifier">empty?</span> <span class="ruby-operator">||</span>
@@ -176,6 +195,58 @@
   <span class="ruby-keyword">end</span>.<span class="ruby-identifier">map</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">segment</span><span class="ruby-operator">|</span>
     <span class="ruby-identifier">segment</span>.<span class="ruby-identifier">reject</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">word</span><span class="ruby-operator">|</span> <span class="ruby-identifier">word</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">match?</span>(<span class="ruby-regexp">/^\d+$/</span>) } <span class="ruby-comment"># Remove purely numeric words</span>
   <span class="ruby-keyword">end</span>.<span class="ruby-identifier">reject</span>(<span class="ruby-operator">&amp;</span><span class="ruby-value">:empty?</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-retrieve_input" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">retrieve_input</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          <p>Retrieves the input for the task, which is the current <a href="FileObject.html"><code>FileObject</code></a>.</p>
+
+<p>@return [FileObject] The current <a href="FileObject.html"><code>FileObject</code></a>.</p>
+
+          <div class="method-source-code" id="retrieve_input-source">
+            <pre><span class="ruby-comment"># File lib/tasks/accumulate_filtered_segments_task.rb, line 46</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">retrieve_input</span>
+  <span class="ruby-identifier">retrieve_file_object</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-update_file_object" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">update_file_object</span><span
+            class="method-args">(cleaned_segments)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          <p>Updates the <a href="FileObject.html"><code>FileObject</code></a> with the given cleaned segments.</p>
+
+<p>@param cleaned_segments [Array&lt;Array&lt;String&gt;&gt;] The cleaned segments to add to the <a href="FileObject.html"><code>FileObject</code></a>.</p>
+
+<p>@return [void]</p>
+
+          <div class="method-source-code" id="update_file_object-source">
+            <pre><span class="ruby-comment"># File lib/tasks/accumulate_filtered_segments_task.rb, line 74</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">update_file_object</span>(<span class="ruby-identifier">cleaned_segments</span>)
+  <span class="ruby-identifier">file_object</span> = <span class="ruby-identifier">retrieve_input</span>
+  <span class="ruby-keyword">return</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">file_object</span>.<span class="ruby-identifier">nil?</span>
+
+  <span class="ruby-identifier">file_object</span>.<span class="ruby-identifier">add_segments</span>(<span class="ruby-identifier">cleaned_segments</span>.<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">segment</span><span class="ruby-operator">|</span> <span class="ruby-identifier">segment</span>.<span class="ruby-identifier">join</span>(<span class="ruby-string">&quot; &quot;</span>) })
+  <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-node">&quot;Updated FileObject #{file_object.id} with #{cleaned_segments.length} new segments&quot;</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
         </div>

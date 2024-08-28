@@ -65,6 +65,14 @@
 </div>
 
     
+<div id="includes-section" class="nav-section">
+  <h3>Included Modules</h3>
+
+  <ul class="link-list">
+    <li><a class="include" href="InputRetrieval.html">InputRetrieval</a>
+  </ul>
+</div>
+
     
     
 <!-- Method Quickref -->
@@ -76,6 +84,7 @@
     <li ><a href="#method-i-execute">#execute</a>
     <li ><a href="#method-i-filter_segment_words">#filter_segment_words</a>
     <li ><a href="#method-i-filter_segments">#filter_segments</a>
+    <li ><a href="#method-i-retrieve_input">#retrieve_input</a>
   </ul>
 </div>
 
@@ -89,7 +98,7 @@
 
   <section class="description">
     
-<p>This task filters segments based on their word tags.</p>
+<p>lib/tasks/filter_segments_task.rb</p>
 
   </section>
 
@@ -112,28 +121,25 @@
         </div>
 
         <div class="method-description">
-          <p>Executes the task.</p>
-
-<p>@return [void]</p>
+          
 
           <div class="method-source-code" id="execute-source">
             <pre><span class="ruby-comment"># File lib/tasks/filter_segments_task.rb, line 9</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">execute</span>
-  <span class="ruby-comment"># Retrieve the Textfile object from Redis using its ID.</span>
-  <span class="ruby-identifier">textfile_id</span> = <span class="ruby-constant">Jongleur</span><span class="ruby-operator">::</span><span class="ruby-constant">WorkerTask</span>.<span class="ruby-identifier">class_variable_get</span>(<span class="ruby-value">:@@redis</span>).<span class="ruby-identifier">get</span>(<span class="ruby-string">&quot;current_textfile_id&quot;</span>)
-  <span class="ruby-identifier">text_file</span> = <span class="ruby-constant">Textfile</span>[<span class="ruby-identifier">textfile_id</span>]
+  <span class="ruby-comment"># Retrieve the FileObject using the InputRetrieval module</span>
+  <span class="ruby-identifier">file_object</span> = <span class="ruby-identifier">retrieve_input</span>
 
-  <span class="ruby-comment"># Log a message indicating the start of segment filtering for the current file.</span>
-  <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-node">&quot;Processing FilterSegmentsTask for file: #{text_file.name}&quot;</span>
+  <span class="ruby-comment"># Log a message indicating the start of segment filtering for the current file</span>
+  <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-node">&quot;Processing FilterSegmentsTask for file: #{file_object.name}&quot;</span>
 
-  <span class="ruby-comment"># Filter segments based on their word tags and store the filtered segments in Redis.</span>
-  <span class="ruby-identifier">filtered_segments</span> = <span class="ruby-identifier">filter_segments</span>(<span class="ruby-identifier">text_file</span>)
+  <span class="ruby-comment"># Filter segments based on their word tags and store the filtered segments in Redis</span>
+  <span class="ruby-identifier">filtered_segments</span> = <span class="ruby-identifier">filter_segments</span>(<span class="ruby-identifier">file_object</span>)
   <span class="ruby-constant">Jongleur</span><span class="ruby-operator">::</span><span class="ruby-constant">WorkerTask</span>.<span class="ruby-identifier">class_variable_get</span>(<span class="ruby-value">:@@redis</span>).<span class="ruby-identifier">set</span>(<span class="ruby-string">&quot;current_filtered_segments&quot;</span>, <span class="ruby-identifier">filtered_segments</span>.<span class="ruby-identifier">to_json</span>)
 
-  <span class="ruby-comment"># Log a message indicating the number of filtered segments.</span>
+  <span class="ruby-comment"># Log a message indicating the number of filtered segments</span>
   <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-node">&quot;Filtered #{filtered_segments.length} segments&quot;</span>
 
-  <span class="ruby-comment"># Display the filtered segments to the user.</span>
+  <span class="ruby-comment"># Display the filtered segments to the user</span>
   <span class="ruby-identifier">display_filtered_segments</span>(<span class="ruby-identifier">filtered_segments</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
@@ -157,20 +163,13 @@
         </div>
 
         <div class="method-description">
-          <p>Displays the filtered segments to the user.</p>
-
-<p>@param filtered_segments [Array] An array of filtered segments.</p>
-
-<p>@return [void]</p>
+          
 
           <div class="method-source-code" id="display_filtered_segments-source">
-            <pre><span class="ruby-comment"># File lib/tasks/filter_segments_task.rb, line 87</span>
+            <pre><span class="ruby-comment"># File lib/tasks/filter_segments_task.rb, line 73</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">display_filtered_segments</span>(<span class="ruby-identifier">filtered_segments</span>)
-  <span class="ruby-comment"># Display the filtered segments in a framed box.</span>
-  <span class="ruby-identifier">ui</span>.<span class="ruby-identifier">framed</span> <span class="ruby-keyword">do</span>
-    <span class="ruby-identifier">ui</span>.<span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;#{filtered_segments}&quot;</span>
-  <span class="ruby-keyword">end</span>
-  <span class="ruby-identifier">ui</span>.<span class="ruby-identifier">space</span>
+  <span class="ruby-comment"># Display the filtered segments in a framed box</span>
+  <span class="ruby-constant">UI</span>.<span class="ruby-identifier">say</span>(<span class="ruby-value">:ok</span>, <span class="ruby-node">&quot;#{filtered_segments}&quot;</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
         </div>
@@ -186,41 +185,37 @@
         </div>
 
         <div class="method-description">
-          <p>Filters words from a segment based on their tags.</p>
-
-<p>@param segment [Segment] The <a href="Segment.html"><code>Segment</code></a> object.</p>
-
-<p>@return [Array] An array of filtered words, or nil if the segment has invalid tagged data.</p>
+          
 
           <div class="method-source-code" id="filter_segment_words-source">
-            <pre><span class="ruby-comment"># File lib/tasks/filter_segments_task.rb, line 52</span>
+            <pre><span class="ruby-comment"># File lib/tasks/filter_segments_task.rb, line 43</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">filter_segment_words</span>(<span class="ruby-identifier">segment</span>)
-  <span class="ruby-comment"># Log a message indicating the processing of the current segment.</span>
+  <span class="ruby-comment"># Log a message indicating the processing of the current segment</span>
   <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;Processing segment: #{segment.id}&quot;</span>
 
-  <span class="ruby-comment"># Retrieve the tagged data for the segment.</span>
+  <span class="ruby-comment"># Retrieve the tagged data for the segment</span>
   <span class="ruby-identifier">tagged</span> = <span class="ruby-identifier">segment</span>.<span class="ruby-identifier">tagged</span>
 
-  <span class="ruby-comment"># Check if the tagged data is valid.</span>
+  <span class="ruby-comment"># Check if the tagged data is valid</span>
   <span class="ruby-keyword">if</span> <span class="ruby-identifier">tagged</span>.<span class="ruby-identifier">nil?</span> <span class="ruby-operator">||</span> <span class="ruby-operator">!</span><span class="ruby-identifier">tagged</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Hash</span>) <span class="ruby-operator">||</span> <span class="ruby-operator">!</span><span class="ruby-identifier">tagged</span>[<span class="ruby-string">&quot;pos&quot;</span>]
-    <span class="ruby-comment"># Log a warning message if the tagged data is invalid.</span>
+    <span class="ruby-comment"># Log a warning message if the tagged data is invalid</span>
     <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">warn</span> <span class="ruby-node">&quot;Segment #{segment.id} has invalid tagged data: #{tagged.inspect}&quot;</span>
     <span class="ruby-keyword">return</span> <span class="ruby-keyword">nil</span>
   <span class="ruby-keyword">end</span>
 
-  <span class="ruby-comment"># Define the relevant parts of speech (POS) tags for filtering.</span>
+  <span class="ruby-comment"># Define the relevant parts of speech (POS) tags for filtering</span>
   <span class="ruby-identifier">relevant_pos</span> = <span class="ruby-node">%w[NOUN ADJ VERB]</span>
 
-  <span class="ruby-comment"># Get the words from the segment&#39;s POS tagged data.</span>
+  <span class="ruby-comment"># Get the words from the segment&#39;s POS tagged data</span>
   <span class="ruby-identifier">words</span> = <span class="ruby-identifier">tagged</span>[<span class="ruby-string">&quot;pos&quot;</span>].<span class="ruby-identifier">keys</span>
 
-  <span class="ruby-comment"># Filter words based on the relevant POS tags.</span>
+  <span class="ruby-comment"># Filter words based on the relevant POS tags</span>
   <span class="ruby-identifier">filtered_words</span> = <span class="ruby-identifier">words</span>.<span class="ruby-identifier">select</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">word</span><span class="ruby-operator">|</span> <span class="ruby-identifier">relevant_pos</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">tagged</span>[<span class="ruby-string">&quot;pos&quot;</span>][<span class="ruby-identifier">word</span>]) }
 
-  <span class="ruby-comment"># Log a message indicating the number of filtered words from the segment.</span>
+  <span class="ruby-comment"># Log a message indicating the number of filtered words from the segment</span>
   <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;Filtered #{filtered_words.length} words from segment #{segment.id}&quot;</span>
 
-  <span class="ruby-comment"># Return the filtered words.</span>
+  <span class="ruby-comment"># Return the filtered words</span>
   <span class="ruby-identifier">filtered_words</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
@@ -232,29 +227,44 @@
       <div id="method-i-filter_segments" class="method-detail ">
         <div class="method-heading">
           <span class="method-name">filter_segments</span><span
-            class="method-args">(text_file)</span>
+            class="method-args">(file_object)</span>
           <span class="method-click-advice">click to toggle source</span>
         </div>
 
         <div class="method-description">
-          <p>Filters segments based on their word tags.</p>
-
-<p>@param text_file [Textfile] The <a href="Textfile.html"><code>Textfile</code></a> object.</p>
-
-<p>@return [Array] An array of filtered segments.</p>
+          
 
           <div class="method-source-code" id="filter_segments-source">
-            <pre><span class="ruby-comment"># File lib/tasks/filter_segments_task.rb, line 35</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">filter_segments</span>(<span class="ruby-identifier">text_file</span>)
-  <span class="ruby-comment"># Retrieve all segments from the Textfile.</span>
-  <span class="ruby-identifier">segments</span> = <span class="ruby-identifier">text_file</span>.<span class="ruby-identifier">retrieve_segments</span>
+            <pre><span class="ruby-comment"># File lib/tasks/filter_segments_task.rb, line 33</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">filter_segments</span>(<span class="ruby-identifier">file_object</span>)
+  <span class="ruby-comment"># Retrieve all segments from the FileObject</span>
+  <span class="ruby-identifier">segments</span> = <span class="ruby-identifier">file_object</span>.<span class="ruby-identifier">segments</span>
 
-  <span class="ruby-comment"># Filter segments based on their word tags.</span>
+  <span class="ruby-comment"># Filter segments based on their word tags</span>
   <span class="ruby-identifier">segments</span>.<span class="ruby-identifier">map</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">segment</span><span class="ruby-operator">|</span>
     <span class="ruby-identifier">filter_segment_words</span>(<span class="ruby-identifier">segment</span>)
   <span class="ruby-keyword">end</span>.<span class="ruby-identifier">compact</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
 
-  <span class="ruby-comment"># Return the filtered segments.</span>
+
+      </div>
+
+      <div id="method-i-retrieve_input" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">retrieve_input</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          
+
+          <div class="method-source-code" id="retrieve_input-source">
+            <pre><span class="ruby-comment"># File lib/tasks/filter_segments_task.rb, line 29</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">retrieve_input</span>
+  <span class="ruby-identifier">retrieve_file_object</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
         </div>

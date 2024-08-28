@@ -48,24 +48,34 @@ require_relative "ui"
 require_relative "workflows"
 require_relative "tasks"
 
+# Constant for the directory containing workflows.
 WORKFLOW_DIR = File.expand_path("workflows", __dir__)
+# Constant for the directory containing tasks.
 TASK_DIR = File.expand_path("tasks", __dir__)
+# Constant for the directory containing grammars.
 GRAMMAR_DIR = File.expand_path("grammars", __dir__)
+# Constant for the directory containing cartridges.
 CARTRIDGE_DIR = File.expand_path("../nano-bots/cartridges/", __dir__)
 
-# Define a class to manage Redis connection
+# Class to manage Redis connection.
 class RedisConnection
-  # Redis Configuration
+  # Redis configuration.
   REDIS_CONFIG = {
     host: ENV.fetch("REDIS_HOST", "localhost"),
     port: 6379,
     db: 15
   }.freeze
 
+  # Initializes a new RedisConnection instance.
+  #
+  # @return [void]
   def initialize
     @redis = Redis.new(REDIS_CONFIG)
   end
 
+  # Returns the Redis connection.
+  #
+  # @return [Redis] The Redis connection.
   attr_reader :redis
 end
 
@@ -81,16 +91,25 @@ class Jongleur::WorkerTask
   end
 end
 
+# Module for Flowbots application.
 module Flowbots
+  # Constant indicating whether the application is running in a container.
   IN_CONTAINER = File.file?("/.dockerenv")
+  # Constant indicating whether the application is running in batch mode.
   BATCH = false
 
   class << self
+    # Initializes the Flowbots application.
+    #
+    # @return [void]
     def initialize
       setup_redis
       load_components
     end
 
+    # Shuts down the Flowbots application.
+    #
+    # @return [void]
     def shutdown
       Ohm.redis.quit
       stop_running_workflows
@@ -99,17 +118,27 @@ module Flowbots
 
     private
 
+    # Sets up the Redis connection for Ohm.
+    #
+    # @return [void]
+    # @raise [Ohm::Error] If there is an error connecting to Redis.
     def setup_redis
       Ohm.redis = Redic.new("redis://localhost:6379/0")
     rescue Ohm::Error => e
       ExceptionHandler.handle_exception(e)
     end
 
+    # Loads the necessary components for the application.
+    #
+    # @return [void]
     def load_components
       Workflows.load_workflows
       Task.load_tasks
     end
 
+    # Stops any running workflows.
+    #
+    # @return [void]
     def stop_running_workflows
       logger.info "All workflows stopped"
     end

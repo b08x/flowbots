@@ -64,8 +64,6 @@ class Task < Ohm::Model
   end
 end
 
-# lib/models/file_object.rb
-
 class FileObject < Ohm::Model
   include Ohm::DataTypes
   include Ohm::Callbacks

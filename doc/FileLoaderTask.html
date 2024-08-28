@@ -61,7 +61,7 @@
 <div id="parent-class-section" class="nav-section">
   <h3>Parent</h3>
 
-  <p class="link"><a href="Jongleur/WorkerTask.html">Jongleur::WorkerTask</a>
+  <p class="link"><a href="Task.html">Task</a>
 </div>
 
     
@@ -73,6 +73,8 @@
 
   <ul class="link-list" role="directory">
     <li ><a href="#method-i-execute">#execute</a>
+    <li ><a href="#method-i-retrieve_input">#retrieve_input</a>
+    <li ><a href="#method-i-store_FileObject_id">#store_FileObject_id</a>
   </ul>
 </div>
 
@@ -109,32 +111,86 @@
         </div>
 
         <div class="method-description">
-          <p>Executes the task.</p>
+          <p>Executes the task to load a <a href="FileObject.html"><code>FileObject</code></a> and store its ID in Redis.</p>
+
+<p>Retrieves the input file path, processes the file using <a href="Flowbots/FileLoader.html"><code>Flowbots::FileLoader</code></a>, stores the <a href="FileObject.html"><code>FileObject</code></a> ID in Redis, and logs the progress.</p>
+
+<p>@return [void] @raises [FlowbotError] If the <a href="FileObject.html"><code>FileObject</code></a> is not found or its ID is nil.</p>
+
+          <div class="method-source-code" id="execute-source">
+            <pre><span class="ruby-comment"># File lib/tasks/file_loader_task.rb, line 13</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">execute</span>
+  <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-string">&quot;Starting FileLoaderTask&quot;</span>
+
+  <span class="ruby-identifier">input_file_path</span> = <span class="ruby-identifier">retrieve_input</span>
+
+  <span class="ruby-identifier">file_processor</span> = <span class="ruby-constant">Flowbots</span><span class="ruby-operator">::</span><span class="ruby-constant">FileLoader</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">input_file_path</span>)
+  <span class="ruby-identifier">text_file</span> = <span class="ruby-identifier">file_processor</span>.<span class="ruby-identifier">file_data</span>
+
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">text_file</span>.<span class="ruby-identifier">nil?</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">text_file</span>.<span class="ruby-identifier">id</span>.<span class="ruby-identifier">nil?</span>
+    <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">error</span> <span class="ruby-string">&quot;Failed to load FileObject&quot;</span>
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">FlowbotError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-string">&quot;FileObject not found&quot;</span>, <span class="ruby-string">&quot;FILENOTFOUND&quot;</span>)
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-identifier">store_FileObject_id</span>(<span class="ruby-identifier">text_file</span>.<span class="ruby-identifier">id</span>)
+
+  <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-node">&quot;Loaded FileObject with ID: #{text_file.id}&quot;</span>
+  <span class="ruby-constant">UI</span>.<span class="ruby-identifier">say</span>(<span class="ruby-value">:ok</span>, <span class="ruby-node">&quot;Loaded FileObject with ID: #{text_file.id}&quot;</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+    </section>
+
+     <section id="private-instance-5Buntitled-5D-method-details" class="method-section">
+       <header>
+         <h3>Private Instance Methods</h3>
+       </header>
+
+      <div id="method-i-retrieve_input" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">retrieve_input</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          <p>Retrieves the input file path from Redis.</p>
+
+<p>@return [String] The input file path.</p>
+
+          <div class="method-source-code" id="retrieve_input-source">
+            <pre><span class="ruby-comment"># File lib/tasks/file_loader_task.rb, line 37</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">retrieve_input</span>
+  <span class="ruby-identifier">retrieve_file_path</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-store_FileObject_id" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">store_FileObject_id</span><span
+            class="method-args">(id)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          <p>Stores the <a href="FileObject.html"><code>FileObject</code></a> ID in Redis.</p>
+
+<p>@param id [Integer] The ID of the <a href="FileObject.html"><code>FileObject</code></a>.</p>
 
 <p>@return [void]</p>
 
-          <div class="method-source-code" id="execute-source">
-            <pre><span class="ruby-comment"># File lib/tasks/file_loader_task.rb, line 9</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">execute</span>
-  <span class="ruby-comment"># Retrieve the input file path from Redis.</span>
-  <span class="ruby-identifier">input_file_path</span> = <span class="ruby-constant">Jongleur</span><span class="ruby-operator">::</span><span class="ruby-constant">WorkerTask</span>.<span class="ruby-identifier">class_variable_get</span>(<span class="ruby-value">:@@redis</span>).<span class="ruby-identifier">get</span>(<span class="ruby-string">&quot;input_file_path&quot;</span>)
-
-  <span class="ruby-comment"># Create a new FileLoader instance to process the file.</span>
-  <span class="ruby-identifier">file_processor</span> = <span class="ruby-constant">Flowbots</span><span class="ruby-operator">::</span><span class="ruby-constant">FileLoader</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">input_file_path</span>)
-
-  <span class="ruby-comment"># Get the ID of the loaded Textfile.</span>
-  <span class="ruby-identifier">text_file_id</span> = <span class="ruby-identifier">file_processor</span>.<span class="ruby-identifier">file_data</span>.<span class="ruby-identifier">id</span>
-
-  <span class="ruby-comment"># If the Textfile ID is nil, raise an error.</span>
-  <span class="ruby-keyword">if</span> <span class="ruby-identifier">text_file_id</span>.<span class="ruby-identifier">nil?</span>
-    <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">error</span> <span class="ruby-node">&quot;Failed to load Textfile with ID: #{text_file_id}&quot;</span>
-    <span class="ruby-identifier">raise</span> <span class="ruby-constant">FlowbotError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-string">&quot;Textfile not found&quot;</span>, <span class="ruby-string">&quot;FILENOTFOUND&quot;</span>)
-  <span class="ruby-keyword">end</span>
-
-  <span class="ruby-comment"># Log a success message and display it to the user.</span>
-  <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-node">&quot;Loaded Textfile with ID: #{text_file_id}&quot;</span>
-  <span class="ruby-constant">Flowbots</span><span class="ruby-operator">::</span><span class="ruby-constant">UI</span>.<span class="ruby-identifier">say</span>(<span class="ruby-value">:ok</span>, <span class="ruby-node">&quot;Loaded Textfile with ID: #{text_file_id}&quot;</span>)
-  <span class="ruby-identifier">ui</span>.<span class="ruby-identifier">space</span>
+          <div class="method-source-code" id="store_FileObject_id-source">
+            <pre><span class="ruby-comment"># File lib/tasks/file_loader_task.rb, line 46</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">store_FileObject_id</span>(<span class="ruby-identifier">id</span>)
+  <span class="ruby-constant">RedisKeys</span>.<span class="ruby-identifier">set</span>(<span class="ruby-constant">RedisKeys</span><span class="ruby-operator">::</span><span class="ruby-constant">CURRENT_FileObject_ID</span>, <span class="ruby-identifier">id</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
         </div>

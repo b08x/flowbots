@@ -116,8 +116,8 @@
           <div class="method-source-code" id="execute-source">
             <pre><span class="ruby-comment"># File lib/tasks/text_tokenize_task.rb, line 9</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">execute</span>
-  <span class="ruby-comment"># Retrieve the segments from the latest Textfile.</span>
-  <span class="ruby-identifier">segments</span> = <span class="ruby-constant">Textfile</span>.<span class="ruby-identifier">latest</span>.<span class="ruby-identifier">retrieve_segments</span>
+  <span class="ruby-comment"># Retrieve the segments from the latest FileObject.</span>
+  <span class="ruby-identifier">segments</span> = <span class="ruby-constant">FileObject</span>.<span class="ruby-identifier">latest</span>.<span class="ruby-identifier">retrieve_segments</span>
 
   <span class="ruby-comment"># Get an instance of the TextTokenizeProcessor.</span>
   <span class="ruby-identifier">text_tokenizer</span> = <span class="ruby-constant">Flowbots</span><span class="ruby-operator">::</span><span class="ruby-constant">TextTokenizeProcessor</span>.<span class="ruby-identifier">instance</span>

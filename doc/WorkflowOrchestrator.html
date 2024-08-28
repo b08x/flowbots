@@ -90,7 +90,11 @@
 
   <section class="description">
     
-<p>This class orchestrates the execution of workflows in the <a href="Flowbots.html"><code>Flowbots</code></a> application.</p>
+<p>Orchestrates the execution of workflows in the <a href="Flowbots.html"><code>Flowbots</code></a> application.</p>
+
+<p>The <a href="WorkflowOrchestrator.html"><code>WorkflowOrchestrator</code></a> is responsible for managing the lifecycle of a workflow, from defining its structure to executing its tasks and handling their results. It acts as a central coordinator, ensuring that agents are properly initialized, tasks are executed in the correct order, and errors are handled gracefully.</p>
+
+<p>This class orchestrates a workflow of tasks using <a href="Jongleur.html"><code>Jongleur</code></a>.</p>
 
   </section>
 
@@ -127,8 +131,9 @@
 <p>@return [void]</p>
 
           <div class="method-source-code" id="new-source">
-            <pre><span class="ruby-comment"># File lib/components/WorkflowOrchestrator.rb, line 14</span>
+            <pre><span class="ruby-comment"># File lib/components/WorkflowOrchestrator.rb, line 19</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">initialize</span>
+  <span class="ruby-comment"># A hash to store the registered agents, keyed by their roles.</span>
   <span class="ruby-ivar">@agents</span> = {}
 <span class="ruby-keyword">end</span></pre>
           </div>
@@ -154,20 +159,17 @@
         <div class="method-description">
           <p>Adds an agent to the orchestrator.</p>
 
-<p>@param role [String] The role of the agent. @param cartridge_file [String] The name of the cartridge file. @param author [String] The author of the cartridge.</p>
+<p>@param role [String] The role of the agent in the workflow. @param cartridge_file [String] The name of the cartridge file defining the agent’s behavior. @param author [String] The author of the cartridge (default: “@b08x”).</p>
 
-<p>@return [void]</p>
+<p>@return [void] @raise [RuntimeError] If the specified cartridge file is not found.</p>
 
           <div class="method-source-code" id="add_agent-source">
-            <pre><span class="ruby-comment"># File lib/components/WorkflowOrchestrator.rb, line 25</span>
+            <pre><span class="ruby-comment"># File lib/components/WorkflowOrchestrator.rb, line 32</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">add_agent</span>(<span class="ruby-identifier">role</span>, <span class="ruby-identifier">cartridge_file</span>, <span class="ruby-value">author:</span> <span class="ruby-string">&quot;@b08x&quot;</span>)
   <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;Adding agent: #{role}&quot;</span>
   <span class="ruby-identifier">cartridge_path</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-constant">CARTRIDGE_BASE_DIR</span>, <span class="ruby-identifier">author</span>, <span class="ruby-string">&quot;cartridges&quot;</span>, <span class="ruby-identifier">cartridge_file</span>)
 
-  <span class="ruby-keyword">unless</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exist?</span>(<span class="ruby-identifier">cartridge_path</span>)
-    <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">error</span> <span class="ruby-node">&quot;Cartridge file not found: \&quot;#{cartridge_path}\&quot;&quot;</span>
-    <span class="ruby-identifier">raise</span> <span class="ruby-node">&quot;Cartridge file not found: \&quot;#{cartridge_path}\&quot;&quot;</span>
-  <span class="ruby-keyword">end</span>
+  <span class="ruby-identifier">raise</span> <span class="ruby-node">&quot;Cartridge file not found: \&quot;#{cartridge_path}\&quot;&quot;</span> <span class="ruby-keyword">unless</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exist?</span>(<span class="ruby-identifier">cartridge_path</span>)
 
   <span class="ruby-ivar">@agents</span>[<span class="ruby-identifier">role</span>] = <span class="ruby-constant">WorkflowAgent</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">role</span>, <span class="ruby-identifier">cartridge_path</span>)
   <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;Agent added: #{role}&quot;</span>
@@ -188,10 +190,12 @@
         <div class="method-description">
           <p>Performs <a href="WorkflowOrchestrator.html#method-i-cleanup"><code>cleanup</code></a> operations for the workflow.</p>
 
+<p>This method is called after the workflow has finished or has been interrupted. It ensures that any resources held by the workflow are released and that the system is in a clean state for the next workflow execution.</p>
+
 <p>@return [void]</p>
 
           <div class="method-source-code" id="cleanup-source">
-            <pre><span class="ruby-comment"># File lib/components/WorkflowOrchestrator.rb, line 106</span>
+            <pre><span class="ruby-comment"># File lib/components/WorkflowOrchestrator.rb, line 129</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">cleanup</span>
   <span class="ruby-comment"># Perform any necessary cleanup for the workflow</span>
   <span class="ruby-constant">Jongleur</span><span class="ruby-operator">::</span><span class="ruby-constant">API</span>.<span class="ruby-identifier">trap_quit_signals</span>
@@ -211,14 +215,16 @@
         </div>
 
         <div class="method-description">
-          <p>Defines a workflow using the given definition.</p>
+          <p>Defines the workflow structure using a task graph.</p>
 
-<p>@param workflow_definition [Hash] The workflow definition.</p>
+<p>The workflow definition is a hash that outlines the tasks to be executed and their dependencies. It is used by the <a href="Jongleur.html"><code>Jongleur</code></a> library to create a task graph that represents the workflow.</p>
+
+<p>@param workflow_definition [Hash] The workflow definition in a format understood by <a href="Jongleur.html"><code>Jongleur</code></a>.</p>
 
 <p>@return [void]</p>
 
           <div class="method-source-code" id="define_workflow-source">
-            <pre><span class="ruby-comment"># File lib/components/WorkflowOrchestrator.rb, line 43</span>
+            <pre><span class="ruby-comment"># File lib/components/WorkflowOrchestrator.rb, line 51</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">define_workflow</span>(<span class="ruby-identifier">workflow_definition</span>)
   <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-string">&quot;Defining workflow&quot;</span>
   <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;Workflow definition: #{workflow_definition}&quot;</span>
@@ -241,10 +247,12 @@
         <div class="method-description">
           <p>Runs the defined workflow.</p>
 
+<p>This method initiates the workflow execution, managing the lifecycle of tasks and handling any errors that occur during the process. It uses the <a href="Jongleur.html"><code>Jongleur</code></a> library to execute the tasks in the defined order and provides hooks for monitoring the progress and handling events.</p>
+
 <p>@return [void]</p>
 
           <div class="method-source-code" id="run_workflow-source">
-            <pre><span class="ruby-comment"># File lib/components/WorkflowOrchestrator.rb, line 53</span>
+            <pre><span class="ruby-comment"># File lib/components/WorkflowOrchestrator.rb, line 66</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">run_workflow</span>
   <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-string">&quot;Starting workflow execution&quot;</span>
   <span class="ruby-ivar">@running</span> = <span class="ruby-keyword">true</span>
@@ -253,14 +261,16 @@
     <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-string">&quot;Printing graph to /tmp&quot;</span>
     <span class="ruby-constant">Jongleur</span><span class="ruby-operator">::</span><span class="ruby-constant">API</span>.<span class="ruby-identifier">print_graph</span>(<span class="ruby-string">&quot;/tmp&quot;</span>)
 
-    <span class="ruby-constant">Flowbots</span><span class="ruby-operator">::</span><span class="ruby-constant">UI</span>.<span class="ruby-identifier">info</span> <span class="ruby-string">&quot;Starting Jongleur::API.run&quot;</span>
+    <span class="ruby-constant">UI</span>.<span class="ruby-identifier">info</span> <span class="ruby-string">&quot;Starting Jongleur::API.run&quot;</span>
     <span class="ruby-constant">Jongleur</span><span class="ruby-operator">::</span><span class="ruby-constant">API</span>.<span class="ruby-identifier">run</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">on</span><span class="ruby-operator">|</span>
+      <span class="ruby-comment"># Event handler for task start.</span>
       <span class="ruby-identifier">on</span>.<span class="ruby-identifier">start</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">task</span><span class="ruby-operator">|</span>
         <span class="ruby-identifier">ui</span>.<span class="ruby-identifier">framed</span> <span class="ruby-keyword">do</span>
           <span class="ruby-identifier">ui</span>.<span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;Starting task: #{task}&quot;</span>
         <span class="ruby-keyword">end</span>
       <span class="ruby-keyword">end</span>
 
+      <span class="ruby-comment"># Event handler for task finish.</span>
       <span class="ruby-identifier">on</span>.<span class="ruby-identifier">finish</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">task</span><span class="ruby-operator">|</span>
         <span class="ruby-identifier">ui</span>.<span class="ruby-identifier">framed</span> <span class="ruby-keyword">do</span>
           <span class="ruby-identifier">ui</span>.<span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;Finished task: #{task}&quot;</span>
@@ -268,24 +278,28 @@
         <span class="ruby-identifier">ui</span>.<span class="ruby-identifier">space</span>
       <span class="ruby-keyword">end</span>
 
+      <span class="ruby-comment"># Event handler for task errors.</span>
       <span class="ruby-identifier">on</span>.<span class="ruby-identifier">error</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">task</span>, <span class="ruby-identifier">error</span><span class="ruby-operator">|</span>
         <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">error</span> <span class="ruby-node">&quot;Error in task #{task}: #{error.message}&quot;</span>
         <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">error</span> <span class="ruby-identifier">error</span>.<span class="ruby-identifier">backtrace</span>.<span class="ruby-identifier">join</span>(<span class="ruby-string">&quot;\n&quot;</span>)
       <span class="ruby-keyword">end</span>
 
+      <span class="ruby-comment"># Event handler for workflow completion.</span>
       <span class="ruby-identifier">on</span>.<span class="ruby-identifier">completed</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">task_matrix</span><span class="ruby-operator">|</span>
-        <span class="ruby-identifier">ui</span>.<span class="ruby-identifier">framed</span> <span class="ruby-keyword">do</span>
-          <span class="ruby-identifier">ui</span>.<span class="ruby-identifier">puts</span> <span class="ruby-string">&quot;Workflow completed&quot;</span>
-          <span class="ruby-identifier">ui</span>.<span class="ruby-identifier">space</span>
-          <span class="ruby-identifier">ui</span>.<span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;Task matrix: #{task_matrix}&quot;</span>
-        <span class="ruby-keyword">end</span>
+        <span class="ruby-identifier">puts</span> <span class="ruby-string">&quot;Workflow completed&quot;</span>
+        <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-node">&quot;Task matrix: #{task_matrix}&quot;</span>
         <span class="ruby-ivar">@running</span> = <span class="ruby-keyword">false</span>
-        <span class="ruby-keyword">return</span> <span class="ruby-string">&quot;next&quot;</span> <span class="ruby-keyword">if</span> <span class="ruby-constant">BATCH</span>
+        <span class="ruby-keyword">begin</span>
+          <span class="ruby-keyword">return</span> <span class="ruby-string">&quot;next&quot;</span> <span class="ruby-keyword">if</span> <span class="ruby-constant">BATCH</span>
+        <span class="ruby-keyword">rescue</span> <span class="ruby-constant">StandardError</span>
+          <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">warn</span> <span class="ruby-string">&quot;Not a batch job&quot;</span>
+          <span class="ruby-keyword">return</span> <span class="ruby-string">&quot;next&quot;</span>
+        <span class="ruby-keyword">end</span>
       <span class="ruby-keyword">end</span>
     <span class="ruby-keyword">end</span>
   <span class="ruby-keyword">rescue</span> <span class="ruby-constant">Interrupt</span>
     <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-string">&quot;Workflow interrupted&quot;</span>
-    <span class="ruby-constant">Flowbots</span><span class="ruby-operator">::</span><span class="ruby-constant">UI</span>.<span class="ruby-identifier">say</span>(<span class="ruby-value">:warn</span>, <span class="ruby-string">&quot;Workflow interrupted. Cleaning up...&quot;</span>)
+    <span class="ruby-constant">UI</span>.<span class="ruby-identifier">say</span>(<span class="ruby-value">:warn</span>, <span class="ruby-string">&quot;Workflow interrupted. Cleaning up...&quot;</span>)
     <span class="ruby-identifier">cleanup</span>
   <span class="ruby-keyword">rescue</span> <span class="ruby-constant">StandardError</span> <span class="ruby-operator">=&gt;</span> <span class="ruby-identifier">e</span>
     <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">error</span> <span class="ruby-node">&quot;Error during workflow execution: #{e.message}&quot;</span>

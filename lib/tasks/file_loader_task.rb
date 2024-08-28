@@ -3,6 +3,13 @@
 
 # This task loads a text file and stores its ID in Redis.
 class FileLoaderTask < Task
+  # Executes the task to load a FileObject and store its ID in Redis.
+  #
+  # Retrieves the input file path, processes the file using Flowbots::FileLoader,
+  # stores the FileObject ID in Redis, and logs the progress.
+  #
+  # @return [void]
+  # @raises [FlowbotError] If the FileObject is not found or its ID is nil.
   def execute
     logger.info "Starting FileLoaderTask"
 
@@ -24,10 +31,18 @@ class FileLoaderTask < Task
 
   private
 
+  # Retrieves the input file path from Redis.
+  #
+  # @return [String] The input file path.
   def retrieve_input
     retrieve_file_path
   end
 
+  # Stores the FileObject ID in Redis.
+  #
+  # @param id [Integer] The ID of the FileObject.
+  #
+  # @return [void]
   def store_FileObject_id(id)
     RedisKeys.set(RedisKeys::CURRENT_FileObject_ID, id)
   end

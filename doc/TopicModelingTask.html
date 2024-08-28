@@ -65,6 +65,14 @@
 </div>
 
     
+<div id="includes-section" class="nav-section">
+  <h3>Included Modules</h3>
+
+  <ul class="link-list">
+    <li><a class="include" href="InputRetrieval.html">InputRetrieval</a>
+  </ul>
+</div>
+
     
     
 <!-- Method Quickref -->
@@ -72,11 +80,14 @@
   <h3>Methods</h3>
 
   <ul class="link-list" role="directory">
+    <li ><a href="#method-c-new">::new</a>
     <li ><a href="#method-i-execute">#execute</a>
     <li ><a href="#method-i-filter_segment_words">#filter_segment_words</a>
-    <li ><a href="#method-i-retrieve_current_textfile">#retrieve_current_textfile</a>
+    <li ><a href="#method-i-get_documents">#get_documents</a>
     <li ><a href="#method-i-retrieve_filtered_words">#retrieve_filtered_words</a>
+    <li ><a href="#method-i-retrieve_input">#retrieve_input</a>
     <li ><a href="#method-i-store_topic_result">#store_topic_result</a>
+    <li ><a href="#method-i-store_topics">#store_topics</a>
   </ul>
 </div>
 
@@ -100,6 +111,34 @@
 
 
 
+     <section id="public-class-5Buntitled-5D-method-details" class="method-section">
+       <header>
+         <h3>Public Class Methods</h3>
+       </header>
+
+      <div id="method-c-new" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">new</span><span
+            class="method-args">(model_params)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          
+
+          <div class="method-source-code" id="new-source">
+            <pre><span class="ruby-comment"># File lib/general_task_agent.rb, line 63</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">initialize</span>(<span class="ruby-identifier">model_params</span>)
+  <span class="ruby-ivar">@model</span> = <span class="ruby-constant">TopicModel</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">model_params</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+    </section>
+
      <section id="public-instance-5Buntitled-5D-method-details" class="method-section">
        <header>
          <h3>Public Instance Methods</h3>
@@ -113,32 +152,15 @@
         </div>
 
         <div class="method-description">
-          <p>Executes the task.</p>
-
-<p>@return [void]</p>
+          
 
           <div class="method-source-code" id="execute-source">
-            <pre><span class="ruby-comment"># File lib/tasks/topic_modeling_task.rb, line 9</span>
+            <pre><span class="ruby-comment"># File lib/general_task_agent.rb, line 67</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">execute</span>
-  <span class="ruby-comment"># Retrieve the current Textfile object from Redis.</span>
-  <span class="ruby-identifier">text_file</span> = <span class="ruby-identifier">retrieve_current_textfile</span>
-
-  <span class="ruby-comment"># Retrieve filtered words from the Textfile.</span>
-  <span class="ruby-identifier">filtered_words</span> = <span class="ruby-identifier">retrieve_filtered_words</span>(<span class="ruby-identifier">text_file</span>)
-
-  <span class="ruby-comment"># Get an instance of the TopicModelProcessor.</span>
-  <span class="ruby-identifier">topic_processor</span> = <span class="ruby-constant">Flowbots</span><span class="ruby-operator">::</span><span class="ruby-constant">TopicModelProcessor</span>.<span class="ruby-identifier">instance</span>
-
-  <span class="ruby-comment"># Load or create the topic model.</span>
-  <span class="ruby-identifier">topic_processor</span>.<span class="ruby-identifier">load_or_create_model</span>
-
-  <span class="ruby-comment"># Infer topics for each set of filtered words.</span>
-  <span class="ruby-identifier">results</span> = <span class="ruby-identifier">filtered_words</span>.<span class="ruby-identifier">map</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">words</span><span class="ruby-operator">|</span>
-    <span class="ruby-identifier">topic_processor</span>.<span class="ruby-identifier">infer_topics</span>(<span class="ruby-identifier">words</span>.<span class="ruby-identifier">join</span>(<span class="ruby-string">&quot; &quot;</span>))
-  <span class="ruby-keyword">end</span>
-
-  <span class="ruby-comment"># Store the topic modeling results in the Textfile.</span>
-  <span class="ruby-identifier">store_topic_result</span>(<span class="ruby-identifier">text_file</span>, <span class="ruby-identifier">results</span>)
+  <span class="ruby-comment"># Perform topic modeling</span>
+  <span class="ruby-identifier">documents</span> = <span class="ruby-identifier">get_documents</span>()
+  <span class="ruby-identifier">topics</span> = <span class="ruby-ivar">@model</span>.<span class="ruby-identifier">extract_topics</span>(<span class="ruby-identifier">documents</span>)
+  <span class="ruby-identifier">store_topics</span>(<span class="ruby-identifier">topics</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
         </div>
@@ -161,22 +183,20 @@
         </div>
 
         <div class="method-description">
-          <p>Filters words from a segment based on their tags.</p>
+          <p>Filters words from a segment based on their POS tags.</p>
 
-<p>@param segment [Segment] The <a href="Segment.html"><code>Segment</code></a> object.</p>
+<p>@param segment [Segment] The segment to filter words from.</p>
 
-<p>@return [Array] An array of filtered words.</p>
+<p>@return [Array&lt;String&gt;] An array of filtered words.</p>
 
           <div class="method-source-code" id="filter_segment_words-source">
-            <pre><span class="ruby-comment"># File lib/tasks/topic_modeling_task.rb, line 67</span>
+            <pre><span class="ruby-comment"># File lib/tasks/topic_modeling_task.rb, line 70</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">filter_segment_words</span>(<span class="ruby-identifier">segment</span>)
-  <span class="ruby-comment"># Define the relevant tags for filtering.</span>
+  <span class="ruby-comment"># Define the relevant POS tags for filtering.</span>
   <span class="ruby-identifier">relevant_tags</span> = <span class="ruby-node">%w[NN JJ RB]</span>
-
-  <span class="ruby-comment"># Get the tokens from the segment&#39;s tagged data.</span>
-  <span class="ruby-identifier">tokens</span> = <span class="ruby-identifier">segment</span>.<span class="ruby-identifier">tagged</span>[<span class="ruby-string">&quot;tokens&quot;</span>] <span class="ruby-operator">||</span> []
-
-  <span class="ruby-comment"># Select tokens with relevant tags and extract their words.</span>
+  <span class="ruby-comment"># Retrieve the POS tagged tokens from the segment.</span>
+  <span class="ruby-identifier">tokens</span> = <span class="ruby-identifier">segment</span>.<span class="ruby-identifier">tagged</span>&amp;.<span class="ruby-identifier">[]</span>(<span class="ruby-string">&quot;pos&quot;</span>) <span class="ruby-operator">||</span> []
+  <span class="ruby-comment"># Select tokens with relevant POS tags and extract their words.</span>
   <span class="ruby-identifier">tokens</span>.<span class="ruby-identifier">select</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">token</span><span class="ruby-operator">|</span> <span class="ruby-identifier">relevant_tags</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">token</span>[<span class="ruby-string">&quot;tag&quot;</span>]) }
     .<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">token</span><span class="ruby-operator">|</span> <span class="ruby-identifier">token</span>[<span class="ruby-string">&quot;word&quot;</span>] }
 <span class="ruby-keyword">end</span></pre>
@@ -186,23 +206,20 @@
 
       </div>
 
-      <div id="method-i-retrieve_current_textfile" class="method-detail ">
+      <div id="method-i-get_documents" class="method-detail ">
         <div class="method-heading">
-          <span class="method-name">retrieve_current_textfile</span><span
+          <span class="method-name">get_documents</span><span
             class="method-args">()</span>
           <span class="method-click-advice">click to toggle source</span>
         </div>
 
         <div class="method-description">
-          <p>Retrieves the current <a href="Textfile.html"><code>Textfile</code></a> object from Redis.</p>
+          
 
-<p>@return [Textfile] The <a href="Textfile.html"><code>Textfile</code></a> object representing the current file.</p>
-
-          <div class="method-source-code" id="retrieve_current_textfile-source">
-            <pre><span class="ruby-comment"># File lib/tasks/topic_modeling_task.rb, line 36</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">retrieve_current_textfile</span>
-  <span class="ruby-identifier">textfile_id</span> = <span class="ruby-constant">Jongleur</span><span class="ruby-operator">::</span><span class="ruby-constant">WorkerTask</span>.<span class="ruby-identifier">class_variable_get</span>(<span class="ruby-value">:@@redis</span>).<span class="ruby-identifier">get</span>(<span class="ruby-string">&quot;current_textfile_id&quot;</span>)
-  <span class="ruby-constant">Textfile</span>[<span class="ruby-identifier">textfile_id</span>]
+          <div class="method-source-code" id="get_documents-source">
+            <pre><span class="ruby-comment"># File lib/general_task_agent.rb, line 76</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">get_documents</span>
+  <span class="ruby-comment"># Retrieve documents for topic modeling</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
         </div>
@@ -213,33 +230,47 @@
       <div id="method-i-retrieve_filtered_words" class="method-detail ">
         <div class="method-heading">
           <span class="method-name">retrieve_filtered_words</span><span
-            class="method-args">(text_file)</span>
+            class="method-args">(textfile)</span>
           <span class="method-click-advice">click to toggle source</span>
         </div>
 
         <div class="method-description">
-          <p>Retrieves filtered words from the <a href="Textfile.html"><code>Textfile</code></a>.</p>
+          <p>Retrieves filtered words from the segments of the given <a href="FileObject.html"><code>FileObject</code></a>.</p>
 
-<p>@param text_file [Textfile] The <a href="Textfile.html"><code>Textfile</code></a> object.</p>
+<p>@param textfile [FileObject] The <a href="FileObject.html"><code>FileObject</code></a> to retrieve filtered words from.</p>
 
-<p>@return [Array] An array of filtered words.</p>
+<p>@return [Array&lt;Array&lt;String&gt;&gt;] An array of arrays, where each inner array contains  filtered words from a segment.</p>
 
           <div class="method-source-code" id="retrieve_filtered_words-source">
-            <pre><span class="ruby-comment"># File lib/tasks/topic_modeling_task.rb, line 46</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">retrieve_filtered_words</span>(<span class="ruby-identifier">text_file</span>)
-  <span class="ruby-comment"># Retrieve segments from the Textfile.</span>
-  <span class="ruby-identifier">segments</span> = <span class="ruby-identifier">text_file</span>.<span class="ruby-identifier">retrieve_segments</span>
+            <pre><span class="ruby-comment"># File lib/tasks/topic_modeling_task.rb, line 58</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">retrieve_filtered_words</span>(<span class="ruby-identifier">textfile</span>)
+  <span class="ruby-comment"># Retrieve the segments from the FileObject.</span>
+  <span class="ruby-identifier">segments</span> = <span class="ruby-identifier">textfile</span>.<span class="ruby-identifier">retrieve_segments</span>
+  <span class="ruby-comment"># Filter words from each segment and flatten the resulting array.</span>
+  <span class="ruby-identifier">segments</span>.<span class="ruby-identifier">flat_map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">segment</span><span class="ruby-operator">|</span> <span class="ruby-identifier">filter_segment_words</span>(<span class="ruby-identifier">segment</span>) }
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
 
-  <span class="ruby-comment"># Filter words from each segment based on their tags.</span>
-  <span class="ruby-identifier">filtered_words</span> = <span class="ruby-identifier">segments</span>.<span class="ruby-identifier">flat_map</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">segment</span><span class="ruby-operator">|</span>
-    <span class="ruby-identifier">filter_segment_words</span>(<span class="ruby-identifier">segment</span>)
-  <span class="ruby-keyword">end</span>
 
-  <span class="ruby-comment"># Log the number of filtered words retrieved.</span>
-  <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-node">&quot;Retrieved #{filtered_words.length} filtered words for topic modeling&quot;</span>
+      </div>
 
-  <span class="ruby-comment"># Return the filtered words.</span>
-  <span class="ruby-identifier">filtered_words</span>
+      <div id="method-i-retrieve_input" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">retrieve_input</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          <p>Retrieves the input for the task, which is the current <a href="FileObject.html"><code>FileObject</code></a>.</p>
+
+<p>@return [FileObject] The current <a href="FileObject.html"><code>FileObject</code></a>.</p>
+
+          <div class="method-source-code" id="retrieve_input-source">
+            <pre><span class="ruby-comment"># File lib/tasks/topic_modeling_task.rb, line 48</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">retrieve_input</span>
+  <span class="ruby-identifier">retrieve_file_object</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
         </div>
@@ -250,41 +281,59 @@
       <div id="method-i-store_topic_result" class="method-detail ">
         <div class="method-heading">
           <span class="method-name">store_topic_result</span><span
-            class="method-args">(text_file, result)</span>
+            class="method-args">(textfile, result)</span>
           <span class="method-click-advice">click to toggle source</span>
         </div>
 
         <div class="method-description">
-          <p>Stores the topic modeling results in the <a href="Textfile.html"><code>Textfile</code></a>.</p>
+          <p>Stores the topic modeling results in the given <a href="FileObject.html"><code>FileObject</code></a>.</p>
 
-<p>@param text_file [Textfile] The <a href="Textfile.html"><code>Textfile</code></a> object. @param result [Array] The topic modeling results.</p>
+<p>Extracts unique words from the topic results, adds them as topics to the <a href="FileObject.html"><code>FileObject</code></a>, and logs the progress.</p>
+
+<p>@param textfile [FileObject] The <a href="FileObject.html"><code>FileObject</code></a> to store the topic results in. @param result [Array&lt;Hash&gt;] An array of topic modeling results.</p>
 
 <p>@return [void]</p>
 
           <div class="method-source-code" id="store_topic_result-source">
-            <pre><span class="ruby-comment"># File lib/tasks/topic_modeling_task.rb, line 85</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">store_topic_result</span>(<span class="ruby-identifier">text_file</span>, <span class="ruby-identifier">result</span>)
-  <span class="ruby-comment"># Create a set of unique words from the topic modeling results.</span>
+            <pre><span class="ruby-comment"># File lib/tasks/topic_modeling_task.rb, line 89</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">store_topic_result</span>(<span class="ruby-identifier">textfile</span>, <span class="ruby-identifier">result</span>)
+  <span class="ruby-comment"># Extract unique words from the topic results.</span>
   <span class="ruby-identifier">unique_words</span> = <span class="ruby-identifier">result</span>.<span class="ruby-identifier">each_with_object</span>(<span class="ruby-constant">Set</span>.<span class="ruby-identifier">new</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">hash</span>, <span class="ruby-identifier">words</span><span class="ruby-operator">|</span>
+    <span class="ruby-comment"># Add top words from the topic.</span>
     <span class="ruby-identifier">hash</span>[<span class="ruby-value">:top_words</span>].<span class="ruby-identifier">keys</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">key</span><span class="ruby-operator">|</span>
-      <span class="ruby-comment"># Check if the key is a string and only contains letters.</span>
       <span class="ruby-identifier">words</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">key</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">key</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">String</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">key</span>.<span class="ruby-identifier">match?</span>(<span class="ruby-regexp">/^[a-zA-Z]+$/</span>)
     <span class="ruby-keyword">end</span>
+    <span class="ruby-comment"># Add sorted words from the topic.</span>
     <span class="ruby-identifier">hash</span>[<span class="ruby-value">:sorted_words</span>].<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">word</span><span class="ruby-operator">|</span>
-      <span class="ruby-comment"># Check if the key is a string and only contains letters.</span>
       <span class="ruby-identifier">words</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">word</span>[<span class="ruby-value">0</span>] <span class="ruby-keyword">if</span> <span class="ruby-identifier">word</span>[<span class="ruby-value">0</span>].<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">String</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">word</span>[<span class="ruby-value">0</span>].<span class="ruby-identifier">match?</span>(<span class="ruby-regexp">/^[a-zA-Z]+$/</span>)
     <span class="ruby-keyword">end</span>
   <span class="ruby-keyword">end</span>
 
-  <span class="ruby-comment"># Add the unique words as topics to the Textfile.</span>
-  <span class="ruby-keyword">begin</span>
-    <span class="ruby-identifier">text_file</span>.<span class="ruby-identifier">add_topics</span>(<span class="ruby-identifier">unique_words</span>.<span class="ruby-identifier">to_a</span>)
-  <span class="ruby-keyword">rescue</span> <span class="ruby-constant">StandardError</span> <span class="ruby-operator">=&gt;</span> <span class="ruby-identifier">e</span>
-    <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">warn</span> <span class="ruby-node">&quot;#{e.message}&quot;</span>
-  <span class="ruby-keyword">end</span>
-
+  <span class="ruby-comment"># Add the unique words as topics to the FileObject.</span>
+  <span class="ruby-identifier">textfile</span>.<span class="ruby-identifier">add_topics</span>(<span class="ruby-identifier">unique_words</span>.<span class="ruby-identifier">to_a</span>)
   <span class="ruby-comment"># Log the number of topics stored.</span>
-  <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-node">&quot;Stored #{result.length} topics for Textfile #{text_file.id}&quot;</span>
+  <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-node">&quot;Stored #{result.length} topics for Textfile #{textfile.id}&quot;</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-store_topics" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">store_topics</span><span
+            class="method-args">(topics)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          
+
+          <div class="method-source-code" id="store_topics-source">
+            <pre><span class="ruby-comment"># File lib/general_task_agent.rb, line 80</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">store_topics</span>(<span class="ruby-identifier">topics</span>)
+  <span class="ruby-comment"># Store the extracted topics</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
         </div>

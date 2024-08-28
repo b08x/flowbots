@@ -1,9 +1,16 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+# Task to accumulate filtered segments from all processed files.
 class AccumulateFilteredSegmentsTask < Jongleur::WorkerTask
   include InputRetrieval
 
+  # Executes the task to accumulate and clean filtered segments.
+  #
+  # Retrieves filtered segments from Redis, cleans them, accumulates them,
+  # updates the FileObject with the cleaned segments, and logs the progress.
+  #
+  # @return [void]
   def execute
     logger.info "Starting AccumulateFilteredSegmentsTask"
 
@@ -33,10 +40,18 @@ class AccumulateFilteredSegmentsTask < Jongleur::WorkerTask
 
   private
 
+  # Retrieves the input for the task, which is the current FileObject.
+  #
+  # @return [FileObject] The current FileObject.
   def retrieve_input
     retrieve_file_object
   end
 
+  # Cleans the given segments by removing unwanted segments and words.
+  #
+  # @param segments [Array<Array<String>>] The segments to clean.
+  #
+  # @return [Array<Array<String>>] The cleaned segments.
   def clean_segments(segments)
     segments.reject do |segment|
       segment.empty? ||
@@ -51,6 +66,11 @@ class AccumulateFilteredSegmentsTask < Jongleur::WorkerTask
     end.reject(&:empty?)
   end
 
+  # Updates the FileObject with the given cleaned segments.
+  #
+  # @param cleaned_segments [Array<Array<String>>] The cleaned segments to add to the FileObject.
+  #
+  # @return [void]
   def update_file_object(cleaned_segments)
     file_object = retrieve_input
     return if file_object.nil?

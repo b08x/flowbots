@@ -123,14 +123,35 @@ Rake::RDocTask.new do |rdoc|
 
   rdoc.rdoc_files.include "lib/api.rb"
   rdoc.rdoc_files.include "lib/cli.rb"
+  rdoc.rdoc_files.include "lib/example.rb"
   rdoc.rdoc_files.include "lib/flowbots.rb"
+  rdoc.rdoc_files.include "lib/general_task_agent.rb"
   rdoc.rdoc_files.include "lib/helper.rb"
+
   rdoc.rdoc_files.include "lib/logging.rb"
-  rdoc.rdoc_files.include "lib/tasks.rb"
   rdoc.rdoc_files.include "lib/ui.rb"
+  rdoc.rdoc_files.include "lib/tasks.rb"
   rdoc.rdoc_files.include "lib/workflows.rb"
 
+  rdoc.rdoc_files.include "lib/components/BatchProcessor.rb"
+  rdoc.rdoc_files.include "lib/components/ExceptionAgent.rb"
+  rdoc.rdoc_files.include "lib/components/ExceptionHandler.rb"
+  rdoc.rdoc_files.include "lib/components/FileDiscovery.rb"
+  rdoc.rdoc_files.include "lib/components/FileLoader.rb"
+  rdoc.rdoc_files.include "lib/components/InputRetrieval.rb"
+  rdoc.rdoc_files.include "lib/components/OhmModels.rb"
+  rdoc.rdoc_files.include "lib/components/RedisKeys.rb"
+  rdoc.rdoc_files.include "lib/components/word_salad.rb"
+  rdoc.rdoc_files.include "lib/components/WorkflowAgent.rb"
+  rdoc.rdoc_files.include "lib/components/WorkflowOrchestrator.rb"
+
+  rdoc.rdoc_files.include "lib/flowbots/errors.rb"
+
+  rdoc.rdoc_files.include "lib/grammars/markdown_yaml.rb"
+
   rdoc.rdoc_files.include "lib/integrations/flowise.rb"
+
+  rdoc.rdoc_files.include "lib/pipelines/unified_file_processing.rb"
 
   rdoc.rdoc_files.include "lib/processors/GrammarProcessor.rb"
   rdoc.rdoc_files.include "lib/processors/NLPProcessor.rb"
@@ -145,9 +166,10 @@ Rake::RDocTask.new do |rdoc|
   rdoc.rdoc_files.include "lib/tasks/file_loader_task.rb"
   rdoc.rdoc_files.include "lib/tasks/filter_segments_task.rb"
   rdoc.rdoc_files.include "lib/tasks/llm_analysis_task.rb"
+  rdoc.rdoc_files.include "lib/tasks/load_file_object_task.rb"
   rdoc.rdoc_files.include "lib/tasks/load_text_files_task.rb"
   rdoc.rdoc_files.include "lib/tasks/nlp_analysis_task.rb"
-  rdoc.rdoc_files.include "lib/tasks/preprocess_text_file_task.rb"
+  rdoc.rdoc_files.include "lib/tasks/preprocess_file_object_task.rb"
   rdoc.rdoc_files.include "lib/tasks/text_segment_task.rb"
   rdoc.rdoc_files.include "lib/tasks/text_tagger_task.rb"
   rdoc.rdoc_files.include "lib/tasks/text_tokenize_task.rb"
@@ -155,15 +177,9 @@ Rake::RDocTask.new do |rdoc|
   rdoc.rdoc_files.include "lib/tasks/topic_modeling_task.rb"
   rdoc.rdoc_files.include "lib/tasks/train_topic_model_task.rb"
 
-  rdoc.rdoc_files.include "lib/components/ExceptionAgent.rb"
-  rdoc.rdoc_files.include "lib/components/ExceptionHandler.rb"
-  rdoc.rdoc_files.include "lib/components/FileLoader.rb"
-  rdoc.rdoc_files.include "lib/components/OhmModels.rb"
-  rdoc.rdoc_files.include "lib/components/WorkflowAgent.rb"
-  rdoc.rdoc_files.include "lib/components/WorkflowOrchestrator.rb"
-  rdoc.rdoc_files.include "lib/components/word_salad.rb"
-
-  rdoc.rdoc_files.include "lib/grammars/markdown_yaml.rb"
+  rdoc.rdoc_files.include "lib/ui/base.rb"
+  rdoc.rdoc_files.include "lib/ui/box.rb"
+  rdoc.rdoc_files.include "lib/ui/scrollable_box.rb"
 
   rdoc.rdoc_files.include "lib/utils/command.rb"
   rdoc.rdoc_files.include "lib/utils/transcribe.rb"

@@ -92,7 +92,6 @@
     <li ><a href="#method-i-get_objects_by_query">#get_objects_by_query</a>
     <li ><a href="#method-i-get_objects_by_reference">#get_objects_by_reference</a>
     <li ><a href="#method-i-get_objects_by_regex">#get_objects_by_regex</a>
-    <li ><a href="#method-i-in_container-3F">#in_container?</a>
     <li ><a href="#method-i-main">#main</a>
   </ul>
 </div>
@@ -117,26 +116,18 @@
         <h3>Constants</h3>
       </header>
       <dl>
-        <dt id="BATCH">BATCH
-        <dd>
         <dt id="CARTRIDGE_DIR">CARTRIDGE_DIR
-        <dd>
+        <dd><p>Define the directory for cartridges</p>
         <dt id="GRAMMAR_DIR">GRAMMAR_DIR
-        <dd>
-        <dt id="IN_CONTAINER">IN_CONTAINER
-        <dd>
+        <dd><p>Constant for the directory containing grammars.</p>
         <dt id="PASTEL">PASTEL
         <dd>
-        <dt id="REDIS_CONFIG">REDIS_CONFIG
-        <dd><p>Configuration for Redis connection</p>
         <dt id="TASK_DIR">TASK_DIR
-        <dd>
-        <dt id="TITLE_WIDTH">TITLE_WIDTH
-        <dd>
+        <dd><p>Constant for the directory containing tasks.</p>
         <dt id="TOPIC_MODEL_PATH">TOPIC_MODEL_PATH
         <dd>
         <dt id="WORKFLOW_DIR">WORKFLOW_DIR
-        <dd>
+        <dd><p>Constant for the directory containing workflows.</p>
       </dl>
     </section>
 
@@ -420,27 +411,6 @@
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">get_objects_by_regex</span>(<span class="ruby-identifier">object_bucket</span>, <span class="ruby-identifier">regex</span>)
   <span class="ruby-identifier">object_class</span> = <span class="ruby-constant">Object</span>.<span class="ruby-identifier">const_get</span>(<span class="ruby-identifier">object_bucket</span>.<span class="ruby-identifier">capitalize</span>)
   <span class="ruby-identifier">object_class</span>.<span class="ruby-identifier">all</span>.<span class="ruby-identifier">select</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">object</span><span class="ruby-operator">|</span> <span class="ruby-identifier">object</span>.<span class="ruby-identifier">name</span> <span class="ruby-operator">=~</span> <span class="ruby-identifier">regex</span> }
-<span class="ruby-keyword">end</span></pre>
-          </div>
-        </div>
-
-
-      </div>
-
-      <div id="method-i-in_container-3F" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">in_container?</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-
-        <div class="method-description">
-          <p>from Monadic-Chat, MonadicApp class: return true if we are inside a docker container</p>
-
-          <div class="method-source-code" id="in_container-3F-source">
-            <pre><span class="ruby-comment"># File lib/flowbots.rb, line 108</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">in_container?</span>
-  <span class="ruby-constant">File</span>.<span class="ruby-identifier">file?</span>(<span class="ruby-string">&quot;/.dockerenv&quot;</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
         </div>
