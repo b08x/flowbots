@@ -92,6 +92,8 @@ class FileObject < Ohm::Model
   index :batch
 
   def self.find_or_create_by_path(file_path, attributes={})
+    raise ArgumentError, "file_path must be a String, got #{file_path.class}" unless file_path.is_a?(String)
+
     existing_file = find(path: file_path).first
     return existing_file if existing_file
 
@@ -106,6 +108,10 @@ class FileObject < Ohm::Model
         content: File.read(file_path)
       )
     )
+  rescue Errno::ENOENT
+    raise FileNotFoundError, "File not found: #{file_path}"
+  rescue StandardError => e
+    raise FileObjectError, "Error creating FileObject: #{e.message}"
   end
 
   def add_segment(text)

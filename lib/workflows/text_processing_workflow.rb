@@ -83,10 +83,27 @@ module Flowbots
     #
     # @return [void]
     def process_single_file
-      p @input_file_path
-      puts "-----"
       file_object = create_or_fetch_file_object(@input_file_path)
       perform_additional_tasks(file_object.id)
+    rescue ArgumentError => e
+      logger.error "Invalid input for file object: #{e.message}"
+      UI.say(:error, "Invalid input for file object: #{e.message}")
+    rescue FileNotFoundError => e
+      logger.error e.message
+      UI.say(:error, e.message)
+    rescue FileObjectError => e
+      logger.error "Error processing file: #{e.message}"
+      UI.say(:error, "Error processing file: #{e.message}")
+    rescue StandardError => e
+      logger.error "Unexpected error in text processing: #{e.message}"
+      logger.error e.backtrace.join("\n")
+      UI.say(:error, "Unexpected error in text processing. Check logs for details.")
+    end
+
+    private
+
+    def create_or_fetch_file_object(file_path)
+      FileObject.find_or_create_by_path(file_path)
     end
 
     # Creates or fetches a FileObject for the given file path.
@@ -95,10 +112,13 @@ module Flowbots
     #
     # @return [FileObject] The created or fetched FileObject.
     def create_or_fetch_file_object(file_path)
-      # Assuming we're using ActiveRecord and there's a FileObject model
-      # This method should create a new FileObject or fetch an existing one
-      file_path = file_path[:path] if file_path.is_a?(Hash)
-      FileObject.find_or_create_by_path(path: file_path)
+      FileObject.find_or_create_by_path(file_path)
+    rescue ArgumentError => e
+      logger.error "Invalid file path: #{e.message}"
+      raise FlowbotError.new("Invalid file path", "INVALID_FILE_PATH", details: e.message)
+    rescue StandardError => e
+      logger.error "Error creating or fetching FileObject: #{e.message}"
+      raise FlowbotError.new("Error processing file", "FILE_PROCESSING_ERROR", details: e.message)
     end
 
     # Fetches the IDs of unprocessed files.
@@ -119,12 +139,22 @@ module Flowbots
     # @param file_id [Integer] The ID of the file to process.
     #
     # @return [void]
+    # def perform_additional_tasks(file_id)
+    #   additional_tasks = {
+    #     TextTaggerTask: [:TopicModelingTask],
+    #     TopicModelingTask: [:LlmAnalysisTask],
+    #     LlmAnalysisTask: [:DisplayResultsTask],
+    #     DisplayResultsTask: []
+    #   }
+    #
+    #   @pipeline.orchestrator.define_workflow(additional_tasks)
+    #   @pipeline.orchestrator.run_workflow
+    # end
     def perform_additional_tasks(file_id)
       additional_tasks = {
         TextTaggerTask: [:TopicModelingTask],
         TopicModelingTask: [:LlmAnalysisTask],
-        LlmAnalysisTask: [:DisplayResultsTask],
-        DisplayResultsTask: []
+        LlmAnalysisTask: []
       }
 
       @pipeline.orchestrator.define_workflow(additional_tasks)

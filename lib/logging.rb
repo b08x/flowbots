@@ -10,7 +10,7 @@ module Logging
   LOG_DIR = File.expand_path(File.join(__dir__, "..", "log"))
 
   # The default log level.
-  LOG_LEVEL = Logger::DEBUG
+  LOG_LEVEL = Logger::INFO
 
   # The maximum size of a log file in bytes.
   LOG_MAX_SIZE = 2_145_728
@@ -46,7 +46,7 @@ module Logging
     #
     # @return [Integer] The log level.
     def log_level
-      Logger::DEBUG
+      Logger::INFO
     end
 
     # Returns the logger for the specified class and method.

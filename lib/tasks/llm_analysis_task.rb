@@ -34,6 +34,9 @@ class LlmAnalysisTask < Jongleur::WorkerTask
       # Generate a prompt for the agent based on the retrieved information.
       prompt = generate_analysis_prompt(textfile, content, metadata, nlp_result)
 
+      puts prompt
+      raise
+
       analysis_result = agent.process(prompt)
 
       logger.debug "Agent processing completed"

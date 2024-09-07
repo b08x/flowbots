@@ -32,4 +32,8 @@ module Flowbots
 
   # Error raised when there is a problem with an API call.
   class APIError < FlowbotError; end
+
+  class FileNotFoundError < StandardError; end
+
+  class FileObjectError < StandardError; end
 end

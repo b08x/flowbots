@@ -44,9 +44,9 @@ require_relative "processors/NLPProcessor"
 require_relative "processors/TextTaggerProcessor"
 require_relative "processors/TopicModelProcessor"
 
-require_relative "ui"
-require_relative "workflows"
-require_relative "tasks"
+require "ui"
+require "workflows"
+require "tasks"
 
 # Constant for the directory containing workflows.
 WORKFLOW_DIR = File.expand_path("workflows", __dir__)
