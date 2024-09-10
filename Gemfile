@@ -67,7 +67,7 @@ gem "engtagger", "~> 0.4.1"
 
 gem "scalpel", "~> 0.2.1"
 
-gem "gokdok", "~> 0.4.2"
+#gem "gokdok", "~> 0.4.2"
 
 gem "shale", "~> 1.1"
 

@@ -142,8 +142,6 @@ class LlmAnalysisTask < Jongleur::WorkerTask
       Content:
       #{content}
 
-      NLP Analysis:
-      #{format_nlp_result(nlp_result)}
     PROMPT
   end
 
