@@ -4,6 +4,50 @@ IFS=$'\n\t'
 set -vx
 
 which overcommit > /dev/null 2>&1 && overcommit --install
+
+# paru -S link-grammar --noconfirm --needed
+
+python3 -m venv .venv
+source .venv/bin/activate
+
+export RUSTFLAGS="-A invalid_reference_casting"
+export PATH="$HOME/.cargo/bin:$PATH"
+
+pip3 install -U setuptools wheel
+pip3 install -U spacy transformers booknlp
+
+pip3 install -r requirements.txt
+
+# Function to check if a spaCy model is installed
+check_model_installed() {
+    python3 -c "import spacy; spacy.load('${1}')" &> /dev/null
+}
+
+# Function to install a spaCy model
+install_model() {
+    python3 -m spacy download "${1}"
+}
+
+# Check and install en_core_web_trf if not installed
+if check_model_installed en_core_web_trf; then
+    echo "en_core_web_trf is already installed."
+else
+    echo "Installing en_core_web_trf..."
+    install_model en_core_web_trf
+fi
+
+# Check and install en_core_web_lg if not installed
+if check_model_installed en_core_web_lg; then
+    echo "en_core_web_lg is already installed."
+else
+    echo "Installing en_core_web_lg..."
+    install_model en_core_web_lg
+fi
+
+
+bundle lock --add-platform x86_64-linux
 bundle install
+
+# gum confirm "bundle update?" && bundle update
 
 # Do any other automated setup that you need to do here

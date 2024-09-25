@@ -1,0 +1,124 @@
+{
+  "test_suite": "Enhanced Prompt Compression System Tests",
+  "test_cases": [
+    {
+      "id": "TC001",
+      "name": "Basic Compression Test",
+      "description": "Test basic compression functionality with a simple prompt",
+      "input": {
+        "task": "Summarize a news article",
+        "subtasks": [
+          {"action": "Read the article"},
+          {"action": "Identify key points"},
+          {"action": "Write a concise summary"}
+        ]
+      },
+      "expected_output": {
+        "task": "Summarize article",
+        "subtasks": [
+          {"action": "Identify key points"},
+          {"action": "Write concise summary"}
+        ]
+      }
+    },
+    {
+      "id": "TC002",
+      "name": "Long Context Compression Test",
+      "description": "Test compression of a long, complex prompt",
+      "input": {
+        "task": "Analyze the impact of climate change on global agriculture",
+        "subtasks": [
+          {"action": "Research current climate change trends"},
+          {"action": "Investigate effects on crop yields in different regions"},
+          {"action": "Analyze changes in growing seasons and precipitation patterns"},
+          {"action": "Examine the impact on livestock farming"},
+          {"action": "Study adaptive measures being implemented by farmers"},
+          {"action": "Assess economic implications for global food security"},
+          {"action": "Evaluate potential technological solutions"},
+          {"action": "Consider policy recommendations for sustainable agriculture"}
+        ]
+      },
+      "expected_output": {
+        "task": "Analyze climate change impact on global agriculture",
+        "subtasks": [
+          {"action": "Research climate trends and effects on crops/livestock"},
+          {"action": "Assess economic and food security implications"},
+          {"action": "Evaluate solutions and policy recommendations"}
+        ]
+      }
+    },
+    {
+      "id": "TC003",
+      "name": "Question-Aware Compression Test",
+      "description": "Test the system's ability to compress based on relevance to a specific question",
+      "input": {
+        "task": "Answer: How does photosynthesis work?",
+        "subtasks": [
+          {"action": "Define photosynthesis"},
+          {"action": "Explain the role of chlorophyll"},
+          {"action": "Describe the light-dependent reactions"},
+          {"action": "Outline the Calvin cycle"},
+          {"action": "Discuss cellular respiration"},
+          {"action": "Compare photosynthesis in different plant types"}
+        ]
+      },
+      "expected_output": {
+        "task": "Explain photosynthesis process",
+        "subtasks": [
+          {"action": "Define photosynthesis"},
+          {"action": "Describe light-dependent reactions and Calvin cycle"},
+          {"action": "Explain chlorophyll's role"}
+        ]
+      }
+    },
+    {
+      "id": "TC004",
+      "name": "Information Preservation Test",
+      "description": "Ensure critical information is preserved after compression",
+      "input": {
+        "task": "Bake a chocolate cake",
+        "subtasks": [
+          {"action": "Preheat oven to 350°F (175°C)"},
+          {"action": "Mix dry ingredients: 2 cups flour, 1 cup sugar, 3/4 cup cocoa powder, 2 tsp baking soda"},
+          {"action": "Mix wet ingredients: 2 eggs, 1 cup milk, 1/2 cup vegetable oil, 2 tsp vanilla extract"},
+          {"action": "Combine wet and dry ingredients"},
+          {"action": "Pour batter into greased pan"},
+          {"action": "Bake for 30-35 minutes"}
+        ]
+      },
+      "expected_output": {
+        "task": "Bake chocolate cake",
+        "subtasks": [
+          {"action": "Preheat 350°F, mix ingredients"},
+          {"action": "Pour batter, bake 30-35 min"}
+        ],
+        "preserved_info": "2c flour, 1c sugar, 3/4c cocoa, 2tsp soda, 2 eggs, 1c milk, 1/2c oil, 2tsp vanilla"
+      }
+    },
+    {
+      "id": "TC005",
+      "name": "Reordering Test",
+      "description": "Test the system's ability to reorder subtasks based on importance",
+      "input": {
+        "task": "Prepare for a job interview",
+        "subtasks": [
+          {"action": "Iron your clothes"},
+          {"action": "Research the company"},
+          {"action": "Practice common interview questions"},
+          {"action": "Prepare questions to ask the interviewer"},
+          {"action": "Plan your route to the interview location"},
+          {"action": "Print extra copies of your resume"}
+        ]
+      },
+      "expected_output": {
+        "task": "Prepare for job interview",
+        "subtasks": [
+          {"action": "Research company"},
+          {"action": "Practice interview questions"},
+          {"action": "Plan route"},
+          {"action": "Prepare attire and documents"}
+        ]
+      }
+    }
+  ]
+}

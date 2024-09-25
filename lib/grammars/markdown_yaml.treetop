@@ -1,0 +1,19 @@
+grammar MarkdownYaml
+  rule document
+    yaml_front_matter markdown_content
+  end
+
+  rule yaml_front_matter
+    '---' newline
+    (!'---' .)*
+    '---' newline
+  end
+
+  rule markdown_content
+    .*
+  end
+
+  rule newline
+    [\n\r]+
+  end
+end

@@ -1,0 +1,55 @@
+services:
+  chroma:
+    image: ghcr.io/chroma-core/chroma:latest
+    container_name: chromadb
+    restart: unless-stopped
+    volumes:
+      - ./data/chroma:/chroma/chroma/
+    environment:
+      PUID: 1000
+      PGID: 1000
+      IS_PERSISTENT: TRUE
+    ports:
+      - "9006:8000"
+    networks:
+      - knowlecule
+  redis:
+    image: redis/redis-stack:latest
+    container_name: redis
+    restart: unless-stopped
+    environment:
+      PUID: 1000
+      PGID: 1000
+    volumes:
+      - ./data/redis/data:/data
+    ports:
+      - "6379:6379"
+      - "8081:8081"
+      - "8001:8001"
+    networks:
+      - knowlecule
+  pgvector:
+    image: ankane/pgvector
+    container_name: pgvector
+    restart: unless-stopped
+    environment:
+      PUID: 1000
+      PGID: 1000
+      POSTGRES_HOST_AUTH_METHOD: "trust"
+      POSTGRES_DB: flowbots
+      POSTGRES_USER: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data/pgvector/local-data:/data
+      - ./data/pgvector/pgdata:/var/lib/postgresql/data
+    networks:
+      - knowlecule
+
+# volumes:
+#   chroma_persistent_folder:
+#     driver: local
+
+networks:
+  knowlecule:
+    driver: bridge

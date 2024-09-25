@@ -1,8 +1,28 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-lib_dir = File.expand_path(File.join(__dir__, '..', 'lib'))
+lib_dir = File.expand_path(File.join(__dir__, "..", "lib"))
 $LOAD_PATH.unshift lib_dir unless $LOAD_PATH.include?(lib_dir)
 
+require "dotenv/load"
+
+# Attempts to load the .env file, overwriting existing environment variables.
+# If an error occurs, it displays an error message.
+begin
+  Dotenv.load(".env", overwrite: true)
+rescue StandardError => e
+  puts "Error loading .env file: #{e.message}"
+end
+
+# Requires the Flowbots library.
 require "flowbots"
+
+# Traps the INT signal (Ctrl+C) and performs a graceful shutdown of the application.
+Signal.trap("INT") do
+  puts "\nInterrupt received. Shutting down gracefully..."
+  Flowbots.shutdown
+  exit(0)
+end
+
+# Starts the Flowbots CLI with the provided command-line arguments.
 Flowbots::CLI.start(ARGV)

@@ -1,107 +1,198 @@
-require "bundler/gem_tasks"
+#!/usr/bin/env ruby
+
+lib_dir = File.expand_path(File.join(__dir__, "lib"))
+$LOAD_PATH.unshift lib_dir unless $LOAD_PATH.include?(lib_dir)
+
+APP_ROOT = __dir__
+
+### Task: rdoc
+require "rake"
 require "rake/testtask"
-require "rubocop/rake_task"
+require "rdoc/task"
+require "gokdok"
 
-Rake::TestTask.new(:test) do |t|
-  t.libs << "test"
-  t.libs << "lib"
-  t.test_files = FileList["test/**/*_test.rb"]
-end
+OWNER = "b08x".freeze
+ALL_IMAGES = %w[
+  flowbots
+].each(&:freeze).freeze
 
-RuboCop::RakeTask.new
+BASE_IMAGES = ALL_IMAGES.map do |name|
+  base_image_name, base_image_tag = nil
+  IO.foreach("Dockerfile") do |line|
+    break if base_image_name && base_image_tag
 
-task default: %i[test rubocop]
-
-# == "rake release" enhancements ==============================================
-
-Rake::Task["release"].enhance do
-  puts "Don't forget to publish the release on GitHub!"
-  system "open https://github.com/b08x/flowbots/releases"
-end
-
-task :disable_overcommit do
-  ENV["OVERCOMMIT_DISABLE"] = "1"
-end
-
-Rake::Task[:build].enhance [:disable_overcommit]
-
-task :verify_gemspec_files do
-  git_files = `git ls-files -z`.split("\x0")
-  gemspec_files = Gem::Specification.load("flowbots.gemspec").files.sort
-  ignored_by_git = gemspec_files - git_files
-  next if ignored_by_git.empty?
-
-  raise <<~ERROR
-
-    The `spec.files` specified in flowbots.gemspec include the following files
-    that are being ignored by git. Did you forget to add them to the repo? If
-    not, you may need to delete these files or modify the gemspec to ensure
-    that they are not included in the gem by mistake:
-
-    #{ignored_by_git.join("\n").gsub(/^/, '  ')}
-
-  ERROR
-end
-
-Rake::Task[:build].enhance [:verify_gemspec_files]
-
-# == "rake bump" tasks ========================================================
-
-task bump: %w[bump:bundler bump:ruby bump:year]
-
-namespace :bump do
-  task :bundler do
-    sh "bundle update --bundler"
-  end
-
-  task :ruby do
-    replace_in_file "flowbots.gemspec", /ruby_version = .*">= (.*)"/ => RubyVersions.lowest
-    replace_in_file ".rubocop.yml", /TargetRubyVersion: (.*)/ => RubyVersions.lowest
-    replace_in_file ".github/workflows/ci.yml", /ruby: (\[.+\])/ => RubyVersions.all.inspect
-  end
-
-  task :year do
-    replace_in_file "LICENSE.txt", /\(c\) (\d+)/ => Date.today.year.to_s
-  end
-end
-
-require "date"
-require "open-uri"
-require "yaml"
-
-def replace_in_file(path, replacements)
-  contents = File.read(path)
-  orig_contents = contents.dup
-  replacements.each do |regexp, text|
-    raise "Can't find #{regexp} in #{path}" unless regexp.match?(contents)
-
-    contents.gsub!(regexp) do |match|
-      match[regexp, 1] = text
-      match
+    case line
+    when /BASE_IMAGE_TAG=(\h+)/
+      base_image_tag = Regexp.last_match(1)
+    when /BASE_IMAGE_TAG=latest/
+      base_image_tag = "latest"
+    when /\AFROM\s+([^:]+)/
+      base_image_name = Regexp.last_match(1)
     end
   end
-  File.write(path, contents) if contents != orig_contents
+  [
+    name,
+    [base_image_name, base_image_tag].join(":")
+  ]
+end.to_h
+
+DOCKER_FLAGS = ENV.fetch("DOCKER_FLAGS", nil)
+
+TAG_LENGTH = 12
+
+def git_revision
+  `git rev-parse HEAD`.chomp
 end
 
-module RubyVersions
-  class << self
-    def lowest
-      all.first
-    end
+def tag_from_commit_sha1
+  git_revision[...TAG_LENGTH]
+end
 
-    def all
-      patches = versions.values_at(:stable, :security_maintenance).compact.flatten
-      sorted_minor_versions = patches.map { |p| p[/\d+\.\d+/] }.sort_by(&:to_f)
-      [*sorted_minor_versions, "head"]
-    end
+ALL_IMAGES.each do |image|
+  revision_tag = tag_from_commit_sha1
 
-    private
-
-    def versions
-      @_versions ||= begin
-        yaml = URI.open("https://raw.githubusercontent.com/ruby/www.ruby-lang.org/HEAD/_data/downloads.yml")
-        YAML.safe_load(yaml, symbolize_names: true)
-      end
-    end
+  desc "Pull the base image for #{OWNER}/#{image} image"
+  task "pull/base_image/#{image}" do
+    base_image = BASE_IMAGES[image]
+    sh "docker pull #{base_image}"
   end
+
+  desc "Build #{OWNER}/#{image} image"
+  task "build/#{image}" => "pull/base_image/#{image}" do
+    sh "docker build #{DOCKER_FLAGS} --rm --force-rm -t #{OWNER}/notebook-#{image}:latest ."
+  end
+
+  desc "Make #{OWNER}/#{image} image"
+  task "make/#{image}" do
+    sh "docker build #{DOCKER_FLAGS} --rm --force-rm -t #{OWNER}/notebook-#{image}:latest ."
+  end
+
+  desc "Tag #{OWNER}/#{image} image"
+  task "tag/#{image}" => "build/#{image}" do
+    sh "docker tag #{OWNER}/notebook-#{image}:latest #{OWNER}/notebook-#{image}:#{revision_tag}"
+  end
+
+  desc "Push #{OWNER}/#{image} image"
+  task "push/#{image}" => "tag/#{image}" do
+    sh "docker push #{OWNER}/notebook-#{image}:latest"
+    sh "docker push #{OWNER}/notebook-#{image}:#{revision_tag}"
+  end
+end
+
+desc "Build all images"
+task "build-all" do
+  ALL_IMAGES.each do |image|
+    Rake::Task["build/#{image}"].invoke
+  end
+end
+
+desc "Tag all images"
+task "tag-all" do
+  ALL_IMAGES.each do |image|
+    Rake::Task["tag/#{image}"].invoke
+  end
+end
+
+desc "Push all images"
+task "push-all" do
+  ALL_IMAGES.each do |image|
+    Rake::Task["push/#{image}"].invoke
+  end
+end
+
+Rake::RDocTask.new do |rdoc|
+  rdoc.title    = "flowbots v0.1"
+  rdoc.rdoc_dir = "#{APP_ROOT}/doc"
+  rdoc.options += [
+    "-w",
+    "2",
+    "-H",
+    "-A",
+    "-f",
+    "darkfish", # This bit
+    "-m",
+    "README.md",
+    "--visibility",
+    "nodoc",
+    "--markup",
+    "markdown"
+  ]
+  rdoc.rdoc_files.include "README.md"
+  rdoc.rdoc_files.include "LICENSE"
+  rdoc.rdoc_files.include "exe/flowbots"
+
+  rdoc.rdoc_files.include "lib/api.rb"
+  rdoc.rdoc_files.include "lib/cli.rb"
+  rdoc.rdoc_files.include "lib/example.rb"
+  rdoc.rdoc_files.include "lib/flowbots.rb"
+  rdoc.rdoc_files.include "lib/general_task_agent.rb"
+  rdoc.rdoc_files.include "lib/helper.rb"
+
+  rdoc.rdoc_files.include "lib/logging.rb"
+  rdoc.rdoc_files.include "lib/ui.rb"
+  rdoc.rdoc_files.include "lib/tasks.rb"
+  rdoc.rdoc_files.include "lib/workflows.rb"
+
+  rdoc.rdoc_files.include "lib/components/BatchProcessor.rb"
+  rdoc.rdoc_files.include "lib/components/ExceptionAgent.rb"
+  rdoc.rdoc_files.include "lib/components/ExceptionHandler.rb"
+  rdoc.rdoc_files.include "lib/components/FileDiscovery.rb"
+  rdoc.rdoc_files.include "lib/components/FileLoader.rb"
+  rdoc.rdoc_files.include "lib/components/InputRetrieval.rb"
+  rdoc.rdoc_files.include "lib/components/OhmModels.rb"
+  rdoc.rdoc_files.include "lib/components/RedisKeys.rb"
+  rdoc.rdoc_files.include "lib/components/word_salad.rb"
+  rdoc.rdoc_files.include "lib/components/WorkflowAgent.rb"
+  rdoc.rdoc_files.include "lib/components/WorkflowOrchestrator.rb"
+
+  rdoc.rdoc_files.include "lib/flowbots/errors.rb"
+
+  rdoc.rdoc_files.include "lib/grammars/markdown_yaml.rb"
+
+  rdoc.rdoc_files.include "lib/integrations/flowise.rb"
+
+  rdoc.rdoc_files.include "lib/pipelines/unified_file_processing.rb"
+
+  rdoc.rdoc_files.include "lib/processors/GrammarProcessor.rb"
+  rdoc.rdoc_files.include "lib/processors/NLPProcessor.rb"
+  rdoc.rdoc_files.include "lib/processors/TextProcessor.rb"
+  rdoc.rdoc_files.include "lib/processors/TextSegmentProcessor.rb"
+  rdoc.rdoc_files.include "lib/processors/TextTaggerProcessor.rb"
+  rdoc.rdoc_files.include "lib/processors/TextTokenizeProcessor.rb"
+  rdoc.rdoc_files.include "lib/processors/TopicModelProcessor.rb"
+
+  rdoc.rdoc_files.include "lib/tasks/accumulate_filtered_segments_task.rb"
+  rdoc.rdoc_files.include "lib/tasks/display_results_task.rb"
+  rdoc.rdoc_files.include "lib/tasks/file_loader_task.rb"
+  rdoc.rdoc_files.include "lib/tasks/filter_segments_task.rb"
+  rdoc.rdoc_files.include "lib/tasks/llm_analysis_task.rb"
+  rdoc.rdoc_files.include "lib/tasks/load_file_object_task.rb"
+  rdoc.rdoc_files.include "lib/tasks/load_text_files_task.rb"
+  rdoc.rdoc_files.include "lib/tasks/nlp_analysis_task.rb"
+  rdoc.rdoc_files.include "lib/tasks/preprocess_file_object_task.rb"
+  rdoc.rdoc_files.include "lib/tasks/text_segment_task.rb"
+  rdoc.rdoc_files.include "lib/tasks/text_tagger_task.rb"
+  rdoc.rdoc_files.include "lib/tasks/text_tokenize_task.rb"
+  rdoc.rdoc_files.include "lib/tasks/tokenize_segments_task.rb"
+  rdoc.rdoc_files.include "lib/tasks/topic_modeling_task.rb"
+  rdoc.rdoc_files.include "lib/tasks/train_topic_model_task.rb"
+
+  rdoc.rdoc_files.include "lib/ui/base.rb"
+  rdoc.rdoc_files.include "lib/ui/box.rb"
+  rdoc.rdoc_files.include "lib/ui/scrollable_box.rb"
+
+  rdoc.rdoc_files.include "lib/utils/command.rb"
+  rdoc.rdoc_files.include "lib/utils/transcribe.rb"
+  rdoc.rdoc_files.include "lib/utils/tts.rb"
+  rdoc.rdoc_files.include "lib/utils/writefile.rb"
+
+  rdoc.rdoc_files.include "lib/workflows/text_processing_workflow.rb"
+  rdoc.rdoc_files.include "lib/workflows/topic_model_trainer_workflow.rb"
+  rdoc.rdoc_files.include "lib/workflows/topic_model_trainer_workflowtest.rb"
+end
+
+Gokdok::Dokker.new do |gd|
+  gd.remote_path = "" # Put into the root directory
+  gd.repo_url = "git@github.com:b08x/flowbots.git"
+  gd.doc_home = "#{APP_ROOT}/doc"
 end

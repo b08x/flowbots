@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="UTF-8">
+
+<title>module UI - flowbots v0.1</title>
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "./";
+  var index_rel_prefix = "./";
+</script>
+
+<script src="./js/navigation.js" defer></script>
+<script src="./js/search.js" defer></script>
+<script src="./js/search_index.js" defer></script>
+<script src="./js/searcher.js" defer></script>
+<script src="./js/darkfish.js" defer></script>
+
+<link href="./css/fonts.css" rel="stylesheet">
+<link href="./css/rdoc.css" rel="stylesheet">
+
+
+<body id="top" role="document" class="module">
+<nav role="navigation">
+  <div id="project-navigation">
+    <div id="home-section" role="region" title="Quick navigation" class="nav-section">
+  <h2>
+    <a href="./index.html" rel="home">Home</a>
+  </h2>
+
+  <div id="table-of-contents-navigation">
+    <a href="./table_of_contents.html#pages">Pages</a>
+    <a href="./table_of_contents.html#classes">Classes</a>
+    <a href="./table_of_contents.html#methods">Methods</a>
+  </div>
+</div>
+
+    <div id="search-section" role="search" class="project-section initially-hidden">
+  <form action="#" method="get" accept-charset="utf-8">
+    <div id="search-field-wrapper">
+      <input id="search-field" role="combobox" aria-label="Search"
+             aria-autocomplete="list" aria-controls="search-results"
+             type="text" name="search" placeholder="Search" spellcheck="false"
+             title="Type to search, Up and Down to navigate, Enter to load">
+    </div>
+
+    <ul id="search-results" aria-label="Search Results"
+        aria-busy="false" aria-expanded="false"
+        aria-atomic="false" class="initially-hidden"></ul>
+  </form>
+</div>
+
+  </div>
+
+  
+
+  <div id="class-metadata">
+    
+    
+    
+    
+    
+<!-- Method Quickref -->
+<div id="method-list-section" class="nav-section">
+  <h3>Methods</h3>
+
+  <ul class="link-list" role="directory">
+    <li ><a href="#method-i-footer">#footer</a>
+    <li ><a href="#method-i-header">#header</a>
+    <li ><a href="#method-i-info">#info</a>
+    <li ><a href="#method-i-main_menu">#main_menu</a>
+    <li ><a href="#method-i-prompt">#prompt</a>
+    <li ><a href="#method-i-say">#say</a>
+    <li ><a href="#method-i-spinner">#spinner</a>
+  </ul>
+</div>
+
+  </div>
+</nav>
+
+<main role="main" aria-labelledby="module-UI">
+  <h1 id="module-UI" class="module">
+    module UI
+  </h1>
+
+  <section class="description">
+    
+<p>This module provides user interface (<a href="UI.html"><code>UI</code></a>) elements and functions for the <a href="Flowbots.html"><code>Flowbots</code></a> application.</p>
+
+<p>This module provides methods for creating and displaying boxes in the <a href="UI.html"><code>UI</code></a>.</p>
+
+<p>This module provides methods for creating and displaying scrollable boxes in the <a href="UI.html"><code>UI</code></a>.</p>
+
+  </section>
+
+  <section id="5Buntitled-5D" class="documentation-section">
+
+
+    <section class="constants-list">
+      <header>
+        <h3>Constants</h3>
+      </header>
+      <dl>
+        <dt id="PASTEL">PASTEL
+        <dd><p>An instance of the Pastel gem for colorizing text.</p>
+        <dt id="TITLE_WIDTH">TITLE_WIDTH
+        <dd><p>The width of the title box.</p>
+      </dl>
+    </section>
+
+
+
+     <section id="public-instance-5Buntitled-5D-method-details" class="method-section">
+       <header>
+         <h3>Public Instance Methods</h3>
+       </header>
+
+      <div id="method-i-footer" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">footer</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          <p>Displays the <a href="Flowbots.html"><code>Flowbots</code></a> <a href="UI.html#method-i-footer"><code>footer</code></a> in a framed box.</p>
+
+<p>@return [void]</p>
+
+          <div class="method-source-code" id="footer-source">
+            <pre><span class="ruby-comment"># File lib/ui/base.rb, line 75</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">footer</span>
+  <span class="ruby-comment"># Create a framed box with the &quot;Alright&quot; title in the bottom right corner.</span>
+  <span class="ruby-identifier">box</span> = <span class="ruby-constant">TTY</span><span class="ruby-operator">::</span><span class="ruby-constant">Box</span>.<span class="ruby-identifier">frame</span>(<span class="ruby-value">width:</span> <span class="ruby-constant">TITLE_WIDTH</span>, <span class="ruby-value">title:</span> { <span class="ruby-value">bottom_right:</span> <span class="ruby-string">&quot; Alright &quot;</span> })
+  <span class="ruby-comment"># Print the box.</span>
+  <span class="ruby-identifier">puts</span> <span class="ruby-identifier">box</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-header" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">header</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          <p>Displays the <a href="Flowbots.html"><code>Flowbots</code></a> <a href="UI.html#method-i-header"><code>header</code></a> in a framed box.</p>
+
+<p>@return [void]</p>
+
+          <div class="method-source-code" id="header-source">
+            <pre><span class="ruby-comment"># File lib/ui/base.rb, line 65</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">header</span>
+  <span class="ruby-comment"># Create a framed box with the Flowbots title and magenta foreground color.</span>
+  <span class="ruby-identifier">box</span> = <span class="ruby-constant">TTY</span><span class="ruby-operator">::</span><span class="ruby-constant">Box</span>.<span class="ruby-identifier">frame</span>(<span class="ruby-value">width:</span> <span class="ruby-constant">TITLE_WIDTH</span>, <span class="ruby-value">title:</span> { <span class="ruby-value">top_left:</span> <span class="ruby-string">&quot; Flowbots &quot;</span> }, <span class="ruby-value">style:</span> { <span class="ruby-value">fg:</span> <span class="ruby-value">:magenta</span> })
+  <span class="ruby-comment"># Print the box.</span>
+  <span class="ruby-identifier">puts</span> <span class="ruby-identifier">box</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-info" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">info</span><span
+            class="method-args">(text)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          <p>Displays an information message in a framed box.</p>
+
+<p>@param text [String] The text to display in the <a href="UI.html#method-i-info"><code>info</code></a> box.</p>
+
+<p>@return [void]</p>
+
+          <div class="method-source-code" id="info-source">
+            <pre><span class="ruby-comment"># File lib/ui/base.rb, line 51</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">info</span>(<span class="ruby-identifier">text</span>)
+  <span class="ruby-comment"># Display the header.</span>
+  <span class="ruby-identifier">header</span>
+  <span class="ruby-comment"># Create a framed box with the specified text and title.</span>
+  <span class="ruby-identifier">box</span> = <span class="ruby-constant">TTY</span><span class="ruby-operator">::</span><span class="ruby-constant">Box</span>.<span class="ruby-identifier">frame</span>(<span class="ruby-value">width:</span> <span class="ruby-constant">TITLE_WIDTH</span>, <span class="ruby-value">title:</span> { <span class="ruby-value">top_left:</span> <span class="ruby-string">&quot; Information &quot;</span> }, <span class="ruby-value">padding:</span> <span class="ruby-value">1</span>) <span class="ruby-keyword">do</span>
+    <span class="ruby-identifier">text</span>
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-comment"># Print the box.</span>
+  <span class="ruby-identifier">puts</span> <span class="ruby-identifier">box</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-main_menu" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">main_menu</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          <p>Displays the main menu and prompts the user for a choice.</p>
+
+<p>@return [Symbol] The value of the selected choice.</p>
+
+          <div class="method-source-code" id="main_menu-source">
+            <pre><span class="ruby-comment"># File lib/ui/base.rb, line 85</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">main_menu</span>
+  <span class="ruby-comment"># Define the choices for the main menu.</span>
+  <span class="ruby-identifier">choices</span> = [
+    { <span class="ruby-value">name:</span> <span class="ruby-string">&quot;Start Workflow&quot;</span>, <span class="ruby-value">value:</span> <span class="ruby-value">:workflow</span> },
+    { <span class="ruby-value">name:</span> <span class="ruby-string">&quot;Configure Settings&quot;</span>, <span class="ruby-value">value:</span> <span class="ruby-value">:settings</span> },
+    { <span class="ruby-value">name:</span> <span class="ruby-string">&quot;View Logs&quot;</span>, <span class="ruby-value">value:</span> <span class="ruby-value">:logs</span> },
+    { <span class="ruby-value">name:</span> <span class="ruby-string">&quot;Exit&quot;</span>, <span class="ruby-value">value:</span> <span class="ruby-value">:exit</span> }
+  ]
+
+  <span class="ruby-comment"># Display the main menu prompt and return the selected choice.</span>
+  <span class="ruby-identifier">prompt</span>.<span class="ruby-identifier">select</span>(<span class="ruby-string">&quot;Welcome to Flowbots. What would you like to do?&quot;</span>, <span class="ruby-identifier">choices</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-prompt" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">prompt</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          <p>Returns the TTY::Prompt instance used for user interaction.</p>
+
+<p>@return [TTY::Prompt] The TTY::Prompt instance.</p>
+
+          <div class="method-source-code" id="prompt-source">
+            <pre><span class="ruby-comment"># File lib/ui/base.rb, line 16</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">prompt</span>
+  <span class="ruby-ivar">@prompt</span> <span class="ruby-operator">||=</span> <span class="ruby-constant">TTY</span><span class="ruby-operator">::</span><span class="ruby-constant">Prompt</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">enable_color:</span> <span class="ruby-keyword">true</span>, <span class="ruby-value">active_color:</span> <span class="ruby-value">:cyan</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-say" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">say</span><span
+            class="method-args">(type, statement)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          <p>Displays a message to the user with the specified type and logs it.</p>
+
+<p>@param type [Symbol] The type of message (:ok, :warn, :error, or nil). @param statement [String] The message to display.</p>
+
+<p>@return [void]</p>
+
+          <div class="method-source-code" id="say-source">
+            <pre><span class="ruby-comment"># File lib/ui/base.rb, line 26</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">say</span>(<span class="ruby-identifier">type</span>, <span class="ruby-identifier">statement</span>)
+  <span class="ruby-comment"># Default to :ok type if nil.</span>
+  <span class="ruby-identifier">type</span> = <span class="ruby-value">:ok</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">type</span>.<span class="ruby-identifier">nil?</span>
+
+  <span class="ruby-comment"># Display the message based on the type and log it.</span>
+  <span class="ruby-keyword">case</span> <span class="ruby-identifier">type</span>
+  <span class="ruby-keyword">when</span> <span class="ruby-value">:ok</span>
+    <span class="ruby-identifier">prompt</span>.<span class="ruby-identifier">ok</span>(<span class="ruby-identifier">statement</span>)
+    <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-identifier">statement</span>
+  <span class="ruby-keyword">when</span> <span class="ruby-value">:warn</span>
+    <span class="ruby-identifier">prompt</span>.<span class="ruby-identifier">warn</span>(<span class="ruby-identifier">statement</span>)
+    <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">warn</span> <span class="ruby-identifier">statement</span>
+  <span class="ruby-keyword">when</span> <span class="ruby-value">:error</span>
+    <span class="ruby-identifier">prompt</span>.<span class="ruby-identifier">error</span>(<span class="ruby-identifier">statement</span>)
+    <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">fatal</span> <span class="ruby-identifier">statement</span>
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-identifier">puts</span> <span class="ruby-constant">PASTEL</span>.<span class="ruby-identifier">say</span>(<span class="ruby-identifier">statement</span>)
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-spinner" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">spinner</span><span
+            class="method-args">(text)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          <p>Creates and returns a TTY::Spinner instance with the specified text.</p>
+
+<p>@param text [String] The text to display next to the <a href="UI.html#method-i-spinner"><code>spinner</code></a>.</p>
+
+<p>@return [TTY::Spinner] The TTY::Spinner instance.</p>
+
+          <div class="method-source-code" id="spinner-source">
+            <pre><span class="ruby-comment"># File lib/ui/base.rb, line 103</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">spinner</span>(<span class="ruby-identifier">text</span>)
+  <span class="ruby-constant">TTY</span><span class="ruby-operator">::</span><span class="ruby-constant">Spinner</span>.<span class="ruby-identifier">new</span>(<span class="ruby-node">&quot;[:spinner] #{text}&quot;</span>, <span class="ruby-value">format:</span> <span class="ruby-value">:dots</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+    </section>
+
+  </section>
+</main>
+
+
+<footer id="validator-badges" role="contentinfo">
+  <p><a href="https://validator.w3.org/check/referer">Validate</a>
+  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.4.0.
+  <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
+</footer>
+

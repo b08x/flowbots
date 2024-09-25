@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="UTF-8">
+
+<title>README - flowbots v0.1</title>
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "./";
+  var index_rel_prefix = "./";
+</script>
+
+<script src="./js/navigation.js" defer></script>
+<script src="./js/search.js" defer></script>
+<script src="./js/search_index.js" defer></script>
+<script src="./js/searcher.js" defer></script>
+<script src="./js/darkfish.js" defer></script>
+
+<link href="./css/fonts.css" rel="stylesheet">
+<link href="./css/rdoc.css" rel="stylesheet">
+
+
+<body id="top" role="document" class="file">
+<nav role="navigation">
+  <div id="project-navigation">
+    <div id="home-section" role="region" title="Quick navigation" class="nav-section">
+  <h2>
+    <a href="./index.html" rel="home">Home</a>
+  </h2>
+
+  <div id="table-of-contents-navigation">
+    <a href="./table_of_contents.html#pages">Pages</a>
+    <a href="./table_of_contents.html#classes">Classes</a>
+    <a href="./table_of_contents.html#methods">Methods</a>
+  </div>
+</div>
+
+    <div id="search-section" role="search" class="project-section initially-hidden">
+  <form action="#" method="get" accept-charset="utf-8">
+    <div id="search-field-wrapper">
+      <input id="search-field" role="combobox" aria-label="Search"
+             aria-autocomplete="list" aria-controls="search-results"
+             type="text" name="search" placeholder="Search" spellcheck="false"
+             title="Type to search, Up and Down to navigate, Enter to load">
+    </div>
+
+    <ul id="search-results" aria-label="Search Results"
+        aria-busy="false" aria-expanded="false"
+        aria-atomic="false" class="initially-hidden"></ul>
+  </form>
+</div>
+
+  </div>
+
+  
+<div class="nav-section">
+  <h3>Table of Contents</h3>
+
+  <ul class="link-list" role="directory">
+    <li><a href="#label-Flowbots">Flowbots</a>
+    <li><a href="#label-Features">Features</a>
+    <li><a href="#label-System+Architecture">System Architecture</a>
+    <li><a href="#label-Class+Diagram">Class Diagram</a>
+    <li><a href="#label-Flowbots+Project+Overview">Flowbots Project Overview</a>
+    <li><a href="#label-Key+Features">Key Features</a>
+    <li><a href="#label-Project+Structure">Project Structure</a>
+    <li><a href="#label-Key+Components">Key Components</a>
+    <li><a href="#label-Workflow+Execution">Workflow Execution</a>
+    <li><a href="#label-Workflows">Workflows</a>
+    <li><a href="#label-TextProcessingWorkflow">TextProcessingWorkflow</a>
+    <li><a href="#label-Key+Steps-3A">Key Steps:</a>
+    <li><a href="#label-TopicModelTrainerWorkflow">TopicModelTrainerWorkflow</a>
+    <li><a href="#label-Key+Steps-3A">Key Steps:</a>
+    <li><a href="#label-Workflow+Execution">Workflow Execution</a>
+    <li><a href="#label-Workflow+Flexibility">Workflow Flexibility</a>
+    <li><a href="#label-Task+Processors">Task Processors</a>
+    <li><a href="#label-Key+Task+Processors">Key Task Processors</a>
+    <li><a href="#label-Task+Processor+Architecture">Task Processor Architecture</a>
+    <li><a href="#label-Extensibility">Extensibility</a>
+    <li><a href="#label-Flowbots+Detailed+Operation">Flowbots Detailed Operation</a>
+    <li><a href="#label-1.+Workflow+Initialization">1. Workflow Initialization</a>
+    <li><a href="#label-2.+Task+Execution">2. Task Execution</a>
+    <li><a href="#label-3.+Data+Flow">3. Data Flow</a>
+    <li><a href="#label-4.+NLP+and+Topic+Modeling">4. NLP and Topic Modeling</a>
+    <li><a href="#label-5.+LLM+Integration">5. LLM Integration</a>
+    <li><a href="#label-6.+Error+Handling+and+Logging">6. Error Handling and Logging</a>
+    <li><a href="#label-7.+Batch+Processing">7. Batch Processing</a>
+    <li><a href="#label-8.+Result+Presentation">8. Result Presentation</a>
+    <li><a href="#label-Key+Interactions">Key Interactions</a>
+    <li><a href="#label-Ruby+Gems+Used+in+Flowbots">Ruby Gems Used in Flowbots</a>
+  </ul>
+</div>
+
+
+  <div id="project-metadata">
+    
+<div id="fileindex-section" class="nav-section">
+  <h3>Pages</h3>
+
+  <ul class="link-list">
+    <li><a href="./LICENSE.html">LICENSE</a>
+    <li><a href="./README_md.html">README</a>
+  </ul>
+</div>
+
+  </div>
+</nav>
+
+<main role="main" aria-label="Page README.md">
+
+<h1 id="label-Flowbots"><a href="Flowbots.html"><code>Flowbots</code></a><span><a href="#label-Flowbots">&para;</a> <a href="#top">&uarr;</a></span></h1>
+
+<p><a href="Flowbots.html"><code>Flowbots</code></a> is an advanced text processing and analysis system that combines the power of nano-bots, workflow orchestration, and natural language processing to provide a flexible and powerful tool for document analysis and topic modeling.</p>
+
+<h2 id="label-Features">Features<span><a href="#label-Features">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Text processing workflows for individual files and batch processing</p>
+</li><li>
+<p>Advanced NLP capabilities including tokenization, part-of-speech tagging, and named entity recognition</p>
+</li><li>
+<p><a href="Topic.html"><code>Topic</code></a> modeling with dynamic model training and inference</p>
+</li><li>
+<p>Flexible workflow system using <a href="Jongleur.html"><code>Jongleur</code></a> for task orchestration</p>
+</li><li>
+<p>Redis-based data persistence using Ohm models</p>
+</li><li>
+<p>Custom nano-bot cartridges for specialized AI-powered tasks</p>
+</li><li>
+<p>Robust error handling and logging system</p>
+</li><li>
+<p>User-friendly CLI interface</p>
+</li></ul>
+
+<h2 id="label-System+Architecture">System Architecture<span><a href="#label-System+Architecture">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<h3 id="label-Class+Diagram">Class Diagram<span><a href="#label-Class+Diagram">&para;</a> <a href="#top">&uarr;</a></span></h3>
+
+<pre>classDiagram
+    class CLI {
+        +version()
+        +workflows()
+        +train_topic_model(folder)
+        +process_text(file)
+    }
+
+    class Workflows {
+        -prompt: TTY::Prompt
+        +list_and_select()
+        +run(workflow_name)
+        -get_workflows()
+        -display_workflows(workflows)
+        -select_workflow(workflows)
+        -extract_workflow_description(file)
+    }
+
+    class WorkflowOrchestrator {
+        -agents: Map
+        +add_agent(role, cartridge_file)
+        +define_workflow(workflow_definition)
+        +run_workflow()
+    }
+
+    class WorkflowAgent {
+        -role: String
+        -state: Map
+        -bot: NanoBot
+        +process(input)
+        +save_state()
+        +load_state()
+    }
+
+    class Task {
+        &lt;&lt;abstract&gt;&gt;
+        +execute()
+    }
+
+    class TextProcessingWorkflow {
+        -input_file_path: String
+        -orchestrator: WorkflowOrchestrator
+        +run()
+    }
+
+    class TopicModelTrainerWorkflow {
+        -input_folder_path: String
+        -orchestrator: WorkflowOrchestrator
+        +run()
+    }
+
+    class TextProcessor {
+        &lt;&lt;abstract&gt;&gt;
+        +process(text)
+    }
+
+    class NLPProcessor {
+        -nlp_model: Object
+        +process(segment, options)
+    }
+
+    class TopicModelProcessor {
+        -model_path: String
+        -model: Object
+        -model_params: Map
+        +load_or_create_model()
+        +train_model(documents, iterations)
+        +infer_topics(document)
+    }
+
+    class FileLoader {
+        -file_data: Textfile
+        +initialize(file_path)
+    }
+
+    class Textfile {
+        +path: String
+        +name: String
+        +content: String
+        +preprocessed_content: String
+        +metadata: Map
+        +topics: Set~Topic~
+        +segments: List~Segment~
+        +lemmas: List~Lemma~
+    }
+
+    class Segment {
+        +text: String
+        +tokens: List
+        +tagged: Map
+        +words: List~Word~
+    }
+
+    class Word {
+        +word: String
+        +pos: String
+        +tag: String
+        +dep: String
+        +ner: String
+    }
+
+    class Topic {
+        +name: String
+        +description: String
+        +vector: List
+    }
+
+    CLI --&gt; Workflows : uses
+    Workflows --&gt; TextProcessingWorkflow : runs
+    Workflows --&gt; TopicModelTrainerWorkflow : runs
+    TextProcessingWorkflow --&gt; WorkflowOrchestrator : uses
+    TopicModelTrainerWorkflow --&gt; WorkflowOrchestrator : uses
+    WorkflowOrchestrator --&gt; WorkflowAgent : manages
+    WorkflowOrchestrator --&gt; Task : executes
+    Task &lt;|-- FileLoaderTask
+    Task &lt;|-- PreprocessTextFileTask
+    Task &lt;|-- TextSegmentTask
+    Task &lt;|-- TokenizeSegmentsTask
+    Task &lt;|-- NlpAnalysisTask
+    Task &lt;|-- TopicModelingTask
+    Task &lt;|-- LlmAnalysisTask
+    Task &lt;|-- DisplayResultsTask
+    TextProcessor &lt;|-- NLPProcessor
+    TextProcessor &lt;|-- TopicModelProcessor
+    NlpAnalysisTask --&gt; NLPProcessor : uses
+    TopicModelingTask --&gt; TopicModelProcessor : uses
+    FileLoaderTask --&gt; FileLoader : uses
+    Textfile &quot;1&quot; *-- &quot;many&quot; Segment
+    Segment &quot;1&quot; *-- &quot;many&quot; Word
+    Textfile &quot;1&quot; *-- &quot;many&quot; Topic
+    Textfile &quot;1&quot; *-- &quot;many&quot; Lemma</pre>
+
+<h1 id="label-Flowbots+Project+Overview"><a href="Flowbots.html"><code>Flowbots</code></a> Project Overview<span><a href="#label-Flowbots+Project+Overview">&para;</a> <a href="#top">&uarr;</a></span></h1>
+
+<p><a href="Flowbots.html"><code>Flowbots</code></a> is an advanced text processing and analysis system that combines the power of nano-bots, workflow orchestration, and natural language processing to provide a flexible and powerful tool for document analysis and topic modeling.</p>
+
+<h2 id="label-Key+Features">Key Features<span><a href="#label-Key+Features">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ol><li>
+<p>Text processing workflows for individual files and batch processing</p>
+</li><li>
+<p>Advanced NLP capabilities including tokenization, part-of-speech tagging, and named entity recognition</p>
+</li><li>
+<p><a href="Topic.html"><code>Topic</code></a> modeling with dynamic model training and inference</p>
+</li><li>
+<p>Flexible workflow system using <a href="Jongleur.html"><code>Jongleur</code></a> for task orchestration</p>
+</li><li>
+<p>Redis-based data persistence using Ohm models</p>
+</li><li>
+<p>Custom nano-bot cartridges for specialized AI-powered tasks</p>
+</li><li>
+<p>Robust error handling and logging system</p>
+</li><li>
+<p>User-friendly CLI interface</p>
+</li></ol>
+
+<h2 id="label-Project+Structure">Project Structure<span><a href="#label-Project+Structure">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>The <a href="Flowbots.html"><code>Flowbots</code></a> project is organized into several key directories:</p>
+<ul><li>
+<p><code>/lib</code>: Main application code</p>
+</li><li>
+<p><code>/components</code>: Core system components</p>
+</li><li>
+<p><code>/processors</code>: Text and NLP processors</p>
+</li><li>
+<p><code>/tasks</code>: Individual workflow tasks</p>
+</li><li>
+<p><code>/workflows</code>: Workflow definitions</p>
+</li><li>
+<p><code>/ohm</code>: Ohm model definitions</p>
+</li><li>
+<p><code>/utils</code>: Utility functions and classes</p>
+</li><li>
+<p><code>/nano-bots/cartridges</code>: Nano-bot cartridge definitions</p>
+</li><li>
+<p><code>/test</code>: Test files and test helpers</p>
+</li><li>
+<p><code>/log</code>: Log files</p>
+</li></ul>
+
+<h2 id="label-Key+Components">Key Components<span><a href="#label-Key+Components">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ol><li>
+<p><strong>CLI</strong>: The main entry point for user interaction, allowing users to select and run workflows.</p>
+</li><li>
+<p><strong>WorkflowOrchestrator</strong>: Manages the execution of workflows and their constituent tasks.</p>
+</li><li>
+<p><strong>Task Processors</strong>: Specialized classes for text processing, NLP analysis, and topic modeling.</p>
+</li><li>
+<p><strong>Ohm Models</strong>: Data persistence layer for storing document information and workflow states.</p>
+</li><li>
+<p><strong>NanoBot Integration</strong>: Utilizes nano-bot cartridges for specialized AI-powered tasks.</p>
+</li><li>
+<p><strong>Logging System</strong>: Comprehensive logging for debugging and monitoring.</p>
+</li></ol>
+
+<h2 id="label-Workflow+Execution">Workflow Execution<span><a href="#label-Workflow+Execution">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ol><li>
+<p>User selects a workflow through the CLI.</p>
+</li><li>
+<p>The selected workflow is initialized and configured.</p>
+</li><li>
+<p>The <a href="WorkflowOrchestrator.html"><code>WorkflowOrchestrator</code></a> sets up the task graph based on the workflow definition.</p>
+</li><li>
+<p>Tasks are executed in the defined order, with results passed between tasks as needed.</p>
+</li><li>
+<p>Results are stored in Redis and Ohm models for persistence.</p>
+</li><li>
+<p>The workflow completes, and final results are displayed or stored as appropriate.</p>
+</li></ol>
+
+<p>This project demonstrates a sophisticated approach to text analysis and processing, combining multiple technologies and techniques to create a powerful and flexible system.</p>
+
+<h1 id="label-Workflows">Workflows<span><a href="#label-Workflows">&para;</a> <a href="#top">&uarr;</a></span></h1>
+
+<p><a href="Flowbots.html"><code>Flowbots</code></a> uses a flexible workflow system to orchestrate various text processing and analysis tasks. The two main workflows defined in the project are:</p>
+<ol><li>
+<p>TextProcessingWorkflow</p>
+</li><li>
+<p>TopicModelTrainerWorkflow</p>
+</li></ol>
+
+<h2 id="label-TextProcessingWorkflow">TextProcessingWorkflow<span><a href="#label-TextProcessingWorkflow">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>This workflow is designed to process a single text file through a series of tasks.</p>
+
+<pre>stateDiagram-v2
+    [*] --&gt; Initialized
+    Initialized --&gt; PromptingForFile: No file path provided
+    PromptingForFile --&gt; FileSelected: User selects file
+    Initialized --&gt; FileSelected: File path provided
+    FileSelected --&gt; ProcessingFile: Start processing
+    ProcessingFile --&gt; TextTagging: File processed
+    TextTagging --&gt; TopicModeling: Tagging complete
+    TopicModeling --&gt; LlmAnalysis: Modeling complete
+    LlmAnalysis --&gt; DisplayingResults: Analysis complete
+    DisplayingResults --&gt; [*]: Workflow complete
+
+    state ProcessingFile {
+        [*] --&gt; LoadingFile
+        LoadingFile --&gt; PreprocessingFile
+        PreprocessingFile --&gt; SegmentingText
+        SegmentingText --&gt; TokenizingText
+        TokenizingText --&gt; [*]
+    }
+
+    DisplayingResults --&gt; ErrorState: Error occurs
+    ProcessingFile --&gt; ErrorState: Error occurs
+    TextTagging --&gt; ErrorState: Error occurs
+    TopicModeling --&gt; ErrorState: Error occurs
+    LlmAnalysis --&gt; ErrorState: Error occurs
+    ErrorState --&gt; [*]: Log error and exit</pre>
+
+<h3 id="label-Key+Steps-3A">Key Steps:<span><a href="#label-Key+Steps-3A">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ol><li>
+<p><strong>File Loading</strong>: Loads the input file into the system.</p>
+</li><li>
+<p><strong>Preprocessing</strong>: Extracts metadata and preprocesses the text content.</p>
+</li><li>
+<p><strong>Text Segmentation</strong>: Splits the text into manageable segments.</p>
+</li><li>
+<p><strong>Tokenization</strong>: Breaks down segments into individual tokens.</p>
+</li><li>
+<p><strong>NLP Analysis</strong>: Performs part-of-speech tagging, dependency parsing, and named entity recognition.</p>
+</li><li>
+<p><strong>Topic Modeling</strong>: Infers topics from the processed text.</p>
+</li><li>
+<p><strong>LLM Analysis</strong>: Uses a language model to generate insights about the text.</p>
+</li><li>
+<p><strong>Result Display</strong>: Presents the analysis results to the user.</p>
+</li></ol>
+
+<h2 id="label-TopicModelTrainerWorkflow">TopicModelTrainerWorkflow<span><a href="#label-TopicModelTrainerWorkflow">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>This workflow is designed to process multiple files in batches and train a topic model.</p>
+
+<h3 id="label-Key+Steps-3A">Key Steps:<span><a href="#label-Key+Steps-3A">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ol><li>
+<p><strong>Batch Processing</strong>: Processes files in batches of a defined size.</p>
+</li><li>
+<p><strong>File Loading</strong>: Loads each file in the batch.</p>
+</li><li>
+<p><strong>Preprocessing</strong>: Extracts metadata and preprocesses each file’s content.</p>
+</li><li>
+<p><strong>Text Segmentation</strong>: Splits each file’s content into segments.</p>
+</li><li>
+<p><strong>Tokenization</strong>: Breaks down segments into tokens.</p>
+</li><li>
+<p><strong>NLP Analysis</strong>: Performs NLP tasks on the tokenized segments.</p>
+</li><li>
+<p><strong>Filtering</strong>: Filters segments based on predefined criteria.</p>
+</li><li>
+<p><strong>Accumulation</strong>: Accumulates filtered segments across all processed files.</p>
+</li><li>
+<p><strong>Topic Model Training</strong>: Trains a topic model using the accumulated segments.</p>
+</li></ol>
+
+<h2 id="label-Workflow+Execution">Workflow Execution<span><a href="#label-Workflow+Execution">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>Both workflows use the <code>WorkflowOrchestrator</code> class to manage task execution. The orchestrator:</p>
+<ol><li>
+<p>Initializes the workflow and its tasks.</p>
+</li><li>
+<p>Sets up the task graph based on the workflow definition.</p>
+</li><li>
+<p>Executes tasks in the defined order.</p>
+</li><li>
+<p>Manages data flow between tasks using Redis for temporary storage.</p>
+</li><li>
+<p>Handles errors and exceptions during workflow execution.</p>
+</li></ol>
+
+<h2 id="label-Workflow+Flexibility">Workflow Flexibility<span><a href="#label-Workflow+Flexibility">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>The workflow system is designed to be flexible and extensible:</p>
+<ul><li>
+<p>New workflows can be easily added by creating new workflow classes.</p>
+</li><li>
+<p>Existing workflows can be modified by adding, removing, or reordering tasks.</p>
+</li><li>
+<p>Tasks are modular and can be reused across different workflows.</p>
+</li></ul>
+
+<p>This flexibility allows <a href="Flowbots.html"><code>Flowbots</code></a> to adapt to various text processing and analysis needs.</p>
+
+<pre>sequenceDiagram
+    participant User
+    participant TextProcessingWorkflow
+    participant UnifiedFileProcessingPipeline
+    participant WorkflowOrchestrator
+    participant TextTaggerTask
+    participant TopicModelingTask
+    participant LlmAnalysisTask
+    participant DisplayResultsTask
+    participant Logger
+    participant UI
+
+    User-&gt;&gt;TextProcessingWorkflow: Initialize with file path
+    alt No file path provided
+        TextProcessingWorkflow-&gt;&gt;User: Prompt for file
+        User-&gt;&gt;TextProcessingWorkflow: Provide file path
+    end
+    TextProcessingWorkflow-&gt;&gt;UnifiedFileProcessingPipeline: Initialize
+    TextProcessingWorkflow-&gt;&gt;Logger: Log workflow start
+    TextProcessingWorkflow-&gt;&gt;UI: Display workflow start message
+    TextProcessingWorkflow-&gt;&gt;UnifiedFileProcessingPipeline: Process
+    UnifiedFileProcessingPipeline--&gt;&gt;TextProcessingWorkflow: Processing complete
+    TextProcessingWorkflow-&gt;&gt;WorkflowOrchestrator: Define additional tasks
+    TextProcessingWorkflow-&gt;&gt;WorkflowOrchestrator: Run workflow
+    WorkflowOrchestrator-&gt;&gt;TextTaggerTask: Execute
+    TextTaggerTask--&gt;&gt;WorkflowOrchestrator: Task complete
+    WorkflowOrchestrator-&gt;&gt;TopicModelingTask: Execute
+    TopicModelingTask--&gt;&gt;WorkflowOrchestrator: Task complete
+    WorkflowOrchestrator-&gt;&gt;LlmAnalysisTask: Execute
+    LlmAnalysisTask--&gt;&gt;WorkflowOrchestrator: Task complete
+    WorkflowOrchestrator-&gt;&gt;DisplayResultsTask: Execute
+    DisplayResultsTask--&gt;&gt;WorkflowOrchestrator: Task complete
+    WorkflowOrchestrator--&gt;&gt;TextProcessingWorkflow: Workflow complete
+    TextProcessingWorkflow-&gt;&gt;Logger: Log workflow completion
+    TextProcessingWorkflow-&gt;&gt;UI: Display completion message
+    TextProcessingWorkflow--&gt;&gt;User: Workflow finished</pre>
+
+<pre>sequenceDiagram
+    actor User
+    participant CLI
+    participant TextProcessingWorkflow
+    participant WorkflowOrchestrator
+    participant FileLoaderTask
+    participant PreprocessTextFileTask
+    participant TextSegmentTask
+    participant TokenizeSegmentsTask
+    participant NlpAnalysisTask
+    participant TopicModelingTask
+    participant LlmAnalysisTask
+    participant DisplayResultsTask
+    participant Redis
+    participant Textfile
+
+    User-&gt;&gt;CLI: process_text(file)
+    activate CLI
+    CLI-&gt;&gt;TextProcessingWorkflow: new(input_file_path)
+    activate TextProcessingWorkflow
+    TextProcessingWorkflow-&gt;&gt;WorkflowOrchestrator: define_workflow()
+    TextProcessingWorkflow-&gt;&gt;WorkflowOrchestrator: run_workflow()
+    activate WorkflowOrchestrator
+    WorkflowOrchestrator-&gt;&gt;FileLoaderTask: execute()
+    activate FileLoaderTask
+    FileLoaderTask-&gt;&gt;Redis: set(&quot;current_textfile_id&quot;, id)
+    FileLoaderTask-&gt;&gt;Textfile: create
+    deactivate FileLoaderTask
+    WorkflowOrchestrator-&gt;&gt;PreprocessTextFileTask: execute()
+    activate PreprocessTextFileTask
+    PreprocessTextFileTask-&gt;&gt;Textfile: update(preprocessed_content, metadata)
+    deactivate PreprocessTextFileTask
+    WorkflowOrchestrator-&gt;&gt;TextSegmentTask: execute()
+    activate TextSegmentTask
+    TextSegmentTask-&gt;&gt;Textfile: add_segments()
+    deactivate TextSegmentTask
+    WorkflowOrchestrator-&gt;&gt;TokenizeSegmentsTask: execute()
+    activate TokenizeSegmentsTask
+    TokenizeSegmentsTask-&gt;&gt;Textfile: update segments
+    deactivate TokenizeSegmentsTask
+    WorkflowOrchestrator-&gt;&gt;NlpAnalysisTask: execute()
+    activate NlpAnalysisTask
+    NlpAnalysisTask-&gt;&gt;Textfile: update segments with NLP data
+    deactivate NlpAnalysisTask
+    WorkflowOrchestrator-&gt;&gt;TopicModelingTask: execute()
+    activate TopicModelingTask
+    TopicModelingTask-&gt;&gt;Textfile: add_topics()
+    deactivate TopicModelingTask
+    WorkflowOrchestrator-&gt;&gt;LlmAnalysisTask: execute()
+    activate LlmAnalysisTask
+    LlmAnalysisTask-&gt;&gt;Textfile: update(analysis)
+    deactivate LlmAnalysisTask
+    WorkflowOrchestrator-&gt;&gt;DisplayResultsTask: execute()
+    activate DisplayResultsTask
+    DisplayResultsTask-&gt;&gt;Textfile: retrieve data
+    DisplayResultsTask--&gt;&gt;User: display results
+    deactivate DisplayResultsTask
+    deactivate WorkflowOrchestrator
+    TextProcessingWorkflow--&gt;&gt;CLI: workflow completed
+    deactivate TextProcessingWorkflow
+    CLI--&gt;&gt;User: display completion message
+    deactivate CLI</pre>
+
+<h1 id="label-Task+Processors"><a href="Task.html"><code>Task</code></a> Processors<span><a href="#label-Task+Processors">&para;</a> <a href="#top">&uarr;</a></span></h1>
+
+<p><a href="Flowbots.html"><code>Flowbots</code></a> uses a variety of task processors to handle different aspects of text processing and analysis. These processors are modular and can be combined in workflows to create complex text processing pipelines.</p>
+
+<h2 id="label-Key+Task+Processors">Key <a href="Task.html"><code>Task</code></a> Processors<span><a href="#label-Key+Task+Processors">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ol><li>
+<p><strong>FileLoaderTask</strong></p>
+</li><li>
+<p>Loads input files into the system.</p>
+</li><li>
+<p>Stores file content in Ohm models for further processing.</p>
+</li><li>
+<p><strong>PreprocessTextFileTask</strong></p>
+</li><li>
+<p>Extracts metadata from file content (e.g., YAML front matter in Markdown files).</p>
+</li><li>
+<p>Preprocesses the main content for further analysis.</p>
+</li><li>
+<p><strong>TextSegmentTask</strong></p>
+</li><li>
+<p>Splits preprocessed text into manageable segments.</p>
+</li><li>
+<p>Uses the <code>TextSegmentProcessor</code> for actual segmentation logic.</p>
+</li><li>
+<p><strong>TokenizeSegmentsTask</strong></p>
+</li><li>
+<p>Breaks down text segments into individual tokens.</p>
+</li><li>
+<p>Uses the <code>TextTokenizeProcessor</code> for tokenization.</p>
+</li><li>
+<p><strong>NlpAnalysisTask</strong></p>
+</li><li>
+<p>Performs various NLP tasks on tokenized segments.</p>
+</li><li>
+<p>Includes part-of-speech tagging, dependency parsing, and named entity recognition.</p>
+</li><li>
+<p>Uses the <code>NLPProcessor</code> which wraps the Spacy library for NLP operations.</p>
+</li><li>
+<p><strong>FilterSegmentsTask</strong></p>
+</li><li>
+<p>Filters processed segments based on predefined criteria.</p>
+</li><li>
+<p>Removes irrelevant or low-quality segments to improve analysis quality.</p>
+</li><li>
+<p><strong>TopicModelingTask</strong></p>
+</li><li>
+<p>Infers topics from processed text segments.</p>
+</li><li>
+<p>Uses the <code>TopicModelProcessor</code> which implements topic modeling algorithms.</p>
+</li><li>
+<p><strong>LlmAnalysisTask</strong></p>
+</li><li>
+<p>Utilizes a language model (via NanoBot) to generate insights about the text.</p>
+</li><li>
+<p>Provides high-level analysis and summarization of the processed content.</p>
+</li><li>
+<p><strong>DisplayResultsTask</strong></p>
+</li><li>
+<p>Formats and displays the results of the text processing and analysis pipeline.</p>
+</li></ol>
+
+<h2 id="label-Task+Processor+Architecture"><a href="Task.html"><code>Task</code></a> Processor Architecture<span><a href="#label-Task+Processor+Architecture">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>Each task processor:</p>
+<ol><li>
+<p>Inherits from <code>Jongleur::WorkerTask</code> or <code>Flowbots::BaseTask</code>.</p>
+</li><li>
+<p>Implements an <code>execute</code> method that performs the core task logic.</p>
+</li><li>
+<p>Uses Redis for temporary data storage and passing data between tasks.</p>
+</li><li>
+<p>Interacts with Ohm models for persistent data storage.</p>
+</li><li>
+<p>Includes error handling and logging for robust execution.</p>
+</li></ol>
+
+<h2 id="label-Extensibility">Extensibility<span><a href="#label-Extensibility">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>The task processor system is designed to be easily extensible:</p>
+<ul><li>
+<p>New task processors can be added by creating new classes inheriting from <code>Jongleur::WorkerTask</code> or <code>Flowbots::BaseTask</code>.</p>
+</li><li>
+<p>Existing task processors can be modified or extended to support new functionality.</p>
+</li><li>
+<p><a href="Task.html"><code>Task</code></a> processors can be combined in different ways within workflows to create custom text processing pipelines.</p>
+</li></ul>
+
+<p>This modular design allows <a href="Flowbots.html"><code>Flowbots</code></a> to adapt to various text processing and analysis requirements.</p>
+
+<h1 id="label-Flowbots+Detailed+Operation"><a href="Flowbots.html"><code>Flowbots</code></a> Detailed Operation<span><a href="#label-Flowbots+Detailed+Operation">&para;</a> <a href="#top">&uarr;</a></span></h1>
+
+<h2 id="label-1.+Workflow+Initialization">1. Workflow Initialization<span><a href="#label-1.+Workflow+Initialization">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>When a user selects a workflow through the CLI, the system initializes the chosen workflow (e.g., TextProcessingWorkflow or TopicModelTrainerWorkflow). The <a href="WorkflowOrchestrator.html"><code>WorkflowOrchestrator</code></a> sets up the task graph based on the workflow definition.</p>
+
+<h2 id="label-2.+Task+Execution">2. <a href="Task.html"><code>Task</code></a> Execution<span><a href="#label-2.+Task+Execution">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>The <a href="WorkflowOrchestrator.html"><code>WorkflowOrchestrator</code></a> executes tasks in the defined order. Each task follows a similar pattern:</p>
+<ol><li>
+<p>Retrieve necessary data from Redis or Ohm models.</p>
+</li><li>
+<p>Process the data using specialized processors (e.g., NLPProcessor, TopicModelProcessor).</p>
+</li><li>
+<p>Store the results back in Redis (for temporary storage) or Ohm models (for persistence).</p>
+</li></ol>
+
+<h2 id="label-3.+Data+Flow">3. Data Flow<span><a href="#label-3.+Data+Flow">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Redis is used for storing temporary data and passing information between tasks. This includes file IDs, current batch information, and intermediate processing results.</p>
+</li><li>
+<p>Ohm models, backed by Redis, are used for persistent storage of document information, segments, tokens, and analysis results.</p>
+</li></ul>
+
+<h2 id="label-4.+NLP+and+Topic+Modeling">4. NLP and <a href="Topic.html"><code>Topic</code></a> Modeling<span><a href="#label-4.+NLP+and+Topic+Modeling">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>The <a href="NlpAnalysisTask.html"><code>NlpAnalysisTask</code></a> uses the ruby-spacy gem to perform tasks like tokenization, part-of-speech tagging, and named entity recognition.</p>
+</li><li>
+<p>The <a href="TopicModelingTask.html"><code>TopicModelingTask</code></a> uses the tomoto gem to implement topic modeling algorithms.</p>
+</li></ul>
+
+<h2 id="label-5.+LLM+Integration">5. LLM Integration<span><a href="#label-5.+LLM+Integration">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>The <a href="LlmAnalysisTask.html"><code>LlmAnalysisTask</code></a> integrates with external language models through the NanoBot system. This allows for high-level analysis and insights generation based on the processed text data.</p>
+
+<h2 id="label-6.+Error+Handling+and+Logging">6. Error Handling and <a href="Logging.html"><code>Logging</code></a><span><a href="#label-6.+Error+Handling+and+Logging">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>Each task and the <a href="WorkflowOrchestrator.html"><code>WorkflowOrchestrator</code></a> include error handling mechanisms. Errors are caught, logged, and in some cases, trigger the <a href="ExceptionAgent.html"><code>ExceptionAgent</code></a> for detailed error analysis.</p>
+
+<h2 id="label-7.+Batch+Processing">7. Batch Processing<span><a href="#label-7.+Batch+Processing">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>For the TopicModelTrainerWorkflow, files are processed in batches. The <a href="WorkflowOrchestrator.html"><code>WorkflowOrchestrator</code></a> manages the batch state, ensuring all files in a batch are processed before moving to the next batch.</p>
+
+<h2 id="label-8.+Result+Presentation">8. Result Presentation<span><a href="#label-8.+Result+Presentation">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>The <a href="DisplayResultsTask.html"><code>DisplayResultsTask</code></a> formats the analysis results and presents them to the user through the CLI. This may include summaries, topic distributions, and insights generated by the LLM.</p>
+
+<h2 id="label-Key+Interactions">Key Interactions<span><a href="#label-Key+Interactions">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ol><li>
+<p><strong>CLI &lt;-&gt; WorkflowOrchestrator</strong>: The CLI initiates workflow execution and receives final results.</p>
+</li><li>
+<p><strong>WorkflowOrchestrator &lt;-&gt; Tasks</strong>: The orchestrator manages task execution order and handles task results.</p>
+</li><li>
+<p><strong>Tasks &lt;-&gt; Redis</strong>: Tasks use Redis for short-term storage and inter-task communication.</p>
+</li><li>
+<p><strong>Tasks &lt;-&gt; Ohm Models</strong>: Tasks interact with Ohm models for persistent storage of document data and analysis results.</p>
+</li><li>
+<p><strong>NLP and Topic Modeling Tasks &lt;-&gt; External Libraries</strong>: These tasks utilize external Ruby gems for specialized processing.</p>
+</li><li>
+<p><strong>LlmAnalysisTask &lt;-&gt; NanoBot</strong>: This task interacts with the NanoBot system to leverage external language models.</p>
+</li></ol>
+
+<p>This architecture allows <a href="Flowbots.html"><code>Flowbots</code></a> to process text data through a series of specialized tasks, each building upon the results of previous tasks, to provide comprehensive text analysis and insights.</p>
+
+<h1 id="label-Ruby+Gems+Used+in+Flowbots">Ruby Gems Used in <a href="Flowbots.html"><code>Flowbots</code></a><span><a href="#label-Ruby+Gems+Used+in+Flowbots">&para;</a> <a href="#top">&uarr;</a></span></h1>
+
+<p><a href="Flowbots.html"><code>Flowbots</code></a> leverages a variety of Ruby gems to provide its functionality. Here’s a comprehensive list of the gems used in the project, along with their purposes:</p>
+<ol><li>
+<p><strong>jongleur</strong></p>
+</li><li>
+<p>Purpose: Workflow orchestration and task management</p>
+</li><li>
+<p>Usage: Core component for defining and executing task workflows</p>
+</li><li>
+<p><strong>ohm</strong></p>
+</li><li>
+<p>Purpose: <a href="Object.html"><code>Object</code></a>-hash mapping for Redis</p>
+</li><li>
+<p>Usage: Data persistence layer for storing document information and workflow states</p>
+</li><li>
+<p><strong>redis</strong></p>
+</li><li>
+<p>Purpose: In-memory data structure store</p>
+</li><li>
+<p>Usage: Temporary data storage and passing data between tasks</p>
+</li><li>
+<p><strong>json</strong></p>
+</li><li>
+<p>Purpose: JSON parsing and generation</p>
+</li><li>
+<p>Usage: Handling JSON data throughout the application</p>
+</li><li>
+<p><strong>parallel</strong></p>
+</li><li>
+<p>Purpose: Parallel processing</p>
+</li><li>
+<p>Usage: Potential use for parallel execution of tasks (not prominently used in the current implementation)</p>
+</li><li>
+<p><strong>pry</strong> and <strong>pry-stack_explorer</strong></p>
+</li><li>
+<p>Purpose: Enhanced REPL and debugging tools</p>
+</li><li>
+<p>Usage: Development and debugging</p>
+</li><li>
+<p><strong>ruby-spacy</strong></p>
+</li><li>
+<p>Purpose: Ruby bindings for the Spacy NLP library</p>
+</li><li>
+<p>Usage: Natural Language Processing tasks</p>
+</li><li>
+<p><strong>thor</strong></p>
+</li><li>
+<p>Purpose: Building command-line interfaces</p>
+</li><li>
+<p>Usage: Creating the CLI for <a href="Flowbots.html"><code>Flowbots</code></a></p>
+</li><li>
+<p><strong>treetop</strong></p>
+</li><li>
+<p>Purpose: parsing expression grammar (PEG) parser generator</p>
+</li><li>
+<p>Usage: Custom grammar parsing, particularly for Markdown with YAML front matter</p>
+</li><li>
+<p><strong>yaml</strong></p>
+<ul><li>
+<p>Purpose: YAML parsing and generation</p>
+</li><li>
+<p>Usage: Handling YAML data, particularly in configuration files and document front matter</p>
+</li></ul>
+</li><li>
+<p><strong>faraday</strong> and <strong>faraday/multipart</strong></p>
+<ul><li>
+<p>Purpose: HTTP client library</p>
+</li><li>
+<p>Usage: Making HTTP requests, potentially for integrations with external services</p>
+</li></ul>
+</li><li>
+<p><strong>logging</strong></p>
+<ul><li>
+<p>Purpose: Flexible logging</p>
+</li><li>
+<p>Usage: Comprehensive logging system throughout the application</p>
+</li></ul>
+</li><li>
+<p><strong>tty-box</strong>, <strong>tty-cursor</strong>, <strong>tty-prompt</strong>, <strong>tty-screen</strong>, <strong>tty-spinner</strong>, <strong>tty-table</strong></p>
+<ul><li>
+<p>Purpose: Various terminal output formatting and interaction tools</p>
+</li><li>
+<p>Usage: Creating rich command-line interfaces and displaying formatted output</p>
+</li></ul>
+</li><li>
+<p><strong>pastel</strong></p>
+<ul><li>
+<p>Purpose: Terminal output styling</p>
+</li><li>
+<p>Usage: Adding colors and styles to terminal output</p>
+</li></ul>
+</li><li>
+<p><strong>highline</strong></p>
+<ul><li>
+<p>Purpose: High-level command-line interface building</p>
+</li><li>
+<p>Usage: Additional CLI features and user input handling</p>
+</li></ul>
+</li><li>
+<p><strong>cli-ui</strong></p>
+<ul><li>
+<p>Purpose: CLI user interface components</p>
+</li><li>
+<p>Usage: Enhancing the command-line interface with advanced <a href="UI.html"><code>UI</code></a> elements</p>
+</li></ul>
+</li><li>
+<p><strong>kramdown</strong></p>
+<ul><li>
+<p>Purpose: Markdown parsing and conversion</p>
+</li><li>
+<p>Usage: Handling Markdown content in documents</p>
+</li></ul>
+</li><li>
+<p><strong>lingua</strong></p>
+<ul><li>
+<p>Purpose: Natural language detection and processing</p>
+</li><li>
+<p>Usage: Additional NLP capabilities</p>
+</li></ul>
+</li><li>
+<p><strong>pragmatic_segmenter</strong></p>
+<ul><li>
+<p>Purpose: Text segmentation</p>
+</li><li>
+<p>Usage: Splitting text into meaningful segments</p>
+</li></ul>
+</li><li>
+<p><strong>pragmatic_tokenizer</strong></p>
+<ul><li>
+<p>Purpose: Text tokenization</p>
+</li><li>
+<p>Usage: Breaking text into individual tokens</p>
+</li></ul>
+</li><li>
+<p><strong>tomoto</strong></p>
+<ul><li>
+<p>Purpose: <a href="Topic.html"><code>Topic</code></a> modeling</p>
+</li><li>
+<p>Usage: Implementing topic modeling algorithms</p>
+</li></ul>
+</li><li>
+<p><strong>minitest</strong> and <strong>minitest/rg</strong></p>
+<ul><li>
+<p>Purpose: Testing framework</p>
+</li><li>
+<p>Usage: Writing and running tests for the application</p>
+</li></ul>
+</li></ol>
+
+<p>These gems provide a robust foundation for <a href="Flowbots.html"><code>Flowbots</code></a>, covering areas such as data persistence, natural language processing, command-line interfaces, HTTP communications, and more. The combination of these tools allows <a href="Flowbots.html"><code>Flowbots</code></a> to offer a comprehensive text processing and analysis system with a user-friendly interface.</p>
+
+</main>
+
+
+
+<footer id="validator-badges" role="contentinfo">
+  <p><a href="https://validator.w3.org/check/referer">Validate</a>
+  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.4.0.
+  <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
+</footer>
+

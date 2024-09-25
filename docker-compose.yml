@@ -1,0 +1,115 @@
+---
+services:
+  flowbots_service:
+    image: b08x/flowbots:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - USE_TRF=False
+        - USE_BOOKNLP=False
+    container_name: flowbots
+    env_file:
+      - .env
+    environment:
+      PUID: 1000
+      PGID: 1000
+      NANO_BOTS_ENCRYPTION_PASSWORD: UNSAFE
+      NANO_BOTS_END_USER: ${USER}
+    # ports:
+    #   - "3009:3000"
+    volumes:
+      - ./data/workspace:/app/workspace
+    networks:
+      - flowbots
+    depends_on:
+      - redis_service
+  redis_service:
+    image: redis/redis-stack:latest
+    container_name: flowbots-redis
+    restart: unless-stopped
+    environment:
+      PUID: 1000
+      PGID: 1000
+    volumes:
+      - ./data/redis/data:/data
+    ports:
+      - "6378:6379"
+      - "8081:8081"
+      - "8001:8001"
+    networks:
+      - flowbots
+  flowise_service:
+    image: flowiseai/flowise
+    container_name: flowbots-flowise
+    restart: unless-stopped
+    environment:
+      - PORT=3002
+      - DATABASE_PATH=/root/.flowise
+      - APIKEY_PATH=/root/.flowise
+      - SECRETKEY_PATH=/root/.flowise
+      - LOG_PATH=/root/.flowise/logs
+      - DEBUG=True
+      - LOG_LEVEL=debug
+    volumes:
+      - ./data/flowise:/root/.flowise
+      - ./data/flowise/output:/data/output
+    ports:
+      - "3002:3002"
+    entrypoint: /bin/sh -c "sleep 3; flowise start"
+    networks:
+      - flowbots
+  chroma_service:
+    image: ghcr.io/chroma-core/chroma:latest
+    container_name: flowbots-chromadb
+    restart: unless-stopped
+    volumes:
+      - ./data/chroma:/chroma/chroma/
+    environment:
+      PUID: 1000
+      PGID: 1000
+      IS_PERSISTENT: TRUE
+    ports:
+      - "8020:8000"
+    networks:
+      - flowbots
+  postgres_service:
+    image: ankane/pgvector
+    container_name: flowbots-pgvector
+    restart: unless-stopped
+    environment:
+      PUID: 1000
+      PGID: 1000
+      POSTGRES_HOST_AUTH_METHOD: "trust"
+      POSTGRES_DB: flowbots
+      POSTGRES_USER: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data/pgvector/local-data:/data
+      - ./data/pgvector/pgdata:/var/lib/postgresql/data
+    networks:
+      - flowbots
+  langfuse_service:
+    image: ghcr.io/langfuse/langfuse:latest
+    container_name: flowbots-langfuse
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://postgres:postgres@postgres_service:5432/flowbots
+      - NEXTAUTH_SECRET=mysecret
+      - SALT=mysalt
+      - NEXTAUTH_URL=http://localhost:3000
+      - TELEMETRY_ENABLED=${TELEMETRY_ENABLED:-true}
+      - NEXT_PUBLIC_SIGN_UP_DISABLED=${NEXT_PUBLIC_SIGN_UP_DISABLED:-false}
+      - LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES=${LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES:-false}
+    depends_on:
+      - postgres_service
+    networks:
+      - flowbots
+
+networks:
+  flowbots:
+    driver: bridge

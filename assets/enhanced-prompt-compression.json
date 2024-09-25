@@ -1,0 +1,47 @@
+{
+  "task": "Analyze and condense prompt instruction",
+  "compression_strategy": {
+    "coarse_grained": {
+      "action": "Question-aware compression",
+      "details": "Evaluate importance of each subtask based on relevance to main task"
+    },
+    "fine_grained": {
+      "action": "Token-level contrastive perplexity",
+      "details": "Assess importance of each token relative to task description"
+    },
+    "dynamic_compression": {
+      "action": "Adaptive allocation",
+      "details": "Assign variable compression ratios based on subtask importance"
+    }
+  },
+  "reordering": {
+    "action": "Importance-based reordering",
+    "details": "Place most relevant subtasks at beginning and end"
+  },
+  "subtasks": [
+    {
+      "action": "Identify key information",
+      "details": "Extract core instructions and goals"
+    },
+    {
+      "action": "Remove low-density information",
+      "details": "Eliminate redundant or less relevant details"
+    },
+    {
+      "action": "Optimize lexical choices",
+      "details": "Use more concise language while preserving context"
+    },
+    {
+      "action": "Ensure coherence",
+      "details": "Maintain logical flow and relationships between elements"
+    }
+  ],
+  "post_processing": {
+    "action": "Subsequence recovery",
+    "details": "Restore any critical information lost during compression"
+  },
+  "output": {
+    "format": "Condensed prompt instruction",
+    "include": "Rationale for key decisions"
+  }
+}

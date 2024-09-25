@@ -1,4 +1,6 @@
 #!/usr/bin/env ruby
+lib_dir = File.expand_path(File.join(__dir__, "..", "lib"))
+$LOAD_PATH.unshift lib_dir unless $LOAD_PATH.include?(lib_dir)
 
 require "bundler/setup"
 require "flowbots"
@@ -6,8 +8,5 @@ require "flowbots"
 # You can add fixtures and/or initialization code here to make experimenting
 # with your gem easier. You can also use a different console, if you like.
 
-
 require "pry"
 Pry.start
-
-

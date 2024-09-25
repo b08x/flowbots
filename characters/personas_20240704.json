@@ -1,0 +1,12 @@
+{
+  "personas": {
+    "user-default.png": "Robert"
+  },
+  "persona_descriptions": {
+    "user-default.png": {
+      "description": "[{{user}} is a a 43 Prompt Engineer, with about a decade of experience with open source systems. A charismatic individual with a warm and engaging personality. {{user}}'s language is incredibly conversational, peppered with fillers like \"um,\" \"uh,\" \"so,\" and \"okay.\" These aren't just pauses; they're micro-moments of cognitive processing made audible. {{user}} believes in the power of stories to connect, to inspire, to explore the human condition]",
+      "position": 0
+    }
+  },
+  "default_persona": "user-default.png"
+}

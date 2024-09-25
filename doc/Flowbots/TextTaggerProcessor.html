@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="UTF-8">
+
+<title>class Flowbots::TextTaggerProcessor - flowbots v0.1</title>
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "../";
+  var index_rel_prefix = "../";
+</script>
+
+<script src="../js/navigation.js" defer></script>
+<script src="../js/search.js" defer></script>
+<script src="../js/search_index.js" defer></script>
+<script src="../js/searcher.js" defer></script>
+<script src="../js/darkfish.js" defer></script>
+
+<link href="../css/fonts.css" rel="stylesheet">
+<link href="../css/rdoc.css" rel="stylesheet">
+
+
+<body id="top" role="document" class="class">
+<nav role="navigation">
+  <div id="project-navigation">
+    <div id="home-section" role="region" title="Quick navigation" class="nav-section">
+  <h2>
+    <a href="../index.html" rel="home">Home</a>
+  </h2>
+
+  <div id="table-of-contents-navigation">
+    <a href="../table_of_contents.html#pages">Pages</a>
+    <a href="../table_of_contents.html#classes">Classes</a>
+    <a href="../table_of_contents.html#methods">Methods</a>
+  </div>
+</div>
+
+    <div id="search-section" role="search" class="project-section initially-hidden">
+  <form action="#" method="get" accept-charset="utf-8">
+    <div id="search-field-wrapper">
+      <input id="search-field" role="combobox" aria-label="Search"
+             aria-autocomplete="list" aria-controls="search-results"
+             type="text" name="search" placeholder="Search" spellcheck="false"
+             title="Type to search, Up and Down to navigate, Enter to load">
+    </div>
+
+    <ul id="search-results" aria-label="Search Results"
+        aria-busy="false" aria-expanded="false"
+        aria-atomic="false" class="initially-hidden"></ul>
+  </form>
+</div>
+
+  </div>
+
+  
+
+  <div id="class-metadata">
+    
+    
+<div id="parent-class-section" class="nav-section">
+  <h3>Parent</h3>
+
+  <p class="link"><a href="../Object.html">Object</a>
+</div>
+
+    
+<div id="includes-section" class="nav-section">
+  <h3>Included Modules</h3>
+
+  <ul class="link-list">
+    <li><span class="include">Singleton</span>
+  </ul>
+</div>
+
+    
+    
+<!-- Method Quickref -->
+<div id="method-list-section" class="nav-section">
+  <h3>Methods</h3>
+
+  <ul class="link-list" role="directory">
+    <li ><a href="#method-c-new">::new</a>
+    <li ><a href="#method-i-analyze_transitivity">#analyze_transitivity</a>
+    <li ><a href="#method-i-extract_main_topics">#extract_main_topics</a>
+    <li ><a href="#method-i-identify_speech_acts">#identify_speech_acts</a>
+    <li ><a href="#method-i-load_engtagger">#load_engtagger</a>
+    <li ><a href="#method-i-process">#process</a>
+  </ul>
+</div>
+
+  </div>
+</nav>
+
+<main role="main" aria-labelledby="class-Flowbots::TextTaggerProcessor">
+  <h1 id="class-Flowbots::TextTaggerProcessor" class="class">
+    class Flowbots::TextTaggerProcessor
+  </h1>
+
+  <section class="description">
+    
+<p>This class provides functionality for tagging text using the EngTagger library.</p>
+
+  </section>
+
+  <section id="5Buntitled-5D" class="documentation-section">
+
+
+
+
+
+     <section id="public-class-5Buntitled-5D-method-details" class="method-section">
+       <header>
+         <h3>Public Class Methods</h3>
+       </header>
+
+      <div id="method-c-new" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">new</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          <p>Initializes a <a href="TextTaggerProcessor.html#method-c-new"><code>new</code></a> <a href="TextTaggerProcessor.html"><code>TextTaggerProcessor</code></a> instance.</p>
+
+<p>@return [void]</p>
+
+          <div class="method-source-code" id="new-source">
+            <pre><span class="ruby-comment"># File lib/processors/TextTaggerProcessor.rb, line 15</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">initialize</span>
+  <span class="ruby-comment"># Initializes a logger object.</span>
+  <span class="ruby-identifier">logger</span> = <span class="ruby-constant">Logger</span>.<span class="ruby-identifier">new</span>(<span class="ruby-constant">STDOUT</span>)
+
+  <span class="ruby-comment"># Loads the EngTagger library.</span>
+  <span class="ruby-identifier">load_engtagger</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+    </section>
+
+     <section id="public-instance-5Buntitled-5D-method-details" class="method-section">
+       <header>
+         <h3>Public Instance Methods</h3>
+       </header>
+
+      <div id="method-i-analyze_transitivity" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">analyze_transitivity</span><span
+            class="method-args">(text)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          <p>Analyzes the transitivity of sentences in the given text.</p>
+
+<p>@param text [String] The text to analyze.</p>
+
+<p>@return [Array] An array of hashes containing transitivity information for each sentence.</p>
+
+          <div class="method-source-code" id="analyze_transitivity-source">
+            <pre><span class="ruby-comment"># File lib/processors/TextTaggerProcessor.rb, line 110</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">analyze_transitivity</span>(<span class="ruby-identifier">text</span>)
+  <span class="ruby-comment"># Splits the text into sentences and removes empty sentences.</span>
+  <span class="ruby-identifier">sentences</span> = <span class="ruby-identifier">text</span>.<span class="ruby-identifier">split</span>(<span class="ruby-regexp">/[.!?]+/</span>).<span class="ruby-identifier">map</span>(<span class="ruby-operator">&amp;</span><span class="ruby-value">:strip</span>).<span class="ruby-identifier">reject</span>(<span class="ruby-operator">&amp;</span><span class="ruby-value">:empty?</span>)
+
+  <span class="ruby-comment"># Iterates through each sentence and analyzes its transitivity.</span>
+  <span class="ruby-identifier">sentences</span>.<span class="ruby-identifier">map</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">sent</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">sent_tagged</span> = <span class="ruby-ivar">@tgr</span>.<span class="ruby-identifier">add_tags</span>(<span class="ruby-identifier">sent</span>)
+    <span class="ruby-keyword">if</span> <span class="ruby-identifier">sent_tagged</span>.<span class="ruby-identifier">nil?</span>
+      <span class="ruby-comment"># Logs a warning message if the sentence cannot be tagged.</span>
+      <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">warn</span> <span class="ruby-node">&quot;Failed to tag sentence for transitivity analysis: #{sent}&quot;</span>
+      { <span class="ruby-value">sentence:</span> <span class="ruby-identifier">sent</span>, <span class="ruby-value">process:</span> <span class="ruby-keyword">nil</span>, <span class="ruby-value">actor:</span> <span class="ruby-keyword">nil</span>, <span class="ruby-value">goal:</span> <span class="ruby-keyword">nil</span> }
+    <span class="ruby-keyword">else</span>
+      <span class="ruby-comment"># Extracts the process, actor, and goal from the tagged sentence.</span>
+      <span class="ruby-identifier">process</span> = <span class="ruby-identifier">sent_tagged</span>.<span class="ruby-identifier">scan</span>(<span class="ruby-regexp">%r{&lt;vb[dgnpz]?&gt;([^&lt;]+)&lt;/vb[dgnpz]?&gt;}</span>).<span class="ruby-identifier">flatten</span>.<span class="ruby-identifier">first</span>
+      <span class="ruby-identifier">actor</span> = <span class="ruby-identifier">sent_tagged</span>.<span class="ruby-identifier">scan</span>(<span class="ruby-regexp">%r{&lt;nn[ps]?&gt;([^&lt;]+)&lt;/nn[ps]?&gt;}</span>).<span class="ruby-identifier">flatten</span>.<span class="ruby-identifier">first</span>
+      <span class="ruby-identifier">goal</span> = <span class="ruby-identifier">sent_tagged</span>.<span class="ruby-identifier">scan</span>(<span class="ruby-regexp">%r{&lt;nn[ps]?&gt;([^&lt;]+)&lt;/nn[ps]?&gt;}</span>).<span class="ruby-identifier">flatten</span>[<span class="ruby-value">1</span>]
+      { <span class="ruby-value">sentence:</span> <span class="ruby-identifier">sent</span>, <span class="ruby-value">process:</span>, <span class="ruby-value">actor:</span>, <span class="ruby-value">goal:</span> }
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-extract_main_topics" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">extract_main_topics</span><span
+            class="method-args">(text, limit=5)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          <p>Extracts the main topics from the given text.</p>
+
+<p>@param text [String] The text to extract topics from. @param limit [Integer] The maximum number of topics to extract.</p>
+
+<p>@return [Array] An array of main topics.</p>
+
+          <div class="method-source-code" id="extract_main_topics-source">
+            <pre><span class="ruby-comment"># File lib/processors/TextTaggerProcessor.rb, line 64</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">extract_main_topics</span>(<span class="ruby-identifier">text</span>, <span class="ruby-identifier">limit</span>=<span class="ruby-value">5</span>)
+  <span class="ruby-comment"># Gets the noun phrases from the text using EngTagger.</span>
+  <span class="ruby-identifier">noun_phrases</span> = <span class="ruby-ivar">@tgr</span>.<span class="ruby-identifier">get_noun_phrases</span>(<span class="ruby-identifier">text</span>)
+
+  <span class="ruby-comment"># If noun phrases are found, sorts them by count in descending order and returns the top `limit` phrases.</span>
+  <span class="ruby-keyword">return</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">noun_phrases</span>.<span class="ruby-identifier">nil?</span>
+
+  <span class="ruby-identifier">sorted_phrases</span> = <span class="ruby-identifier">noun_phrases</span>.<span class="ruby-identifier">sort_by</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">_</span>, <span class="ruby-identifier">count</span><span class="ruby-operator">|</span> <span class="ruby-operator">-</span><span class="ruby-identifier">count</span> }
+  <span class="ruby-identifier">sorted_phrases</span>.<span class="ruby-identifier">first</span>(<span class="ruby-identifier">limit</span>).<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">phrase</span>, <span class="ruby-identifier">_</span><span class="ruby-operator">|</span> <span class="ruby-identifier">phrase</span> }
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-identify_speech_acts" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">identify_speech_acts</span><span
+            class="method-args">(text)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          <p>Identifies the speech acts in the given text.</p>
+
+<p>@param text [String] The text to analyze.</p>
+
+<p>@return [Array] An array of speech act classifications for each sentence.</p>
+
+          <div class="method-source-code" id="identify_speech_acts-source">
+            <pre><span class="ruby-comment"># File lib/processors/TextTaggerProcessor.rb, line 80</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">identify_speech_acts</span>(<span class="ruby-identifier">text</span>)
+  <span class="ruby-comment"># Splits the text into sentences and removes empty sentences.</span>
+  <span class="ruby-identifier">sentences</span> = <span class="ruby-identifier">text</span>.<span class="ruby-identifier">split</span>(<span class="ruby-regexp">/[.!?]+/</span>).<span class="ruby-identifier">map</span>(<span class="ruby-operator">&amp;</span><span class="ruby-value">:strip</span>).<span class="ruby-identifier">reject</span>(<span class="ruby-operator">&amp;</span><span class="ruby-value">:empty?</span>)
+
+  <span class="ruby-comment"># Iterates through each sentence and classifies its speech act.</span>
+  <span class="ruby-identifier">sentences</span>.<span class="ruby-identifier">map</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">sent</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">sent_tagged</span> = <span class="ruby-ivar">@tgr</span>.<span class="ruby-identifier">add_tags</span>(<span class="ruby-identifier">sent</span>)
+    <span class="ruby-keyword">if</span> <span class="ruby-identifier">sent_tagged</span>.<span class="ruby-identifier">nil?</span>
+      <span class="ruby-comment"># Logs a warning message if the sentence cannot be tagged.</span>
+      <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">warn</span> <span class="ruby-node">&quot;Failed to tag sentence: #{sent}&quot;</span>
+      <span class="ruby-string">&quot;unknown&quot;</span>
+    <span class="ruby-keyword">elsif</span> <span class="ruby-identifier">sent_tagged</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-string">&quot;&lt;uh&gt;&quot;</span>)
+      <span class="ruby-string">&quot;interjection&quot;</span>
+    <span class="ruby-keyword">elsif</span> <span class="ruby-identifier">sent</span>.<span class="ruby-identifier">end_with?</span>(<span class="ruby-string">&quot;?&quot;</span>)
+      <span class="ruby-string">&quot;question&quot;</span>
+    <span class="ruby-keyword">elsif</span> <span class="ruby-identifier">sent_tagged</span>.<span class="ruby-identifier">start_with?</span>(<span class="ruby-string">&quot;&lt;md&gt;&quot;</span>, <span class="ruby-string">&quot;&lt;vb&gt;&quot;</span>)
+      <span class="ruby-string">&quot;request&quot;</span>
+    <span class="ruby-keyword">elsif</span> <span class="ruby-identifier">sent</span>.<span class="ruby-identifier">end_with?</span>(<span class="ruby-string">&quot;!&quot;</span>)
+      <span class="ruby-string">&quot;exclamation&quot;</span>
+    <span class="ruby-keyword">else</span>
+      <span class="ruby-string">&quot;statement&quot;</span>
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-process" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">process</span><span
+            class="method-args">(text, options={})</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          <p>Processes the given text using the EngTagger library and returns a hash of tagged results.</p>
+
+<p>@param text [String] The text to be tagged. @param options [Hash] A hash of options for the tagging <a href="TextTaggerProcessor.html#method-i-process"><code>process</code></a>.</p>
+
+<p>@return [Hash] A hash containing the tagged results.</p>
+
+          <div class="method-source-code" id="process-source">
+            <pre><span class="ruby-comment"># File lib/processors/TextTaggerProcessor.rb, line 29</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">process</span>(<span class="ruby-identifier">text</span>, <span class="ruby-identifier">options</span>={})
+  <span class="ruby-comment"># Logs a message indicating the start of text processing.</span>
+  <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-string">&quot;Processing text with TextTaggerProcessor&quot;</span>
+  <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;Options: #{options.inspect}&quot;</span>
+
+  <span class="ruby-comment"># Creates a hash to store the tagged results.</span>
+  <span class="ruby-identifier">result</span> = {}
+
+  <span class="ruby-comment"># Performs various tagging operations based on the provided options.</span>
+  <span class="ruby-identifier">result</span>[<span class="ruby-value">:tagged_text</span>] = <span class="ruby-ivar">@tgr</span>.<span class="ruby-identifier">add_tags</span>(<span class="ruby-identifier">text</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">options</span>[<span class="ruby-value">:tagged_text</span>]
+  <span class="ruby-identifier">result</span>[<span class="ruby-value">:readable_text</span>] = <span class="ruby-ivar">@tgr</span>.<span class="ruby-identifier">get_readable</span>(<span class="ruby-identifier">text</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">options</span>[<span class="ruby-value">:readable_text</span>]
+  <span class="ruby-identifier">result</span>[<span class="ruby-value">:words</span>] = <span class="ruby-ivar">@tgr</span>.<span class="ruby-identifier">get_words</span>(<span class="ruby-identifier">text</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">options</span>[<span class="ruby-value">:words</span>]
+  <span class="ruby-identifier">result</span>[<span class="ruby-value">:nouns</span>] = <span class="ruby-ivar">@tgr</span>.<span class="ruby-identifier">get_nouns</span>(<span class="ruby-identifier">text</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">options</span>[<span class="ruby-value">:nouns</span>]
+  <span class="ruby-identifier">result</span>[<span class="ruby-value">:proper_nouns</span>] = <span class="ruby-ivar">@tgr</span>.<span class="ruby-identifier">get_proper_nouns</span>(<span class="ruby-identifier">result</span>[<span class="ruby-value">:tagged_text</span>]) <span class="ruby-keyword">if</span> <span class="ruby-identifier">options</span>[<span class="ruby-value">:proper_nouns</span>]
+  <span class="ruby-identifier">result</span>[<span class="ruby-value">:past_tense_verbs</span>] = <span class="ruby-ivar">@tgr</span>.<span class="ruby-identifier">get_past_tense_verbs</span>(<span class="ruby-identifier">result</span>[<span class="ruby-value">:tagged_text</span>]) <span class="ruby-keyword">if</span> <span class="ruby-identifier">options</span>[<span class="ruby-value">:past_tense_verbs</span>]
+  <span class="ruby-identifier">result</span>[<span class="ruby-value">:present_tense_verbs</span>] = <span class="ruby-ivar">@tgr</span>.<span class="ruby-identifier">get_present_verbs</span>(<span class="ruby-identifier">result</span>[<span class="ruby-value">:tagged_text</span>]) <span class="ruby-keyword">if</span> <span class="ruby-identifier">options</span>[<span class="ruby-value">:present_tense_verbs</span>]
+  <span class="ruby-identifier">result</span>[<span class="ruby-value">:base_present_verbs</span>] = <span class="ruby-ivar">@tgr</span>.<span class="ruby-identifier">get_base_present_verbs</span>(<span class="ruby-identifier">result</span>[<span class="ruby-value">:tagged_text</span>]) <span class="ruby-keyword">if</span> <span class="ruby-identifier">options</span>[<span class="ruby-value">:base_present_verbs</span>]
+  <span class="ruby-identifier">result</span>[<span class="ruby-value">:gerund_verbs</span>] = <span class="ruby-ivar">@tgr</span>.<span class="ruby-identifier">get_gerund_verbs</span>(<span class="ruby-identifier">result</span>[<span class="ruby-value">:tagged_text</span>]) <span class="ruby-keyword">if</span> <span class="ruby-identifier">options</span>[<span class="ruby-value">:gerund_verbs</span>]
+  <span class="ruby-identifier">result</span>[<span class="ruby-value">:adjectives</span>] = <span class="ruby-ivar">@tgr</span>.<span class="ruby-identifier">get_adjectives</span>(<span class="ruby-identifier">result</span>[<span class="ruby-value">:tagged_text</span>]) <span class="ruby-keyword">if</span> <span class="ruby-identifier">options</span>[<span class="ruby-value">:adjectives</span>]
+  <span class="ruby-identifier">result</span>[<span class="ruby-value">:noun_phrases</span>] = <span class="ruby-ivar">@tgr</span>.<span class="ruby-identifier">get_noun_phrases</span>(<span class="ruby-identifier">result</span>[<span class="ruby-value">:tagged_text</span>]) <span class="ruby-keyword">if</span> <span class="ruby-identifier">options</span>[<span class="ruby-value">:noun_phrases</span>]
+  <span class="ruby-identifier">result</span>[<span class="ruby-value">:pronoun_list</span>] = <span class="ruby-ivar">@tgr</span>.<span class="ruby-identifier">get_pronoun_list</span>(<span class="ruby-identifier">result</span>[<span class="ruby-value">:tagged_text</span>]) <span class="ruby-keyword">if</span> <span class="ruby-identifier">options</span>[<span class="ruby-value">:pronoun_list</span>]
+
+  <span class="ruby-comment"># Logs the processed results for debugging purposes.</span>
+  <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;Processed result: #{result.inspect}&quot;</span>
+
+  <span class="ruby-comment"># Returns the hash of tagged results.</span>
+  <span class="ruby-identifier">result</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+    </section>
+
+     <section id="private-instance-5Buntitled-5D-method-details" class="method-section">
+       <header>
+         <h3>Private Instance Methods</h3>
+       </header>
+
+      <div id="method-i-load_engtagger" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">load_engtagger</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          <p>Loads the EngTagger library.</p>
+
+<p>@return [void]</p>
+
+          <div class="method-source-code" id="load_engtagger-source">
+            <pre><span class="ruby-comment"># File lib/processors/TextTaggerProcessor.rb, line 136</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">load_engtagger</span>
+  <span class="ruby-comment"># Logs a message indicating the start of EngTagger loading.</span>
+  <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-string">&quot;Loading EngTagger&quot;</span>
+
+  <span class="ruby-comment"># Initializes a new EngTagger instance.</span>
+  <span class="ruby-ivar">@tgr</span> = <span class="ruby-constant">EngTagger</span>.<span class="ruby-identifier">new</span>
+
+  <span class="ruby-comment"># Logs a message indicating successful EngTagger loading.</span>
+  <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-string">&quot;EngTagger loaded successfully&quot;</span>
+  <span class="ruby-constant">UI</span>.<span class="ruby-identifier">say</span>(<span class="ruby-value">:ok</span>, <span class="ruby-string">&quot;EngTagger loaded successfully&quot;</span>)
+<span class="ruby-keyword">rescue</span> <span class="ruby-constant">StandardError</span> <span class="ruby-operator">=&gt;</span> <span class="ruby-identifier">e</span>
+  <span class="ruby-comment"># Logs an error message if EngTagger loading fails.</span>
+  <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">error</span> <span class="ruby-node">&quot;Error loading EngTagger: #{e.message}&quot;</span>
+  <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">error</span> <span class="ruby-identifier">e</span>.<span class="ruby-identifier">backtrace</span>.<span class="ruby-identifier">join</span>(<span class="ruby-string">&quot;\n&quot;</span>)
+  <span class="ruby-constant">UI</span>.<span class="ruby-identifier">say</span>(<span class="ruby-value">:error</span>, <span class="ruby-node">&quot;Error loading EngTagger: #{e.message}&quot;</span>)
+  <span class="ruby-identifier">raise</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+    </section>
+
+  </section>
+</main>
+
+
+<footer id="validator-badges" role="contentinfo">
+  <p><a href="https://validator.w3.org/check/referer">Validate</a>
+  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.4.0.
+  <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
+</footer>
+

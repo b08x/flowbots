@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="UTF-8">
+
+<title>class LlmAnalysisTask - flowbots v0.1</title>
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "./";
+  var index_rel_prefix = "./";
+</script>
+
+<script src="./js/navigation.js" defer></script>
+<script src="./js/search.js" defer></script>
+<script src="./js/search_index.js" defer></script>
+<script src="./js/searcher.js" defer></script>
+<script src="./js/darkfish.js" defer></script>
+
+<link href="./css/fonts.css" rel="stylesheet">
+<link href="./css/rdoc.css" rel="stylesheet">
+
+
+<body id="top" role="document" class="class">
+<nav role="navigation">
+  <div id="project-navigation">
+    <div id="home-section" role="region" title="Quick navigation" class="nav-section">
+  <h2>
+    <a href="./index.html" rel="home">Home</a>
+  </h2>
+
+  <div id="table-of-contents-navigation">
+    <a href="./table_of_contents.html#pages">Pages</a>
+    <a href="./table_of_contents.html#classes">Classes</a>
+    <a href="./table_of_contents.html#methods">Methods</a>
+  </div>
+</div>
+
+    <div id="search-section" role="search" class="project-section initially-hidden">
+  <form action="#" method="get" accept-charset="utf-8">
+    <div id="search-field-wrapper">
+      <input id="search-field" role="combobox" aria-label="Search"
+             aria-autocomplete="list" aria-controls="search-results"
+             type="text" name="search" placeholder="Search" spellcheck="false"
+             title="Type to search, Up and Down to navigate, Enter to load">
+    </div>
+
+    <ul id="search-results" aria-label="Search Results"
+        aria-busy="false" aria-expanded="false"
+        aria-atomic="false" class="initially-hidden"></ul>
+  </form>
+</div>
+
+  </div>
+
+  
+
+  <div id="class-metadata">
+    
+    
+<div id="parent-class-section" class="nav-section">
+  <h3>Parent</h3>
+
+  <p class="link"><a href="Jongleur/WorkerTask.html">Jongleur::WorkerTask</a>
+</div>
+
+    
+<div id="includes-section" class="nav-section">
+  <h3>Included Modules</h3>
+
+  <ul class="link-list">
+    <li><a class="include" href="InputRetrieval.html">InputRetrieval</a>
+  </ul>
+</div>
+
+    
+    
+<!-- Method Quickref -->
+<div id="method-list-section" class="nav-section">
+  <h3>Methods</h3>
+
+  <ul class="link-list" role="directory">
+    <li ><a href="#method-i-execute">#execute</a>
+    <li ><a href="#method-i-format_nlp_result">#format_nlp_result</a>
+    <li ><a href="#method-i-generate_analysis_prompt">#generate_analysis_prompt</a>
+    <li ><a href="#method-i-retrieve_file_metadata">#retrieve_file_metadata</a>
+    <li ><a href="#method-i-retrieve_input">#retrieve_input</a>
+    <li ><a href="#method-i-retrieve_nlp_result">#retrieve_nlp_result</a>
+    <li ><a href="#method-i-store_analysis_result">#store_analysis_result</a>
+    <li ><a href="#method-i-write_markdown">#write_markdown</a>
+    <li ><a href="#method-i-write_markdown_report">#write_markdown_report</a>
+  </ul>
+</div>
+
+  </div>
+</nav>
+
+<main role="main" aria-labelledby="class-LlmAnalysisTask">
+  <h1 id="class-LlmAnalysisTask" class="class">
+    class LlmAnalysisTask
+  </h1>
+
+  <section class="description">
+    
+<p>This task performs LLM analysis on a text file using a pre-trained model.</p>
+
+<p>This task performs LLM analysis on a text file using a pre-trained model.</p>
+
+  </section>
+
+  <section id="5Buntitled-5D" class="documentation-section">
+
+
+
+
+
+     <section id="public-instance-5Buntitled-5D-method-details" class="method-section">
+       <header>
+         <h3>Public Instance Methods</h3>
+       </header>
+
+      <div id="method-i-execute" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">execute</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          <p>Executes the task.</p>
+
+<p>@return [void]</p>
+
+          <div class="method-source-code" id="execute-source">
+            <pre><span class="ruby-comment"># File lib/tasks/llm_analysis_task.rb, line 10</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">execute</span>
+  <span class="ruby-constant">UI</span>.<span class="ruby-identifier">footer</span>
+
+  <span class="ruby-constant">UI</span>.<span class="ruby-identifier">info</span> <span class="ruby-string">&quot;Starting LLMAnalysisTask&quot;</span>
+
+  <span class="ruby-keyword">begin</span>
+    <span class="ruby-comment"># Create a new WorkflowAgent instance for the &quot;ironically_literal&quot; agent.</span>
+    <span class="ruby-identifier">agent</span> = <span class="ruby-constant">WorkflowAgent</span>.<span class="ruby-identifier">new</span>(
+      <span class="ruby-string">&quot;ironically_literal&quot;</span>,
+      <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-constant">CARTRIDGE_DIR</span>, <span class="ruby-string">&quot;@b08x&quot;</span>, <span class="ruby-string">&quot;cartridges&quot;</span>, <span class="ruby-string">&quot;assistants/antisteve.yml&quot;</span>)
+    )
+
+    <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-string">&quot;Created WorkflowAgent instance&quot;</span>
+
+    <span class="ruby-comment"># Load the agent&#39;s state from Redis.</span>
+    <span class="ruby-identifier">agent</span>.<span class="ruby-identifier">load_state</span>
+    <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-string">&quot;Loaded agent state&quot;</span>
+
+    <span class="ruby-comment"># Retrieve the Textfile object, its content, metadata, and NLP results.</span>
+    <span class="ruby-identifier">textfile</span> = <span class="ruby-identifier">retrieve_input</span>
+    <span class="ruby-identifier">content</span> = <span class="ruby-identifier">textfile</span>.<span class="ruby-identifier">preprocessed_content</span>
+    <span class="ruby-identifier">metadata</span> = <span class="ruby-identifier">textfile</span>.<span class="ruby-identifier">metadata</span> <span class="ruby-operator">||</span> {}
+    <span class="ruby-identifier">nlp_result</span> = <span class="ruby-identifier">retrieve_nlp_result</span>(<span class="ruby-identifier">textfile</span>)
+
+    <span class="ruby-comment"># Generate a prompt for the agent based on the retrieved information.</span>
+    <span class="ruby-identifier">prompt</span> = <span class="ruby-identifier">generate_analysis_prompt</span>(<span class="ruby-identifier">textfile</span>, <span class="ruby-identifier">content</span>, <span class="ruby-identifier">metadata</span>, <span class="ruby-identifier">nlp_result</span>)
+
+    <span class="ruby-identifier">analysis_result</span> = <span class="ruby-identifier">agent</span>.<span class="ruby-identifier">process</span>(<span class="ruby-identifier">prompt</span>)
+
+    <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-string">&quot;Agent processing completed&quot;</span>
+
+    <span class="ruby-comment"># Save the agent&#39;s state to Redis.</span>
+    <span class="ruby-identifier">agent</span>.<span class="ruby-identifier">save_state</span>
+    <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-string">&quot;Saved agent state&quot;</span>
+
+    <span class="ruby-comment"># Store the analysis result in the Textfile.</span>
+    <span class="ruby-identifier">store_analysis_result</span>(<span class="ruby-identifier">textfile</span>, <span class="ruby-identifier">analysis_result</span>)
+
+    <span class="ruby-identifier">write_markdown_report</span>(<span class="ruby-identifier">analysis_result</span>)
+
+    <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-string">&quot;Stored analysis result&quot;</span>
+
+    <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-string">&quot;LLMAnalysisTask completed&quot;</span>
+  <span class="ruby-keyword">rescue</span> <span class="ruby-constant">StandardError</span> <span class="ruby-operator">=&gt;</span> <span class="ruby-identifier">e</span>
+    <span class="ruby-comment"># Log an error message if an exception occurs during the task execution.</span>
+    <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">error</span> <span class="ruby-node">&quot;Error in LLMAnalysisTask: #{e.message}&quot;</span>
+    <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">error</span> <span class="ruby-identifier">e</span>.<span class="ruby-identifier">backtrace</span>.<span class="ruby-identifier">join</span>(<span class="ruby-string">&quot;\n&quot;</span>)
+    <span class="ruby-identifier">raise</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+    </section>
+
+     <section id="private-instance-5Buntitled-5D-method-details" class="method-section">
+       <header>
+         <h3>Private Instance Methods</h3>
+       </header>
+
+      <div id="method-i-format_nlp_result" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">format_nlp_result</span><span
+            class="method-args">(nlp_result)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          <p>Formats the NLP results for display in the prompt.</p>
+
+<p>@param nlp_result [Array] The NLP results for the segments of the Textfile.</p>
+
+<p>@return [String] The formatted NLP results.</p>
+
+          <div class="method-source-code" id="format_nlp_result-source">
+            <pre><span class="ruby-comment"># File lib/tasks/llm_analysis_task.rb, line 152</span>
+  <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">format_nlp_result</span>(<span class="ruby-identifier">nlp_result</span>)
+    <span class="ruby-identifier">nlp_result</span>.<span class="ruby-identifier">first</span>(<span class="ruby-value">10</span>).<span class="ruby-identifier">map</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">segment</span><span class="ruby-operator">|</span>
+      <span class="ruby-identifier">&lt;&lt;~SEGMENT</span>
+<span class="ruby-value">        Segment: &quot;#{segment[:text]}&quot;
+        Parts of Speech: #{segment[:tagged][:pos].to_a.first(5).map { |word, pos| &quot;#{word}(#{pos})&quot; }.join(&#39;, &#39;)}
+        Named Entities: #{segment[:tagged][:ner].to_a.first(5).map { |word, ner| &quot;#{word}(#{ner})&quot; }.join(&#39;, &#39;)}
+</span><span class="ruby-identifier">      SEGMENT</span>
+    <span class="ruby-keyword">end</span>.<span class="ruby-identifier">join</span>(<span class="ruby-string">&quot;\n&quot;</span>)
+  <span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-generate_analysis_prompt" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">generate_analysis_prompt</span><span
+            class="method-args">(textfile, content, metadata, nlp_result)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          <pre>Please structure your response in a clear, concise manner. Thank you!</pre>
+
+<p>PROMPT end</p>
+
+          <div class="method-source-code" id="generate_analysis_prompt-source">
+            <pre><span class="ruby-comment"># File lib/tasks/llm_analysis_task.rb, line 133</span>
+  <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">generate_analysis_prompt</span>(<span class="ruby-identifier">textfile</span>, <span class="ruby-identifier">content</span>, <span class="ruby-identifier">metadata</span>, <span class="ruby-identifier">nlp_result</span>)
+    <span class="ruby-identifier">&lt;&lt;~PROMPT</span>
+<span class="ruby-value">      Greetings, Here&#39;s what we have:
+
+      Document Name: #{textfile.name}
+
+      Content:
+      #{content}
+
+      NLP Analysis:
+      #{format_nlp_result(nlp_result)}
+</span><span class="ruby-identifier">    PROMPT</span>
+  <span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-retrieve_file_metadata" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">retrieve_file_metadata</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          <p>Retrieves the file metadata from Redis.</p>
+
+<p>@return [Hash] The file metadata.</p>
+
+          <div class="method-source-code" id="retrieve_file_metadata-source">
+            <pre><span class="ruby-comment"># File lib/tasks/llm_analysis_task.rb, line 85</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">retrieve_file_metadata</span>
+  <span class="ruby-constant">JSON</span>.<span class="ruby-identifier">parse</span>(<span class="ruby-constant">Jongleur</span><span class="ruby-operator">::</span><span class="ruby-constant">WorkerTask</span>.<span class="ruby-identifier">class_variable_get</span>(<span class="ruby-value">:@@redis</span>).<span class="ruby-identifier">get</span>(<span class="ruby-string">&quot;file_metadata&quot;</span>) <span class="ruby-operator">||</span> <span class="ruby-string">&quot;{}&quot;</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-retrieve_input" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">retrieve_input</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          
+
+          <div class="method-source-code" id="retrieve_input-source">
+            <pre><span class="ruby-comment"># File lib/tasks/llm_analysis_task.rb, line 63</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">retrieve_input</span>
+  <span class="ruby-identifier">retrieve_file_object</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-retrieve_nlp_result" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">retrieve_nlp_result</span><span
+            class="method-args">(textfile)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          <p>Retrieves the NLP results for the segments of the Textfile.</p>
+
+<p>@param textfile [Textfile] The Textfile object.</p>
+
+<p>@return [Array] An array of NLP results for each segment.</p>
+
+          <div class="method-source-code" id="retrieve_nlp_result-source">
+            <pre><span class="ruby-comment"># File lib/tasks/llm_analysis_task.rb, line 94</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">retrieve_nlp_result</span>(<span class="ruby-identifier">textfile</span>)
+  <span class="ruby-identifier">textfile</span>.<span class="ruby-identifier">retrieve_segments</span>.<span class="ruby-identifier">map</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">segment</span><span class="ruby-operator">|</span>
+    {
+      <span class="ruby-value">text:</span> <span class="ruby-identifier">segment</span>.<span class="ruby-identifier">text</span>,
+      <span class="ruby-value">tagged:</span> <span class="ruby-identifier">segment</span>.<span class="ruby-identifier">tagged</span>
+    }
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-store_analysis_result" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">store_analysis_result</span><span
+            class="method-args">(textfile, result)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          <p>Stores the analysis result in the Textfile.</p>
+
+<p>@param textfile [Textfile] The Textfile object. @param result [String] The analysis result from the LLM agent.</p>
+
+<p>@return [void]</p>
+
+          <div class="method-source-code" id="store_analysis_result-source">
+            <pre><span class="ruby-comment"># File lib/tasks/llm_analysis_task.rb, line 168</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">store_analysis_result</span>(<span class="ruby-identifier">textfile</span>, <span class="ruby-identifier">result</span>)
+  <span class="ruby-identifier">textfile</span>.<span class="ruby-identifier">update</span>(<span class="ruby-value">llm_analysis:</span> <span class="ruby-identifier">result</span>)
+  <span class="ruby-comment"># Jongleur::WorkerTask.class_variable_get(:@@redis).set(&quot;analysis_result&quot;, result.to_json)</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-write_markdown" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">write_markdown</span><span
+            class="method-args">(textfile, analysis_result)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          <p>Writes the LLM analysis result to a Markdown file.</p>
+
+<p>@param textfile [Textfile] The Textfile object. @param analysis_result [String] The LLM analysis result.</p>
+
+<p>@return [void]</p>
+
+          <div class="method-source-code" id="write_markdown-source">
+            <pre><span class="ruby-comment"># File lib/ui.rb, line 126</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">write_markdown</span>(<span class="ruby-identifier">textfile</span>, <span class="ruby-identifier">analysis_result</span>)
+  <span class="ruby-comment"># Create a Markdown file name based on the Textfile name.</span>
+  <span class="ruby-identifier">markdown_file</span> = <span class="ruby-node">&quot;#{textfile.name.gsub(/\s+/, &#39;_&#39;)}_analysis.md&quot;</span>
+
+  <span class="ruby-comment"># Write the analysis result to the Markdown file.</span>
+  <span class="ruby-constant">File</span>.<span class="ruby-identifier">write</span>(<span class="ruby-identifier">markdown_file</span>, <span class="ruby-identifier">analysis_result</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-write_markdown_report" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">write_markdown_report</span><span
+            class="method-args">(result)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          <p>Writes the exception report to a markdown file.</p>
+
+<p>@param report [String] The exception report. @param exception_details [Hash] A hash containing exception details.</p>
+
+<p>@return [void]</p>
+
+          <div class="method-source-code" id="write_markdown_report-source">
+            <pre><span class="ruby-comment"># File lib/tasks/llm_analysis_task.rb, line 179</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">write_markdown_report</span>(<span class="ruby-identifier">result</span>)
+  <span class="ruby-identifier">timestamp</span> = <span class="ruby-constant">Time</span>.<span class="ruby-identifier">now</span>.<span class="ruby-identifier">strftime</span>(<span class="ruby-string">&quot;%Y%m%d_%H%M%S&quot;</span>)
+  <span class="ruby-identifier">filename</span> = <span class="ruby-node">&quot;llm_analysis_task_#{timestamp}.md&quot;</span>
+  <span class="ruby-identifier">dir_path</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">expand_path</span>(<span class="ruby-string">&quot;../../llm_analysis&quot;</span>, <span class="ruby-identifier">__dir__</span>)
+  <span class="ruby-constant">FileUtils</span>.<span class="ruby-identifier">mkdir_p</span>(<span class="ruby-identifier">dir_path</span>)
+  <span class="ruby-identifier">file_path</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-identifier">dir_path</span>, <span class="ruby-identifier">filename</span>)
+
+  <span class="ruby-constant">File</span>.<span class="ruby-identifier">write</span>(<span class="ruby-identifier">file_path</span>, <span class="ruby-identifier">result</span>)
+  <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span>(<span class="ruby-node">&quot;Exception report written to: #{file_path}&quot;</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+    </section>
+
+  </section>
+</main>
+
+
+<footer id="validator-badges" role="contentinfo">
+  <p><a href="https://validator.w3.org/check/referer">Validate</a>
+  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.4.0.
+  <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
+</footer>
+
