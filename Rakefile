@@ -5,12 +5,6 @@ $LOAD_PATH.unshift lib_dir unless $LOAD_PATH.include?(lib_dir)
 
 APP_ROOT = __dir__
 
-### Task: rdoc
-require "rake"
-require "rake/testtask"
-require "rdoc/task"
-require "gokdok"
-
 OWNER = "b08x".freeze
 ALL_IMAGES = %w[
   flowbots
@@ -99,6 +93,11 @@ task "push-all" do
     Rake::Task["push/#{image}"].invoke
   end
 end
+
+### Task: rdoc
+require "rake"
+require "rake/testtask"
+require "rdoc/task"
 
 Rake::RDocTask.new do |rdoc|
   rdoc.title    = "flowbots v0.1"
@@ -189,10 +188,4 @@ Rake::RDocTask.new do |rdoc|
   rdoc.rdoc_files.include "lib/workflows/text_processing_workflow.rb"
   rdoc.rdoc_files.include "lib/workflows/topic_model_trainer_workflow.rb"
   rdoc.rdoc_files.include "lib/workflows/topic_model_trainer_workflowtest.rb"
-end
-
-Gokdok::Dokker.new do |gd|
-  gd.remote_path = "" # Put into the root directory
-  gd.repo_url = "git@github.com:b08x/flowbots.git"
-  gd.doc_home = "#{APP_ROOT}/doc"
 end
