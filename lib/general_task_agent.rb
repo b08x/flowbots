@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require 'jongleur'
+require "jongleur"
 
 class WorkflowAgent
   attr_reader :role, :state
@@ -43,7 +43,7 @@ class MicroAgentTask < Jongleur::WorkerTask
 
   def execute
     # Perform LLM analysis using the agent
-    input = get_input_for_analysis()
+    input = get_input_for_analysis
     result = @agent.process(input)
     store_result(result)
   end
@@ -66,7 +66,7 @@ class TopicModelingTask < Jongleur::WorkerTask
 
   def execute
     # Perform topic modeling
-    documents = get_documents()
+    documents = get_documents
     topics = @model.extract_topics(documents)
     store_topics(topics)
   end
@@ -115,7 +115,7 @@ end
 # topic_task.execute
 #
 # # Exception Handling
-# exception_agent = ExceptionAgent.new('exception_handler', 'path/to/exception_handler_cartridge.yml')
+# exception_agent = ExceptionAgent.new('error_handler', 'path/to/error_handler_cartridge.yml')
 # begin
 #   # Some operation that might raise an exception
 # rescue StandardError => e

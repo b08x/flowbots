@@ -86,6 +86,8 @@
 
   <section class="description">
     
+<p>Base class for all <a href="../Flowbots.html"><code>Flowbots</code></a> errors.</p>
+
   </section>
 
   <section id="5Buntitled-5D" class="documentation-section">
@@ -104,7 +106,7 @@
         </div>
 
         <div class="method-description">
-        
+        <p>@return [Hash] Additional <a href="FlowbotError.html#attribute-i-details"><code>details</code></a> about the error.</p>
         </div>
       </div>
       <div id="attribute-i-error_code" class="method-detail">
@@ -114,7 +116,7 @@
         </div>
 
         <div class="method-description">
-        
+        <p>@return [String] The error code.</p>
         </div>
       </div>
     </section>
@@ -133,14 +135,16 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Initializes a <a href="FlowbotError.html#method-c-new"><code>new</code></a> <a href="FlowbotError.html"><code>FlowbotError</code></a>.</p>
+
+<p>@param message [String] The error message. @param <a href="FlowbotError.html#attribute-i-error_code"><code>error_code</code></a> [String] The error code. @param <a href="FlowbotError.html#attribute-i-details"><code>details</code></a> [Hash] Additional <a href="FlowbotError.html#attribute-i-details"><code>details</code></a> about the error.</p>
             <div class="method-calls-super">
               Calls superclass method
               
             </div>
 
           <div class="method-source-code" id="new-source">
-            <pre><span class="ruby-comment"># File lib/flowbots.rb, line 92</span>
+            <pre><span class="ruby-comment"># File lib/flowbots/errors.rb, line 17</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">initialize</span>(<span class="ruby-identifier">message</span>, <span class="ruby-identifier">error_code</span>, <span class="ruby-identifier">details</span>={})
   <span class="ruby-keyword">super</span>(<span class="ruby-identifier">message</span>)
   <span class="ruby-ivar">@error_code</span> = <span class="ruby-identifier">error_code</span>

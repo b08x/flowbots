@@ -1,201 +1,154 @@
 # Flowbots
 
-Flowbots is an advanced text processing and analysis system that combines the power of nano-bots, workflow orchestration, and natural language processing to provide a flexible and powerful tool for document analysis and topic modeling.
+Flowbots is an advanced text processing and analysis system that combines the power of [ruby-nano-bots](https://github.com/icebaker/ruby-nano-bots.git), [workflow orchestration](https://gitlab.com/RedFred7/Jongleur.git), and natural language processing to provide a flexible and powerful tool for document analysis and topic modeling.
 
 ## Features
 
 - Text processing workflows for individual files and batch processing
-- Advanced NLP capabilities including tokenization, part-of-speech tagging, and named entity recognition
+- Advanced NLP methods including tokenization, part-of-speech tagging, and named entity recognition
 - Topic modeling with dynamic model training and inference
 - Flexible workflow system using Jongleur for task orchestration
 - Redis-based data persistence using Ohm models
 - Custom nano-bot cartridges for specialized AI-powered tasks
 - Robust error handling and logging system
-- User-friendly CLI interface
 
 ## System Architecture
 
 ### Class Diagram
 
-```plantuml
-@startuml
+```mermaid
+classDiagram
+    class CLI {
+        +version()
+        +workflows()
+        +train_topic_model(folder)
+        +process_text(file)
+    }
 
-skinparam backgroundColor #2F4F4F
-skinparam participant {
-    BackgroundColor #2F4F4F
-    BorderColor #DAA520
-    FontColor #DAA520
-}
-skinparam actor {
-    BackgroundColor #2F4F4F
-    BorderColor #DAA520
-    FontColor #DAA520
-}
-skinparam database {
-    BackgroundColor #2F4F4F
-    BorderColor #DAA520
-    FontColor #DAA520
-}
-skinparam arrow {
-    Color #DAA520
-    FontColor #87CEEB
-}
-skinparam note {
-    BackgroundColor #2F4F4F
-    BorderColor #DAA520
-    FontColor #87CEEB
-}
-skinparam sequence {
-    LifeLineBorderColor #DAA520
-    LifeLineBackgroundColor #2F4F4F
-}
-skinparam title {
-    FontColor #DAA520
-}
+    class Workflows {
+        -prompt: TTY::Prompt
+        +list_and_select()
+        +run(workflow_name)
+        -get_workflows()
+        -display_workflows(workflows)
+        -select_workflow(workflows)
+        -extract_workflow_description(file)
+    }
 
-class CLI {
-    + version()
-    + workflows()
-    + train_topic_model(folder: String)
-    + process_text(file: String)
-}
+    class WorkflowOrchestrator {
+        -agents: Map
+        +add_agent(role, cartridge_file)
+        +define_workflow(workflow_definition)
+        +run_workflow()
+    }
 
-class Workflows {
-    + list_and_select(): String
-    + run(workflow_name: String)
-}
+    class WorkflowAgent {
+        -role: String
+        -state: Map
+        -bot: NanoBot
+        +process(input)
+        +save_state()
+        +load_state()
+    }
 
-abstract class WorkflowOrchestrator {
-    - tasks: List<Task>
-    + add_task(task: Task)
-    + define_workflow(workflow_definition: Hash)
-    + run_workflow()
-}
+    class Task {
+        <<abstract>>
+        +execute()
+    }
 
-abstract class Task {
-    + execute()
-}
+    class TextProcessingWorkflow {
+        -input_file_path: String
+        -orchestrator: WorkflowOrchestrator
+        +run()
+    }
 
-class FileLoaderTask {
-    + execute()
-}
+    class TopicModelTrainerWorkflow {
+        -input_folder_path: String
+        -orchestrator: WorkflowOrchestrator
+        +run()
+    }
 
-class PreprocessTextFileTask {
-    + execute()
-}
+    class TextProcessor {
+        <<abstract>>
+        +process(text)
+    }
 
-class TextSegmentTask {
-    + execute()
-}
+    class NLPProcessor {
+        -nlp_model: Object
+        +process(segment, options)
+    }
 
-class TokenizeSegmentsTask {
-    + execute()
-}
+    class TopicModelProcessor {
+        -model_path: String
+        -model: Object
+        -model_params: Map
+        +load_or_create_model()
+        +train_model(documents, iterations)
+        +infer_topics(document)
+    }
 
-class NlpAnalysisTask {
-    + execute()
-}
+    class FileLoader {
+        -file_data: Textfile
+        +initialize(file_path)
+    }
 
-class TopicModelingTask {
-    + execute()
-}
+    class Textfile {
+        +path: String
+        +name: String
+        +content: String
+        +preprocessed_content: String
+        +metadata: Map
+        +topics: Set~Topic~
+        +segments: List~Segment~
+        +lemmas: List~Lemma~
+    }
 
-class LlmAnalysisTask {
-    + execute()
-}
+    class Segment {
+        +text: String
+        +tokens: List
+        +tagged: Map
+        +words: List~Word~
+    }
 
-class DisplayResultsTask {
-    + execute()
-}
+    class Word {
+        +word: String
+        +pos: String
+        +tag: String
+        +dep: String
+        +ner: String
+    }
 
-abstract class TextProcessor {
-    + process(text: String): String
-}
+    class Topic {
+        +name: String
+        +description: String
+        +vector: List
+    }
 
-class NLPProcessor {
-    - nlp_model: Object
-    + process(segment: String, options: Hash): Hash
-}
-
-class TopicModelProcessor {
-    - model: Object
-    + train_model(documents: List<String>)
-    + infer_topics(document: String): Hash
-}
-
-class WorkflowAgent {
-    - role: String
-    - state: Hash
-    + process(input: String): String
-    + save_state()
-    + load_state()
-}
-
-class OhmModel {
-}
-
-class Sourcefile {
-    + path: String
-    + name: String
-    + content: String
-    + preprocessed_content: String
-    + metadata: Hash
-}
-
-class Segment {
-    + text: String
-    + tokens: List<String>
-    + tagged: Hash
-}
-
-class Topic {
-    + name: String
-    + description: String
-    + vector: List<Float>
-}
-
-CLI --> Workflows : uses
-Workflows --> WorkflowOrchestrator : runs
-WorkflowOrchestrator o-- Task
-Task <|-- FileLoaderTask
-Task <|-- PreprocessTextFileTask
-Task <|-- TextSegmentTask
-Task <|-- TokenizeSegmentsTask
-Task <|-- NlpAnalysisTask
-Task <|-- TopicModelingTask
-Task <|-- LlmAnalysisTask
-Task <|-- DisplayResultsTask
-TextProcessor <|-- NLPProcessor
-TextProcessor <|-- TopicModelProcessor
-NlpAnalysisTask --> NLPProcessor : uses
-TopicModelingTask --> TopicModelProcessor : uses
-LlmAnalysisTask --> WorkflowAgent : uses
-OhmModel <|-- Sourcefile
-OhmModel <|-- Segment
-OhmModel <|-- Topic
-Task --> OhmModel : interacts with
-
-@enduml
+    CLI --> Workflows : uses
+    Workflows --> TextProcessingWorkflow : runs
+    Workflows --> TopicModelTrainerWorkflow : runs
+    TextProcessingWorkflow --> WorkflowOrchestrator : uses
+    TopicModelTrainerWorkflow --> WorkflowOrchestrator : uses
+    WorkflowOrchestrator --> WorkflowAgent : manages
+    WorkflowOrchestrator --> Task : executes
+    Task <|-- FileLoaderTask
+    Task <|-- PreprocessTextFileTask
+    Task <|-- TextSegmentTask
+    Task <|-- TokenizeSegmentsTask
+    Task <|-- NlpAnalysisTask
+    Task <|-- TopicModelingTask
+    Task <|-- LlmAnalysisTask
+    Task <|-- DisplayResultsTask
+    TextProcessor <|-- NLPProcessor
+    TextProcessor <|-- TopicModelProcessor
+    NlpAnalysisTask --> NLPProcessor : uses
+    TopicModelingTask --> TopicModelProcessor : uses
+    FileLoaderTask --> FileLoader : uses
+    Textfile "1" *-- "many" Segment
+    Segment "1" *-- "many" Word
+    Textfile "1" *-- "many" Topic
+    Textfile "1" *-- "many" Lemma
 ```
-
-
-
-
-
-# Flowbots Project Overview
-
-Flowbots is an advanced text processing and analysis system that combines the power of nano-bots, workflow orchestration, and natural language processing to provide a flexible and powerful tool for document analysis and topic modeling.
-
-## Key Features
-
-1. Text processing workflows for individual files and batch processing
-2. Advanced NLP capabilities including tokenization, part-of-speech tagging, and named entity recognition
-3. Topic modeling with dynamic model training and inference
-4. Flexible workflow system using Jongleur for task orchestration
-5. Redis-based data persistence using Ohm models
-6. Custom nano-bot cartridges for specialized AI-powered tasks
-7. Robust error handling and logging system
-8. User-friendly CLI interface
 
 ## Project Structure
 
@@ -221,262 +174,8 @@ The Flowbots project is organized into several key directories:
 5. **NanoBot Integration**: Utilizes nano-bot cartridges for specialized AI-powered tasks.
 6. **Logging System**: Comprehensive logging for debugging and monitoring.
 
-## Workflow Execution
 
-1. User selects a workflow through the CLI.
-2. The selected workflow is initialized and configured.
-3. The WorkflowOrchestrator sets up the task graph based on the workflow definition.
-4. Tasks are executed in the defined order, with results passed between tasks as needed.
-5. Results are stored in Redis and Ohm models for persistence.
-6. The workflow completes, and final results are displayed or stored as appropriate.
-
-This project demonstrates a sophisticated approach to text analysis and processing, combining multiple technologies and techniques to create a powerful and flexible system.
-
-# Workflows
-
-Flowbots uses a flexible workflow system to orchestrate various text processing and analysis tasks. The two main workflows defined in the project are:
-
-1. TextProcessingWorkflow
-2. TopicModelTrainerWorkflow
-
-## TextProcessingWorkflow
-
-This workflow is designed to process a single text file through a series of tasks.
-
-### Key Steps:
-
-1. **File Loading**: Loads the input file into the system.
-2. **Preprocessing**: Extracts metadata and preprocesses the text content.
-3. **Text Segmentation**: Splits the text into manageable segments.
-4. **Tokenization**: Breaks down segments into individual tokens.
-5. **NLP Analysis**: Performs part-of-speech tagging, dependency parsing, and named entity recognition.
-6. **Topic Modeling**: Infers topics from the processed text.
-7. **LLM Analysis**: Uses a language model to generate insights about the text.
-8. **Result Display**: Presents the analysis results to the user.
-
-## TopicModelTrainerWorkflow
-
-This workflow is designed to process multiple files in batches and train a topic model.
-
-### Key Steps:
-
-1. **Batch Processing**: Processes files in batches of a defined size.
-2. **File Loading**: Loads each file in the batch.
-3. **Preprocessing**: Extracts metadata and preprocesses each file's content.
-4. **Text Segmentation**: Splits each file's content into segments.
-5. **Tokenization**: Breaks down segments into tokens.
-6. **NLP Analysis**: Performs NLP tasks on the tokenized segments.
-7. **Filtering**: Filters segments based on predefined criteria.
-8. **Accumulation**: Accumulates filtered segments across all processed files.
-9. **Topic Model Training**: Trains a topic model using the accumulated segments.
-
-## Workflow Execution
-
-Both workflows use the `WorkflowOrchestrator` class to manage task execution. The orchestrator:
-
-1. Initializes the workflow and its tasks.
-2. Sets up the task graph based on the workflow definition.
-3. Executes tasks in the defined order.
-4. Manages data flow between tasks using Redis for temporary storage.
-5. Handles errors and exceptions during workflow execution.
-
-## Workflow Flexibility
-
-The workflow system is designed to be flexible and extensible:
-
-- New workflows can be easily added by creating new workflow classes.
-- Existing workflows can be modified by adding, removing, or reordering tasks.
-- Tasks are modular and can be reused across different workflows.
-
-This flexibility allows Flowbots to adapt to various text processing and analysis needs.
-
-```plantuml
-@startuml
-skinparam backgroundColor #2F4F4F
-skinparam participant {
-    BackgroundColor #2F4F4F
-    BorderColor #DAA520
-    FontColor #DAA520
-}
-skinparam actor {
-    BackgroundColor #2F4F4F
-    BorderColor #DAA520
-    FontColor #DAA520
-}
-skinparam database {
-    BackgroundColor #2F4F4F
-    BorderColor #DAA520
-    FontColor #DAA520
-}
-skinparam arrow {
-    Color #DAA520
-    FontColor #87CEEB
-}
-skinparam note {
-    BackgroundColor #2F4F4F
-    BorderColor #DAA520
-    FontColor #87CEEB
-}
-skinparam sequence {
-    LifeLineBorderColor #DAA520
-    LifeLineBackgroundColor #2F4F4F
-}
-skinparam title {
-    FontColor #DAA520
-}
-
-actor User
-participant CLI
-participant TextProcessingWorkflow
-participant FileLoaderTask
-participant PreprocessTextFileTask
-participant TextSegmentTask
-participant TokenizeSegmentsTask
-participant NlpAnalysisTask
-participant TopicModelingTask
-participant LlmAnalysisTask
-participant DisplayResultsTask
-database Redis
-
-User -> CLI : process_text(file)
-activate CLI
-
-CLI -> TextProcessingWorkflow : new(input_file_path)
-activate TextProcessingWorkflow
-
-TextProcessingWorkflow -> TextProcessingWorkflow : setup_workflow()
-TextProcessingWorkflow -> Redis : set("input_file_path", path)
-
-TextProcessingWorkflow -> FileLoaderTask : execute()
-activate FileLoaderTask
-FileLoaderTask -> Redis : get("input_file_path")
-FileLoaderTask -> FileLoaderTask : load_file()
-FileLoaderTask -> Redis : set("current_textfile_id", id)
-deactivate FileLoaderTask
-
-TextProcessingWorkflow -> PreprocessTextFileTask : execute()
-activate PreprocessTextFileTask
-PreprocessTextFileTask -> Redis : get("current_textfile_id")
-PreprocessTextFileTask -> PreprocessTextFileTask : split_content_and_metadata()
-PreprocessTextFileTask -> Redis : set("preprocessed_content", content)
-PreprocessTextFileTask -> Redis : set("file_metadata", metadata)
-deactivate PreprocessTextFileTask
-
-TextProcessingWorkflow -> TextSegmentTask : execute()
-activate TextSegmentTask
-TextSegmentTask -> Redis : get("current_textfile_id")
-TextSegmentTask -> TextSegmentTask : segment_text()
-TextSegmentTask -> Redis : update textfile segments
-deactivate TextSegmentTask
-
-TextProcessingWorkflow -> TokenizeSegmentsTask : execute()
-activate TokenizeSegmentsTask
-TokenizeSegmentsTask -> Redis : get("current_textfile_id")
-TokenizeSegmentsTask -> TokenizeSegmentsTask : tokenize_segments()
-TokenizeSegmentsTask -> Redis : update segment tokens
-deactivate TokenizeSegmentsTask
-
-TextProcessingWorkflow -> NlpAnalysisTask : execute()
-activate NlpAnalysisTask
-NlpAnalysisTask -> Redis : get("current_textfile_id")
-NlpAnalysisTask -> NlpAnalysisTask : perform_nlp_analysis()
-NlpAnalysisTask -> Redis : update segment NLP data
-deactivate NlpAnalysisTask
-
-TextProcessingWorkflow -> TopicModelingTask : execute()
-activate TopicModelingTask
-TopicModelingTask -> Redis : get("current_textfile_id")
-TopicModelingTask -> TopicModelingTask : infer_topics()
-TopicModelingTask -> Redis : store topic results
-deactivate TopicModelingTask
-
-TextProcessingWorkflow -> LlmAnalysisTask : execute()
-activate LlmAnalysisTask
-LlmAnalysisTask -> Redis : get("current_textfile_id")
-LlmAnalysisTask -> LlmAnalysisTask : generate_analysis()
-LlmAnalysisTask -> Redis : set("analysis_result", result)
-deactivate LlmAnalysisTask
-
-TextProcessingWorkflow -> DisplayResultsTask : execute()
-activate DisplayResultsTask
-DisplayResultsTask -> Redis : get("current_textfile_id")
-DisplayResultsTask -> Redis : get("analysis_result")
-DisplayResultsTask -> DisplayResultsTask : format_and_display_results()
-deactivate DisplayResultsTask
-
-TextProcessingWorkflow --> CLI : workflow completed
-deactivate TextProcessingWorkflow
-
-CLI --> User : display results
-deactivate CLI
-
-@enduml
-```
-
-# Task Processors
-
-Flowbots uses a variety of task processors to handle different aspects of text processing and analysis. These processors are modular and can be combined in workflows to create complex text processing pipelines.
-
-## Key Task Processors
-
-1. **FileLoaderTask**
-   - Loads input files into the system.
-   - Stores file content in Ohm models for further processing.
-
-2. **PreprocessTextFileTask**
-   - Extracts metadata from file content (e.g., YAML front matter in Markdown files).
-   - Preprocesses the main content for further analysis.
-
-3. **TextSegmentTask**
-   - Splits preprocessed text into manageable segments.
-   - Uses the `TextSegmentProcessor` for actual segmentation logic.
-
-4. **TokenizeSegmentsTask**
-   - Breaks down text segments into individual tokens.
-   - Uses the `TextTokenizeProcessor` for tokenization.
-
-5. **NlpAnalysisTask**
-   - Performs various NLP tasks on tokenized segments.
-   - Includes part-of-speech tagging, dependency parsing, and named entity recognition.
-   - Uses the `NLPProcessor` which wraps the Spacy library for NLP operations.
-
-6. **FilterSegmentsTask**
-   - Filters processed segments based on predefined criteria.
-   - Removes irrelevant or low-quality segments to improve analysis quality.
-
-7. **TopicModelingTask**
-   - Infers topics from processed text segments.
-   - Uses the `TopicModelProcessor` which implements topic modeling algorithms.
-
-8. **LlmAnalysisTask**
-   - Utilizes a language model (via NanoBot) to generate insights about the text.
-   - Provides high-level analysis and summarization of the processed content.
-
-9. **DisplayResultsTask**
-   - Formats and displays the results of the text processing and analysis pipeline.
-
-## Task Processor Architecture
-
-Each task processor:
-
-1. Inherits from `Jongleur::WorkerTask` or `Flowbots::BaseTask`.
-2. Implements an `execute` method that performs the core task logic.
-3. Uses Redis for temporary data storage and passing data between tasks.
-4. Interacts with Ohm models for persistent data storage.
-5. Includes error handling and logging for robust execution.
-
-## Extensibility
-
-The task processor system is designed to be easily extensible:
-
-- New task processors can be added by creating new classes inheriting from `Jongleur::WorkerTask` or `Flowbots::BaseTask`.
-- Existing task processors can be modified or extended to support new functionality.
-- Task processors can be combined in different ways within workflows to create custom text processing pipelines.
-
-This modular design allows Flowbots to adapt to various text processing and analysis requirements.
-
-
-# Flowbots Detailed Operation
+# Detailed Operation
 
 ## 1. Workflow Initialization
 
@@ -528,97 +227,44 @@ The DisplayResultsTask formats the analysis results and presents them to the use
 This architecture allows Flowbots to process text data through a series of specialized tasks, each building upon the results of previous tasks, to provide comprehensive text analysis and insights.
 
 
-
 # Ruby Gems Used in Flowbots
 
-Flowbots leverages a variety of Ruby gems to provide its functionality. Here's a comprehensive list of the gems used in the project, along with their purposes:
+## Workflow and Task Management
 
-1. **jongleur**
-   - Purpose: Workflow orchestration and task management
-   - Usage: Core component for defining and executing task workflows
+- [jongleur](https://rubygems.org/gems/jongleur): Core component for defining and executing task workflows, providing workflow orchestration and task management capabilities.
 
-2. **ohm**
-   - Purpose: Object-hash mapping for Redis
-   - Usage: Data persistence layer for storing document information and workflow states
+## Data Persistence
 
-3. **redis**
-   - Purpose: In-memory data structure store
-   - Usage: Temporary data storage and passing data between tasks
+- [ohm](https://rubygems.org/gems/ohm): Object-hash mapping for Redis, used as the data persistence layer for storing document information and workflow states.
 
-4. **json**
-   - Purpose: JSON parsing and generation
-   - Usage: Handling JSON data throughout the application
+## Parallel Processing
 
-5. **parallel**
-   - Purpose: Parallel processing
-   - Usage: Potential use for parallel execution of tasks (not prominently used in the current implementation)
+- [parallel](https://rubygems.org/gems/parallel): Enables parallel processing, with potential use for parallel execution of tasks (not prominently used in the current implementation).
 
-6. **pry** and **pry-stack_explorer**
-   - Purpose: Enhanced REPL and debugging tools
-   - Usage: Development and debugging
+## Development and Debugging
 
-7. **ruby-spacy**
-   - Purpose: Ruby bindings for the Spacy NLP library
-   - Usage: Natural Language Processing tasks
+- [pry](https://rubygems.org/gems/pry) and [pry-stack_explorer](https://rubygems.org/gems/pry-stack_explorer): Enhanced REPL and debugging tools for development and debugging purposes.
 
-8. **thor**
-   - Purpose: Building command-line interfaces
-   - Usage: Creating the CLI for Flowbots
+## Natural Language Processing
 
-9. **treetop**
-   - Purpose: parsing expression grammar (PEG) parser generator
-   - Usage: Custom grammar parsing, particularly for Markdown with YAML front matter
+- [ruby-spacy](https://rubygems.org/gems/ruby-spacy): Ruby bindings for the Spacy NLP library, used for Natural Language Processing tasks.
+- [lingua](https://rubygems.org/gems/lingua): Provides additional natural language detection and processing capabilities.
+- [pragmatic_segmenter](https://rubygems.org/gems/pragmatic_segmenter): Used for text segmentation, splitting text into meaningful segments.
+- [pragmatic_tokenizer](https://rubygems.org/gems/pragmatic_tokenizer): Handles text tokenization, breaking text into individual tokens.
 
-10. **yaml**
-    - Purpose: YAML parsing and generation
-    - Usage: Handling YAML data, particularly in configuration files and document front matter
+## Command-Line Interface
 
-11. **faraday** and **faraday/multipart**
-    - Purpose: HTTP client library
-    - Usage: Making HTTP requests, potentially for integrations with external services
+- [thor](https://rubygems.org/gems/thor): Used for building command-line interfaces, specifically for creating the CLI for Flowbots.
 
-12. **logging**
-    - Purpose: Flexible logging
-    - Usage: Comprehensive logging system throughout the application
+## Parsing and Data Handling
 
-13. **tty-box**, **tty-cursor**, **tty-prompt**, **tty-screen**, **tty-spinner**, **tty-table**
-    - Purpose: Various terminal output formatting and interaction tools
-    - Usage: Creating rich command-line interfaces and displaying formatted output
+- [treetop](https://rubygems.org/gems/treetop): A parsing expression grammar (PEG) parser generator, used for custom grammar parsing, particularly for Markdown with YAML front matter.
+- [yaml](https://rubygems.org/gems/yaml): Handles YAML parsing and generation, particularly for configuration files and document front matter.
 
-14. **pastel**
-    - Purpose: Terminal output styling
-    - Usage: Adding colors and styles to terminal output
+## Terminal Output Formatting
 
-15. **highline**
-    - Purpose: High-level command-line interface building
-    - Usage: Additional CLI features and user input handling
+- [tty-box](https://rubygems.org/gems/tty-box), [tty-cursor](https://rubygems.org/gems/tty-cursor), [tty-prompt](https://rubygems.org/gems/tty-prompt), [tty-screen](https://rubygems.org/gems/tty-screen), [tty-spinner](https://rubygems.org/gems/tty-spinner), [tty-table](https://rubygems.org/gems/tty-table): Various terminal output formatting and interaction tools for creating rich command-line interfaces and displaying formatted output.
 
-16. **cli-ui**
-    - Purpose: CLI user interface components
-    - Usage: Enhancing the command-line interface with advanced UI elements
+## Topic Modeling
 
-17. **kramdown**
-    - Purpose: Markdown parsing and conversion
-    - Usage: Handling Markdown content in documents
-
-18. **lingua**
-    - Purpose: Natural language detection and processing
-    - Usage: Additional NLP capabilities
-
-19. **pragmatic_segmenter**
-    - Purpose: Text segmentation
-    - Usage: Splitting text into meaningful segments
-
-20. **pragmatic_tokenizer**
-    - Purpose: Text tokenization
-    - Usage: Breaking text into individual tokens
-
-21. **tomoto**
-    - Purpose: Topic modeling
-    - Usage: Implementing topic modeling algorithms
-
-22. **minitest** and **minitest/rg**
-    - Purpose: Testing framework
-    - Usage: Writing and running tests for the application
-
-These gems provide a robust foundation for Flowbots, covering areas such as data persistence, natural language processing, command-line interfaces, HTTP communications, and more. The combination of these tools allows Flowbots to offer a comprehensive text processing and analysis system with a user-friendly interface.
+- [tomoto](https://rubygems.org/gems/tomoto): Used for implementing topic modeling algorithms.

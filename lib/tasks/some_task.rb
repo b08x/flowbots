@@ -7,7 +7,7 @@ class SomeTextTask < Task
   def execute
     logger.info "Starting SomeTextTask"
 
-    @textfile = retrieve_input
+    @FileObject = retrieve_input
 
     # Task-specific logic here
 
@@ -17,6 +17,6 @@ class SomeTextTask < Task
   private
 
   def retrieve_input
-    retrieve_textfile
+    retrieve_file_object
   end
 end

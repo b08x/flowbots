@@ -1,22 +1,43 @@
-#!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# This task performs text tagging using a pre-trained model.
+# This class performs text tagging on a given text.
 class TextTaggerTask < Jongleur::WorkerTask
-  # Executes the task.
+  # Includes the InputRetrieval module for retrieving data from Redis.
+  include InputRetrieval
+
+  # Executes the text tagging task.
+  #
+  # Retrieves the FileObject from Redis, extracts its preprocessed content,
+  # performs text tagging using the TextTaggerProcessor, extracts main topics,
+  # identifies speech acts, analyzes transitivity, stores the results in the
+  # FileObject, and logs the progress.
   #
   # @return [void]
+  # @raises [RuntimeError] If the FileObject retrieval fails or the preprocessed
+  #   content is empty or nil.
   def execute
     logger.info "Starting TextTaggerTask"
 
-    # Get an instance of the TextTaggerProcessor.
+    # Retrieve the FileObject from Redis.
     text_tagger = Flowbots::TextTaggerProcessor.instance
+    file_object = retrieve_input
 
-    # Retrieve the Textfile object from Redis.
-    textfile = retrieve_input_text
+    # Raise an error if the FileObject retrieval fails.
+    if file_object.nil?
+      logger.error "Failed to retrieve FileObject"
+      raise("Failed to retrieve FileObject")
+      return
+    end
 
-    # Get the preprocessed content from the Textfile.
-    preprocessed_content = textfile.preprocessed_content
+    # Get the preprocessed content from the FileObject.
+    preprocessed_content = file_object.preprocessed_content
+
+    # Raise an error if the preprocessed content is empty or nil.
+    if preprocessed_content.nil? || preprocessed_content.empty?
+      logger.error "Preprocessed content is empty or nil for FileObject: #{file_object.id}"
+      raise("Preprocessed content is empty or nil")
+      return
+    end
 
     # Perform text tagging using the TextTaggerProcessor.
     result = text_tagger.process(
@@ -29,58 +50,62 @@ class TextTaggerTask < Jongleur::WorkerTask
       present_tense_verbs: true
     )
 
-    # Extract additional information using the TextTaggerProcessor.
+    # Extract main topics from the preprocessed content.
     begin
       main_topics = text_tagger.extract_main_topics(preprocessed_content)
     rescue StandardError => e
-      logger.warn "#{e.message}"
+      logger.warn "Error extracting main topics: #{e.message}"
+      main_topics = []
     end
 
+    # Identify speech acts in the preprocessed content.
     begin
       speech_acts = text_tagger.identify_speech_acts(preprocessed_content)
     rescue StandardError => e
-      logger.warn "#{e.message}"
+      logger.warn "Error identifying speech acts: #{e.message}"
+      speech_acts = []
     end
 
+    # Analyze transitivity in the preprocessed content.
     begin
       transitivity = text_tagger.analyze_transitivity(preprocessed_content)
     rescue StandardError => e
-      logger.warn "#{e.message}"
+      logger.warn "Error analyzing transitivity: #{e.message}"
+      transitivity = []
     end
 
-    # Combine all results into a comprehensive result hash.
-    comprehensive_result = {
-      tagger_analysis: result,
-      main_topics:,
-      speech_acts:,
-      transitivity:
-    }
+    # Store the tagging results in the FileObject.
+    store_result(file_object, result, main_topics, speech_acts, transitivity)
 
-    # Store the comprehensive result in the Textfile.
-    store_result(textfile, comprehensive_result)
-
-    logger.info "TextTaggerTask completed"
+    # Log the completion of the task.
+    logger.info("Text tagging completed for FileObject: #{file_object.id}")
   end
 
   private
 
-  # Retrieves the Textfile object from Redis.
+  # Retrieves the input for the task, which is the current FileObject.
   #
-  # @return [Textfile] The Textfile object.
-  def retrieve_input_text
-    textfile_id = Jongleur::WorkerTask.class_variable_get(:@@redis).get("current_textfile_id")
-    Textfile[textfile_id]
+  # @return [FileObject] The current FileObject.
+  def retrieve_input
+    retrieve_file_object
   end
 
-  # Stores the result in the Textfile.
+  # Stores the tagging results in the FileObject.
   #
-  # @param textfile [Textfile] The Textfile object.
-  # @param result [Hash] The result hash.
+  # @param file_object [FileObject] The FileObject to store the results in.
+  # @param result [Hash] The text tagging results.
+  # @param main_topics [Array<String>] The extracted main topics.
+  # @param speech_acts [Array<String>] The identified speech acts.
+  # @param transitivity [Array<String>] The analyzed transitivity.
   #
   # @return [void]
-  def store_result(textfile, result)
-    textfile.update(tagged: result)
-    textfile.save
-    # Jongleur::WorkerTask.class_variable_get(:@@redis).set("text_tagger_result", result.to_json)
+  def store_result(file_object, result, main_topics, speech_acts, transitivity)
+    file_object.update(
+      tagged: result,
+      main_topics:,
+      speech_acts:,
+      transitivity:
+    )
+    logger.debug "Stored tagging result for FileObject: #{file_object.id}"
   end
 end

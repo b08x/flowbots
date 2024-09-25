@@ -34,7 +34,7 @@ services:
     volumes:
       - ./data/redis/data:/data
     ports:
-      - "6379:6379"
+      - "6378:6379"
       - "8081:8081"
       - "8001:8001"
     networks:

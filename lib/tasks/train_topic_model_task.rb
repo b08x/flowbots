@@ -3,7 +3,11 @@
 
 # This task trains a topic model using filtered segments from multiple batches.
 class TrainTopicModelTask < Jongleur::WorkerTask
-  # Executes the task.
+  # Executes the task to train a topic model using accumulated filtered segments.
+  #
+  # Retrieves the current batch ID and filtered segments from Redis. Accumulates
+  # filtered segments across batches and trains the topic model only on the last
+  # batch. Logs and displays progress messages.
   #
   # @return [void]
   def execute

@@ -73,10 +73,13 @@
 
   <ul class="link-list" role="directory">
     <li ><a href="#method-c-new">::new</a>
+    <li ><a href="#method-i-create_or_fetch_file_object">#create_or_fetch_file_object</a>
+    <li ><a href="#method-i-fetch_unprocessed_file_ids">#fetch_unprocessed_file_ids</a>
+    <li ><a href="#method-i-perform_additional_tasks">#perform_additional_tasks</a>
+    <li ><a href="#method-i-process_batch">#process_batch</a>
+    <li ><a href="#method-i-process_single_file">#process_single_file</a>
     <li ><a href="#method-i-prompt_for_file">#prompt_for_file</a>
     <li ><a href="#method-i-run">#run</a>
-    <li ><a href="#method-i-setup_workflow">#setup_workflow</a>
-    <li ><a href="#method-i-store_input_file_path">#store_input_file_path</a>
   </ul>
 </div>
 
@@ -90,7 +93,7 @@
 
   <section class="description">
     
-<p>This class represents a workflow for processing text using topic modeling.</p>
+<p>This class defines a workflow for processing text files, either individually or in batch mode. It utilizes a <a href="UnifiedFileProcessingPipeline.html"><code>UnifiedFileProcessingPipeline</code></a> to handle the initial processing steps and then performs additional tasks like text tagging, topic modeling, LLM analysis, and result display.</p>
 
   </section>
 
@@ -103,24 +106,14 @@
         <h3>Attributes</h3>
       </header>
 
-      <div id="attribute-i-input_file_path" class="method-detail">
+      <div id="attribute-i-pipeline" class="method-detail">
         <div class="method-heading attribute-method-heading">
-          <span class="method-name">input_file_path</span><span
+          <span class="method-name">pipeline</span><span
             class="attribute-access-type">[R]</span>
         </div>
 
         <div class="method-description">
-        <p>The path to the input file.</p>
-        </div>
-      </div>
-      <div id="attribute-i-text_file_id" class="method-detail">
-        <div class="method-heading attribute-method-heading">
-          <span class="method-name">text_file_id</span><span
-            class="attribute-access-type">[R]</span>
-        </div>
-
-        <div class="method-description">
-        <p>The ID of the <a href="../Textfile.html"><code>Textfile</code></a> object representing the input file.</p>
+        <p>@return [UnifiedFileProcessingPipeline] The <a href="TextProcessingWorkflow.html#attribute-i-pipeline"><code>pipeline</code></a> responsible for the initial processing steps.</p>
         </div>
       </div>
     </section>
@@ -134,25 +127,27 @@
       <div id="method-c-new" class="method-detail ">
         <div class="method-heading">
           <span class="method-name">new</span><span
-            class="method-args">(input_file_path=nil)</span>
+            class="method-args">(input_file_path=nil, batch_mode=false)</span>
           <span class="method-click-advice">click to toggle source</span>
         </div>
 
         <div class="method-description">
           <p>Initializes a <a href="TextProcessingWorkflow.html#method-c-new"><code>new</code></a> <a href="TextProcessingWorkflow.html"><code>TextProcessingWorkflow</code></a> instance.</p>
 
-<p>@param <a href="TextProcessingWorkflow.html#attribute-i-input_file_path"><code>input_file_path</code></a> [String] The path to the input file.</p>
+<p>@param input_file_path [String, nil] The path to the input file. If nil, the user will be prompted to select a file. @param batch_mode [Boolean] Whether to process files in batch mode (default: false).</p>
 
 <p>@return [void]</p>
 
           <div class="method-source-code" id="new-source">
             <pre><span class="ruby-comment"># File lib/workflows/text_processing_workflow.rb, line 18</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">initialize</span>(<span class="ruby-identifier">input_file_path</span>=<span class="ruby-keyword">nil</span>)
-  <span class="ruby-comment"># Assigns the input file path or prompts the user for it.</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">initialize</span>(<span class="ruby-identifier">input_file_path</span>=<span class="ruby-keyword">nil</span>, <span class="ruby-identifier">batch_mode</span>=<span class="ruby-keyword">false</span>)
   <span class="ruby-ivar">@input_file_path</span> = <span class="ruby-identifier">input_file_path</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">prompt_for_file</span>
-
-  <span class="ruby-comment"># Creates a new WorkflowOrchestrator instance.</span>
-  <span class="ruby-ivar">@orchestrator</span> = <span class="ruby-constant">WorkflowOrchestrator</span>.<span class="ruby-identifier">new</span>
+  <span class="ruby-ivar">@batch_mode</span> = <span class="ruby-identifier">batch_mode</span>
+  <span class="ruby-ivar">@pipeline</span> = <span class="ruby-constant">UnifiedFileProcessingPipeline</span>.<span class="ruby-identifier">new</span>(
+    <span class="ruby-ivar">@input_file_path</span>,
+    <span class="ruby-value">batch_size:</span> <span class="ruby-identifier">batch_mode</span> <span class="ruby-operator">?</span> <span class="ruby-keyword">nil</span> <span class="ruby-operator">:</span> <span class="ruby-value">1</span>,
+    <span class="ruby-value">file_types:</span> <span class="ruby-node">%w[txt md markdown]</span>
+  )
 <span class="ruby-keyword">end</span></pre>
           </div>
         </div>
@@ -177,28 +172,30 @@
         <div class="method-description">
           <p>Runs the text processing workflow.</p>
 
+<p>Sets up the workflow, processes the file(s), and performs additional tasks based on the batch mode.</p>
+
 <p>@return [void]</p>
 
           <div class="method-source-code" id="run-source">
-            <pre><span class="ruby-comment"># File lib/workflows/text_processing_workflow.rb, line 29</span>
+            <pre><span class="ruby-comment"># File lib/workflows/text_processing_workflow.rb, line 33</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">run</span>
-  <span class="ruby-comment"># Displays a message indicating the start of the workflow.</span>
-  <span class="ruby-constant">Flowbots</span><span class="ruby-operator">::</span><span class="ruby-constant">UI</span>.<span class="ruby-identifier">say</span>(<span class="ruby-value">:ok</span>, <span class="ruby-string">&quot;Setting Up Text Processing Workflow&quot;</span>)
+  <span class="ruby-constant">UI</span>.<span class="ruby-identifier">say</span>(<span class="ruby-value">:ok</span>, <span class="ruby-string">&quot;Setting Up Text Processing Workflow&quot;</span>)
   <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-string">&quot;Setting Up Text Processing Workflow&quot;</span>
 
-  <span class="ruby-comment"># Sets up the workflow graph and stores the input file path in Redis.</span>
-  <span class="ruby-identifier">setup_workflow</span>
-  <span class="ruby-identifier">store_input_file_path</span>
-
-  <span class="ruby-comment"># Displays a message indicating the start of the workflow execution.</span>
-  <span class="ruby-constant">Flowbots</span><span class="ruby-operator">::</span><span class="ruby-constant">UI</span>.<span class="ruby-identifier">info</span> <span class="ruby-string">&quot;Running Text Processing Workflow&quot;</span>
-
-  <span class="ruby-comment"># Runs the workflow using the WorkflowOrchestrator.</span>
-  <span class="ruby-ivar">@orchestrator</span>.<span class="ruby-identifier">run_workflow</span>
-
-  <span class="ruby-comment"># Displays a message indicating the completion of the workflow.</span>
-  <span class="ruby-constant">Flowbots</span><span class="ruby-operator">::</span><span class="ruby-constant">UI</span>.<span class="ruby-identifier">say</span>(<span class="ruby-value">:ok</span>, <span class="ruby-string">&quot;Text Processing Workflow completed&quot;</span>)
-  <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-string">&quot;Text Processing Workflow completed&quot;</span>
+  <span class="ruby-keyword">begin</span>
+    <span class="ruby-ivar">@pipeline</span>.<span class="ruby-identifier">process</span>
+    <span class="ruby-keyword">if</span> <span class="ruby-ivar">@batch_mode</span>
+      <span class="ruby-identifier">process_batch</span>
+    <span class="ruby-keyword">else</span>
+      <span class="ruby-identifier">process_single_file</span>
+    <span class="ruby-keyword">end</span>
+    <span class="ruby-constant">UI</span>.<span class="ruby-identifier">say</span>(<span class="ruby-value">:ok</span>, <span class="ruby-string">&quot;Text Processing Workflow completed&quot;</span>)
+    <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-string">&quot;Text Processing Workflow completed&quot;</span>
+  <span class="ruby-keyword">rescue</span> <span class="ruby-constant">StandardError</span> <span class="ruby-operator">=&gt;</span> <span class="ruby-identifier">e</span>
+    <span class="ruby-constant">UI</span>.<span class="ruby-identifier">say</span>(<span class="ruby-value">:error</span>, <span class="ruby-node">&quot;Error in Text Processing Workflow: #{e.message}&quot;</span>)
+    <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">error</span> <span class="ruby-node">&quot;Error in Text Processing Workflow: #{e.message}&quot;</span>
+    <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">error</span> <span class="ruby-identifier">e</span>.<span class="ruby-identifier">backtrace</span>.<span class="ruby-identifier">join</span>(<span class="ruby-string">&quot;\n&quot;</span>)
+  <span class="ruby-keyword">end</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
         </div>
@@ -213,6 +210,152 @@
          <h3>Private Instance Methods</h3>
        </header>
 
+      <div id="method-i-create_or_fetch_file_object" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">create_or_fetch_file_object</span><span
+            class="method-args">(file_path)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          <p>Creates or fetches a <a href="../FileObject.html"><code>FileObject</code></a> for the given file path.</p>
+
+<p>@param file_path [String, Hash] The path to the file or a hash containing the path.</p>
+
+<p>@return [FileObject] The created or fetched <a href="../FileObject.html"><code>FileObject</code></a>.</p>
+
+          <div class="method-source-code" id="create_or_fetch_file_object-source">
+            <pre><span class="ruby-comment"># File lib/workflows/text_processing_workflow.rb, line 97</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_or_fetch_file_object</span>(<span class="ruby-identifier">file_path</span>)
+  <span class="ruby-comment"># Assuming we&#39;re using ActiveRecord and there&#39;s a FileObject model</span>
+  <span class="ruby-comment"># This method should create a new FileObject or fetch an existing one</span>
+  <span class="ruby-identifier">file_path</span> = <span class="ruby-identifier">file_path</span>[<span class="ruby-value">:path</span>] <span class="ruby-keyword">if</span> <span class="ruby-identifier">file_path</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Hash</span>)
+  <span class="ruby-constant">FileObject</span>.<span class="ruby-identifier">find_or_create_by_path</span>(<span class="ruby-value">path:</span> <span class="ruby-identifier">file_path</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-fetch_unprocessed_file_ids" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">fetch_unprocessed_file_ids</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          <p>Fetches the IDs of unprocessed files.</p>
+
+<p>@return [Array&lt;Integer&gt;] An array of unprocessed file IDs.</p>
+
+          <div class="method-source-code" id="fetch_unprocessed_file_ids-source">
+            <pre><span class="ruby-comment"># File lib/workflows/text_processing_workflow.rb, line 107</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">fetch_unprocessed_file_ids</span>
+  <span class="ruby-comment"># Assuming we&#39;re using ActiveRecord and there&#39;s a FileObject model</span>
+  <span class="ruby-comment"># This query fetches all file IDs where llm_analysis is nil or an empty string</span>
+  <span class="ruby-identifier">ids</span> = []
+  <span class="ruby-constant">FileObject</span>.<span class="ruby-identifier">all</span>.<span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">f</span><span class="ruby-operator">|</span> <span class="ruby-identifier">ids</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">f</span>.<span class="ruby-identifier">id</span>.<span class="ruby-identifier">to_i</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">f</span>.<span class="ruby-identifier">llm_analysis</span>.<span class="ruby-identifier">nil?</span> }
+  <span class="ruby-identifier">ids</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-perform_additional_tasks" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">perform_additional_tasks</span><span
+            class="method-args">(file_id)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          <p>Performs additional tasks for the given file ID.</p>
+
+<p>Defines the workflow for additional tasks and runs the workflow using the orchestrator.</p>
+
+<p>@param file_id [Integer] The ID of the file to process.</p>
+
+<p>@return [void]</p>
+
+          <div class="method-source-code" id="perform_additional_tasks-source">
+            <pre><span class="ruby-comment"># File lib/workflows/text_processing_workflow.rb, line 122</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">perform_additional_tasks</span>(<span class="ruby-identifier">file_id</span>)
+  <span class="ruby-identifier">additional_tasks</span> = {
+    <span class="ruby-value">TextTaggerTask:</span> [<span class="ruby-value">:TopicModelingTask</span>],
+    <span class="ruby-value">TopicModelingTask:</span> [<span class="ruby-value">:LlmAnalysisTask</span>],
+    <span class="ruby-value">LlmAnalysisTask:</span> [<span class="ruby-value">:DisplayResultsTask</span>],
+    <span class="ruby-value">DisplayResultsTask:</span> []
+  }
+
+  <span class="ruby-ivar">@pipeline</span>.<span class="ruby-identifier">orchestrator</span>.<span class="ruby-identifier">define_workflow</span>(<span class="ruby-identifier">additional_tasks</span>)
+  <span class="ruby-ivar">@pipeline</span>.<span class="ruby-identifier">orchestrator</span>.<span class="ruby-identifier">run_workflow</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-process_batch" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">process_batch</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          <p>Processes files in batch mode.</p>
+
+<p>Fetches unprocessed file IDs and performs additional tasks for each file.</p>
+
+<p>@return [void]</p>
+
+          <div class="method-source-code" id="process_batch-source">
+            <pre><span class="ruby-comment"># File lib/workflows/text_processing_workflow.rb, line 73</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">process_batch</span>
+  <span class="ruby-identifier">file_ids</span> = <span class="ruby-identifier">fetch_unprocessed_file_ids</span>
+  <span class="ruby-identifier">file_ids</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">file_id</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">perform_additional_tasks</span>(<span class="ruby-identifier">file_id</span>)
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-process_single_file" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">process_single_file</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          <p>Processes a single file.</p>
+
+<p>Creates or fetches the <a href="../FileObject.html"><code>FileObject</code></a> for the input file and performs additional tasks.</p>
+
+<p>@return [void]</p>
+
+          <div class="method-source-code" id="process_single_file-source">
+            <pre><span class="ruby-comment"># File lib/workflows/text_processing_workflow.rb, line 85</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">process_single_file</span>
+  <span class="ruby-identifier">p</span> <span class="ruby-ivar">@input_file_path</span>
+  <span class="ruby-identifier">puts</span> <span class="ruby-string">&quot;-----&quot;</span>
+  <span class="ruby-identifier">file_object</span> = <span class="ruby-identifier">create_or_fetch_file_object</span>(<span class="ruby-ivar">@input_file_path</span>)
+  <span class="ruby-identifier">perform_additional_tasks</span>(<span class="ruby-identifier">file_object</span>.<span class="ruby-identifier">id</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
       <div id="method-i-prompt_for_file" class="method-detail ">
         <div class="method-heading">
           <span class="method-name">prompt_for_file</span><span
@@ -221,98 +364,19 @@
         </div>
 
         <div class="method-description">
-          <p>Prompts the user for the input file path.</p>
+          <p>Prompts the user to select a file using the <code>gum file</code> command.</p>
 
-<p>@return [String] The path to the input file.</p>
+<p>@return [String] The path to the selected file. @raises [FlowbotError] If the selected file does not exist.</p>
 
           <div class="method-source-code" id="prompt_for_file-source">
-            <pre><span class="ruby-comment"># File lib/workflows/text_processing_workflow.rb, line 54</span>
+            <pre><span class="ruby-comment"># File lib/workflows/text_processing_workflow.rb, line 59</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">prompt_for_file</span>
-  <span class="ruby-comment"># Uses the `gum` command to prompt the user for a file.</span>
   <span class="ruby-identifier">get_file_path</span> = <span class="ruby-string">`gum file`</span>.<span class="ruby-identifier">chomp</span>.<span class="ruby-identifier">strip</span>
-
-  <span class="ruby-comment"># Constructs the full file path.</span>
   <span class="ruby-identifier">file_path</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-identifier">get_file_path</span>)
 
-  <span class="ruby-comment"># Raises an error if the file does not exist.</span>
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">FlowbotError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-string">&quot;File not found&quot;</span>, <span class="ruby-string">&quot;FILENOTFOUND&quot;</span>) <span class="ruby-keyword">unless</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exist?</span>(<span class="ruby-identifier">file_path</span>)
 
-  <span class="ruby-comment"># Returns the file path.</span>
   <span class="ruby-identifier">file_path</span>
-<span class="ruby-keyword">end</span></pre>
-          </div>
-        </div>
-
-
-      </div>
-
-      <div id="method-i-setup_workflow" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">setup_workflow</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-
-        <div class="method-description">
-          <p>Sets up the workflow graph.</p>
-
-<p>@return [void]</p>
-
-          <div class="method-source-code" id="setup_workflow-source">
-            <pre><span class="ruby-comment"># File lib/workflows/text_processing_workflow.rb, line 71</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">setup_workflow</span>
-  <span class="ruby-comment"># Logs a message indicating the start of workflow setup.</span>
-  <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-string">&quot;Setting up workflow&quot;</span>
-
-  <span class="ruby-comment"># Defines the workflow graph, specifying the order of tasks.</span>
-  <span class="ruby-identifier">workflow_graph</span> = {
-    <span class="ruby-value">FileLoaderTask:</span> [<span class="ruby-value">:PreprocessTextFileTask</span>],
-    <span class="ruby-value">PreprocessTextFileTask:</span> [<span class="ruby-value">:TextTaggerTask</span>],
-    <span class="ruby-value">TextTaggerTask:</span> [<span class="ruby-value">:TextSegmentTask</span>],
-    <span class="ruby-value">TextSegmentTask:</span> [<span class="ruby-value">:TextTokenizeTask</span>],
-    <span class="ruby-value">TextTokenizeTask:</span> [<span class="ruby-value">:NlpAnalysisTask</span>],
-    <span class="ruby-value">NlpAnalysisTask:</span> [<span class="ruby-value">:TopicModelingTask</span>],
-    <span class="ruby-value">TopicModelingTask:</span> [<span class="ruby-value">:LlmAnalysisTask</span>],
-    <span class="ruby-value">LlmAnalysisTask:</span> [<span class="ruby-value">:DisplayResultsTask</span>],
-    <span class="ruby-value">DisplayResultsTask:</span> []
-  }
-
-  <span class="ruby-comment"># Defines the workflow using the WorkflowOrchestrator.</span>
-  <span class="ruby-ivar">@orchestrator</span>.<span class="ruby-identifier">define_workflow</span>(<span class="ruby-identifier">workflow_graph</span>)
-
-  <span class="ruby-comment"># Logs a message indicating the completion of workflow setup.</span>
-  <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-string">&quot;Workflow setup completed&quot;</span>
-<span class="ruby-keyword">end</span></pre>
-          </div>
-        </div>
-
-
-      </div>
-
-      <div id="method-i-store_input_file_path" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">store_input_file_path</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-
-        <div class="method-description">
-          <p>Stores the input file path in Redis.</p>
-
-<p>@return [void]</p>
-
-          <div class="method-source-code" id="store_input_file_path-source">
-            <pre><span class="ruby-comment"># File lib/workflows/text_processing_workflow.rb, line 98</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">store_input_file_path</span>
-  <span class="ruby-comment"># Stores the input file path in Redis.</span>
-  <span class="ruby-constant">Jongleur</span><span class="ruby-operator">::</span><span class="ruby-constant">WorkerTask</span>.<span class="ruby-identifier">class_variable_get</span>(<span class="ruby-value">:@@redis</span>).<span class="ruby-identifier">set</span>(<span class="ruby-string">&quot;input_file_path&quot;</span>, <span class="ruby-ivar">@input_file_path</span>)
-
-  <span class="ruby-comment"># Loads the input file using the FileLoader.</span>
-  <span class="ruby-identifier">file_loader</span> = <span class="ruby-constant">Flowbots</span><span class="ruby-operator">::</span><span class="ruby-constant">FileLoader</span>.<span class="ruby-identifier">new</span>(<span class="ruby-ivar">@input_file_path</span>)
-  <span class="ruby-identifier">textfile</span> = <span class="ruby-identifier">file_loader</span>.<span class="ruby-identifier">file_data</span>
-
-  <span class="ruby-comment"># Stores the Textfile ID in Redis.</span>
-  <span class="ruby-constant">Jongleur</span><span class="ruby-operator">::</span><span class="ruby-constant">WorkerTask</span>.<span class="ruby-identifier">class_variable_get</span>(<span class="ruby-value">:@@redis</span>).<span class="ruby-identifier">set</span>(<span class="ruby-string">&quot;current_textfile_id&quot;</span>, <span class="ruby-identifier">textfile</span>.<span class="ruby-identifier">id</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
         </div>

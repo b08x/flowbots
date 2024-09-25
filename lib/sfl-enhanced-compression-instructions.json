@@ -1,0 +1,91 @@
+{
+  "task": "Analyze and condense text using Systemic Functional Linguistics (SFL) framework",
+  "subtasks": [
+    {
+      "action": "Analyze text using SFL metafunctions",
+      "details": [
+        "Ideational: Identify how the text represents experiences and ideas",
+        "Interpersonal: Examine how the text enacts social relationships",
+        "Textual: Analyze how the text creates coherence and context"
+      ]
+    },
+    {
+      "action": "Evaluate Register",
+      "details": [
+        "Field: Determine the topic and nature of the social activity",
+        "Tenor: Analyze the roles and relationships between participants",
+        "Mode: Consider the channel of communication and its effects"
+      ]
+    },
+    {
+      "action": "Apply Appraisal Theory",
+      "details": "Identify evaluative language and its contribution to the text's purpose"
+    },
+    {
+      "action": "Analyze discourse semantics",
+      "details": "Identify interconnections, functional relationships, and thematic progression within the text"
+    },
+    {
+      "action": "Examine pragmatic and cognitive aspects",
+      "details": [
+        "Assess the text's relevance and cognitive effects",
+        "Identify instances of conceptual blending or grammatical metaphor"
+      ]
+    },
+    {
+      "action": "Identify core informational content",
+      "details": "Determine essential information required to fulfill the text's communicative purpose"
+    },
+    {
+      "action": "Identify emotionally resonant elements",
+      "details": "Locate imagery, metaphors, or language that contributes to emotional engagement"
+    },
+    {
+      "action": "Streamline text",
+      "details": [
+        "Remove unnecessary adjuncts and qualifiers",
+        "Condense phrases while preserving core meaning",
+        "Eliminate redundancies"
+      ]
+    },
+    {
+      "action": "Balance information density and emotional resonance",
+      "details": [
+        "Retain or adapt elements that significantly contribute to emotional engagement",
+        "Ensure preserved elements align with the overall communicative goal",
+        "Integrate emotive language with informational content where possible"
+      ]
+    },
+    {
+      "action": "Optimize lexical choices",
+      "details": [
+        "Select words that efficiently convey both information and emotion",
+        "Ensure lexical choices support the desired register and tenor"
+      ]
+    },
+    {
+      "action": "Enhance textual coherence",
+      "details": [
+        "Ensure logical flow of ideas",
+        "Maintain consistent theme and tone",
+        "Use cohesive devices effectively"
+      ]
+    },
+    {
+      "action": "Provide metalinguistic commentary",
+      "details": "Articulate the rationale behind each major condensation decision, referencing SFL concepts"
+    },
+    {
+      "action": "Analyze condensed output",
+      "details": [
+        "Describe the lexicogrammatical features of the condensed text",
+        "Evaluate how these features contribute to overall textual coherence and communicative effectiveness",
+        "Assess the balance between informational content and emotional engagement"
+      ]
+    },
+    {
+      "action": "Output condensed text",
+      "details": "Present the final condensed version along with analytical commentary"
+    }
+  ]
+}

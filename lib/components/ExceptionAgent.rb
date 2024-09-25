@@ -4,8 +4,6 @@
 require "json"
 require "fileutils"
 
-require_relative 'WorkflowAgent'
-
 module Flowbots
   # This class handles exceptions in the Flowbots application.
   class ExceptionAgent < WorkflowAgent
@@ -13,18 +11,10 @@ module Flowbots
     #
     # @return [void]
     def initialize
-      logger.debug "Initializing ExceptionAgent"
+      logger.debug "Initialized ExceptionAgent"
       begin
-        cartridge_path = File.join(CARTRIDGE_DIR, "@b08x", "cartridges", "exception_handler.yml")
-        logger.debug "Cartridge path: #{cartridge_path}"
-
-        super("exception_handler", cartridge_path)
-        logger.debug "SuperClass initialized"
-
+        super("exception_handler", File.join(CARTRIDGE_DIR, "@b08x", "cartridges", "exception_handler.yml"))
         @file_structure = load_file_structure
-        logger.debug "File structure loaded"
-
-        logger.info "ExceptionAgent initialized successfully"
       rescue StandardError => e
         logger.error "#{e.message}"
       ensure
@@ -39,7 +29,6 @@ module Flowbots
     #
     # @return [String] The formatted exception report.
     def process_exception(classname, exception)
-      logger.debug "Processing exception for class: #{classname}"
       exception_details = {
         classname:,
         message: exception.message,
@@ -52,19 +41,14 @@ module Flowbots
       prompt = generate_exception_prompt(exception_details)
 
       begin
-        logger.debug "Sending prompt to agent"
         response = process(prompt)
-        logger.debug "Received response from agent"
         report = format_exception_report(response, exception_details)
         write_markdown_report(report, exception_details)
-        WorkflowOrchestrator.cleanup
         report
       rescue StandardError => e
-        logger.error("Exception in ExceptionAgent#process_exception: #{e.message}")
-        logger.error e.backtrace.join("\n")
+        logger.error("Exception in ExceptionAgent: #{e.message}")
         fallback_report = fallback_exception_report(exception_details)
         write_markdown_report(fallback_report, exception_details)
-        WorkflowOrchestrator.cleanup
         fallback_report
       end
     end
@@ -77,9 +61,6 @@ module Flowbots
     def load_file_structure
       file_path = File.expand_path("../../flowbots.json", __dir__)
       JSON.parse(File.read(file_path))
-    rescue StandardError => e
-      logger.error "Error loading file structure: #{e.message}"
-      {}
     end
 
     # Extracts relevant files from the exception backtrace.
@@ -88,7 +69,6 @@ module Flowbots
     #
     # @return [Hash] A hash of relevant file names and their content.
     def extract_relevant_files(exception)
-      logger.debug "Extracting relevant files for exception"
       relevant_files = {}
       exception.backtrace.each do |trace_line|
         file_path = trace_line.split(":").first
@@ -96,7 +76,6 @@ module Flowbots
         file_info = @file_structure["files"].find { |f| f["filename"] == file_name }
         relevant_files[file_name] = file_info["content"] if file_info && !relevant_files.key?(file_name)
       end
-      logger.debug "Extracted #{relevant_files.keys.size} relevant files"
       relevant_files
     end
 
@@ -106,8 +85,6 @@ module Flowbots
     #
     # @return [String] The prompt for the agent.
     def generate_exception_prompt(exception_details)
-      logger.debug "Generating exception prompt"
-
       <<~PROMPT
         Oh my stars!! Something terrible has happened!:
 
@@ -131,8 +108,6 @@ module Flowbots
     #
     # @return [String] The formatted exception report.
     def format_exception_report(agent_response, exception_details)
-      logger.debug "Formatting exception report"
-
       <<~REPORT
         # 🤖 FlowBot Exception Report 🤖
 
@@ -159,8 +134,6 @@ module Flowbots
     #
     # @return [String] The fallback exception report.
     def fallback_exception_report(exception_details)
-      logger.debug "Generating fallback exception report"
-
       <<~REPORT
         # 🚨 FlowBot Exception Report (Fallback) 🚨
 
@@ -196,8 +169,6 @@ module Flowbots
     #
     # @return [void]
     def write_markdown_report(report, exception_details)
-      logger.debug "Writing markdown report"
-
       timestamp = Time.now.strftime("%Y%m%d_%H%M%S")
       filename = "exception_report_#{timestamp}.md"
       dir_path = File.expand_path("../../exception_reports", __dir__)

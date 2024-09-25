@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require "cli/ui"
 require "highline/import"
 require "natty-ui"
 require "os"

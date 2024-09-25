@@ -86,14 +86,21 @@ class WorkflowAgent
   #
   # @return [void]
   def save_state
-    Ohm.redis.hset("workflow_agent_state", @role, @state.to_json)
+    Jongleur::WorkerTask.class_variable_get(:@@redis).hset(
+      Process.pid.to_s,
+      "agent:#{@role}",
+      @state.to_json
+    )
   end
 
   # Loads the agent's state from Redis.
   #
   # @return [void]
   def load_state
-    state_json = Ohm.redis.hget("workflow_agent_state", @role)
+    state_json = Jongleur::WorkerTask.class_variable_get(:@@redis).hget(
+      Process.pid.to_s,
+      "agent:#{@role}"
+    )
     @state = JSON.parse(state_json) if state_json
   end
 

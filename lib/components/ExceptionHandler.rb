@@ -4,6 +4,8 @@
 lib_dir = File.expand_path(File.join(__dir__, "..", "lib"))
 $LOAD_PATH.unshift lib_dir unless $LOAD_PATH.include?(lib_dir)
 
+require_relative "ExceptionAgent"
+
 module Flowbots
   # This class handles exceptions in the Flowbots application.
   class ExceptionHandler

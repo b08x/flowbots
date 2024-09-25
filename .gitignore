@@ -7,7 +7,6 @@
 /spec/reports/
 /tmp/
 /Gemfile.lock
-/characters/
 /docker/data/
 .env
 /docker/.env/
@@ -23,10 +22,9 @@ flowbots.json
 /examples/test/
 /data/
 /.bold/
+/.examples/
 /.vendor/
 /.docs/
+/exception_reports/
 *.text.json
 .gh_pages
-llm_analysis/
-exception_reports/
-job.md

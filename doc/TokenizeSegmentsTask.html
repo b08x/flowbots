@@ -53,26 +53,35 @@
 
   </div>
 
-  
+
 
   <div id="class-metadata">
-    
-    
+
+
 <div id="parent-class-section" class="nav-section">
   <h3>Parent</h3>
 
-  <p class="link"><a href="Jongleur/WorkerTask.html">Jongleur::WorkerTask</a>
+  <p class="link"><a href="Task.html">Task</a>
 </div>
 
-    
-    
-    
+
+<div id="includes-section" class="nav-section">
+  <h3>Included Modules</h3>
+
+  <ul class="link-list">
+    <li><a class="include" href="InputRetrieval.html">InputRetrieval</a>
+  </ul>
+</div>
+
+
+
 <!-- Method Quickref -->
 <div id="method-list-section" class="nav-section">
   <h3>Methods</h3>
 
   <ul class="link-list" role="directory">
     <li ><a href="#method-i-execute">#execute</a>
+    <li ><a href="#method-i-retrieve_input">#retrieve_input</a>
   </ul>
 </div>
 
@@ -85,7 +94,7 @@
   </h1>
 
   <section class="description">
-    
+
 <p>This task tokenizes the segments of a text file.</p>
 
   </section>
@@ -109,31 +118,63 @@
         </div>
 
         <div class="method-description">
-          <p>Executes the task.</p>
+          <p>Executes the task to tokenize the segments of a <a href="FileObject.html"><code>FileObject</code></a>.</p>
+
+<p>Retrieves the <a href="FileObject.html"><code>FileObject</code></a> from Redis, tokenizes each segment using the TextTokenizeProcessor, updates the segments with the tokenized data, and logs the progress.</p>
 
 <p>@return [void]</p>
 
           <div class="method-source-code" id="execute-source">
-            <pre><span class="ruby-comment"># File lib/tasks/tokenize_segments_task.rb, line 9</span>
+            <pre><span class="ruby-comment"># File lib/tasks/tokenize_segments_task.rb, line 16</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">execute</span>
-  <span class="ruby-comment"># Retrieve the current Textfile object from Redis.</span>
-  <span class="ruby-identifier">textfile_id</span> = <span class="ruby-constant">Jongleur</span><span class="ruby-operator">::</span><span class="ruby-constant">WorkerTask</span>.<span class="ruby-identifier">class_variable_get</span>(<span class="ruby-value">:@@redis</span>).<span class="ruby-identifier">get</span>(<span class="ruby-string">&quot;current_textfile_id&quot;</span>)
-  <span class="ruby-identifier">text_file</span> = <span class="ruby-constant">Textfile</span>[<span class="ruby-identifier">textfile_id</span>]
+  <span class="ruby-comment"># Log the start of the task.</span>
+  <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-string">&quot;Starting TokenizeSegmentsTask&quot;</span>
 
+  <span class="ruby-comment"># Retrieve the FileObject from Redis.</span>
+  <span class="ruby-identifier">textfile</span> = <span class="ruby-identifier">retrieve_input</span>
   <span class="ruby-comment"># Get an instance of the TextTokenizeProcessor.</span>
   <span class="ruby-identifier">text_tokenizer</span> = <span class="ruby-constant">Flowbots</span><span class="ruby-operator">::</span><span class="ruby-constant">TextTokenizeProcessor</span>.<span class="ruby-identifier">instance</span>
 
-  <span class="ruby-comment"># Iterate through each segment of the Textfile.</span>
-  <span class="ruby-identifier">text_file</span>.<span class="ruby-identifier">retrieve_segments</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">segment</span><span class="ruby-operator">|</span>
+  <span class="ruby-comment"># Iterate through each segment of the FileObject and tokenize its text.</span>
+  <span class="ruby-identifier">textfile</span>.<span class="ruby-identifier">retrieve_segments</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">segment</span><span class="ruby-operator">|</span>
     <span class="ruby-comment"># Tokenize the segment&#39;s text using the TextTokenizeProcessor.</span>
     <span class="ruby-identifier">tokens</span> = <span class="ruby-identifier">text_tokenizer</span>.<span class="ruby-identifier">process</span>(<span class="ruby-identifier">segment</span>.<span class="ruby-identifier">text</span>, { <span class="ruby-value">clean:</span> <span class="ruby-keyword">true</span> })
-
     <span class="ruby-comment"># Update the segment with the tokenized data.</span>
     <span class="ruby-identifier">segment</span>.<span class="ruby-identifier">update</span>(<span class="ruby-value">tokens:</span>)
-
-    <span class="ruby-comment"># Save the updated segment.</span>
-    <span class="ruby-identifier">segment</span>.<span class="ruby-identifier">save</span>
   <span class="ruby-keyword">end</span>
+
+  <span class="ruby-comment"># Log the completion of the task.</span>
+  <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-string">&quot;TokenizeSegmentsTask completed&quot;</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+    </section>
+
+     <section id="private-instance-5Buntitled-5D-method-details" class="method-section">
+       <header>
+         <h3>Private Instance Methods</h3>
+       </header>
+
+      <div id="method-i-retrieve_input" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">retrieve_input</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          <p>Retrieves the input for the task, which is the current <a href="FileObject.html"><code>FileObject</code></a>.</p>
+
+<p>@return [FileObject] The current <a href="FileObject.html"><code>FileObject</code></a>.</p>
+
+          <div class="method-source-code" id="retrieve_input-source">
+            <pre><span class="ruby-comment"># File lib/tasks/tokenize_segments_task.rb, line 42</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">retrieve_input</span>
+  <span class="ruby-identifier">retrieve_file_object</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
         </div>
@@ -152,4 +193,3 @@
   <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.4.0.
   <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
 </footer>
-

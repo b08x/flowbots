@@ -34,6 +34,9 @@ class LlmAnalysisTask < Jongleur::WorkerTask
       # Generate a prompt for the agent based on the retrieved information.
       prompt = generate_analysis_prompt(textfile, content, metadata, nlp_result)
 
+      puts prompt
+      raise
+
       analysis_result = agent.process(prompt)
 
       logger.debug "Agent processing completed"
@@ -61,7 +64,7 @@ class LlmAnalysisTask < Jongleur::WorkerTask
   private
 
   def retrieve_input
-    retrieve_textfile
+    retrieve_file_object
   end
 
   # Retrieves the current Textfile object from Redis.
@@ -139,8 +142,6 @@ class LlmAnalysisTask < Jongleur::WorkerTask
       Content:
       #{content}
 
-      NLP Analysis:
-      #{format_nlp_result(nlp_result)}
     PROMPT
   end
 
@@ -166,7 +167,7 @@ class LlmAnalysisTask < Jongleur::WorkerTask
   #
   # @return [void]
   def store_analysis_result(textfile, result)
-    textfile.update(analysis: result)
+    textfile.update(llm_analysis: result)
     # Jongleur::WorkerTask.class_variable_get(:@@redis).set("analysis_result", result.to_json)
   end
 

@@ -5,11 +5,17 @@
 class DisplayResultsTask < Task
   include InputRetrieval
 
+  # Executes the task to display the results of the text processing workflow.
+  #
+  # Retrieves the processed Textfile object and its LLM analysis results.
+  # Formats and displays the file information and analysis results in a user-friendly format.
+  #
+  # @return [void]
   def execute
     logger.info "Starting DisplayResultsTask"
 
     textfile = retrieve_input
-    analysis_result = textfile.analysis
+    analysis_result = textfile.llm_analysis
 
     display_results(textfile, analysis_result)
 
@@ -18,10 +24,19 @@ class DisplayResultsTask < Task
 
   private
 
+  # Retrieves the input for the task, which is the current FileObject.
+  #
+  # @return [FileObject] The current FileObject.
   def retrieve_input
-    retrieve_textfile
+    retrieve_file_object
   end
 
+  # Displays the results of the text processing workflow.
+  #
+  # @param textfile [Textfile] The processed Textfile object.
+  # @param analysis_result [String, Hash] The LLM analysis results.
+  #
+  # @return [void]
   def display_results(textfile, analysis_result)
     file_info = format_file_info(textfile)
     analysis = format_analysis(analysis_result)
@@ -34,6 +49,11 @@ class DisplayResultsTask < Task
     )
   end
 
+  # Formats the file information for display.
+  #
+  # @param textfile [Textfile] The processed Textfile object.
+  #
+  # @return [String] The formatted file information.
   def format_file_info(textfile)
     <<~INFO
       Filename: #{textfile.name}
@@ -47,6 +67,11 @@ class DisplayResultsTask < Task
     INFO
   end
 
+  # Formats the analysis results for display.
+  #
+  # @param analysis_result [String, Hash] The LLM analysis results.
+  #
+  # @return [String] The formatted analysis results.
   def format_analysis(analysis_result)
     analysis_result.is_a?(String) ? analysis_result : JSON.pretty_generate(analysis_result)
   end

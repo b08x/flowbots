@@ -53,20 +53,20 @@
 
   </div>
 
-  
+
 
   <div id="class-metadata">
-    
-    
+
+
 <div id="parent-class-section" class="nav-section">
   <h3>Parent</h3>
 
   <p class="link"><a href="Object.html">Object</a>
 </div>
 
-    
-    
-    
+
+
+
 <!-- Method Quickref -->
 <div id="method-list-section" class="nav-section">
   <h3>Methods</h3>
@@ -89,18 +89,18 @@
   </h1>
 
   <section class="description">
-    
+
 <p>This class represents an agent in a workflow. Class representing an individual agent within a workflow in the <a href="Flowbots.html"><code>Flowbots</code></a> system.</p>
 
-<p>The <a href="WorkflowAgent.html"><code>WorkflowAgent</code></a> is a key component in the text processing pipeline, responsible for performing specific tasks as defined by its role and cartridge configuration. It’s designed to be flexible, maintainable, and integrated seamlessly with the <a href="WorkflowOrchestrator.html"><code>WorkflowOrchestrator</code></a>.</p>
+<p>The <a href="WorkflowAgent.html"><code>WorkflowAgent</code></a> is a key component in the text processing pipeline, responsible for performing specific tasks as defined by its <a href="WorkflowAgent.html#attribute-i-role"><code>role</code></a> and cartridge configuration. It’s designed to be flexible, maintainable, and integrated seamlessly with the <a href="WorkflowOrchestrator.html"><code>WorkflowOrchestrator</code></a>.</p>
 
 <p>== Key Features</p>
 <ul><li>
-<p>Role-based processing: Each agent has a specific role in the workflow.</p>
+<p>Role-based processing: Each agent has a specific <a href="WorkflowAgent.html#attribute-i-role"><code>role</code></a> in the workflow.</p>
 </li><li>
 <p>Cartridge-based configuration: Agent behavior is defined by a cartridge file.</p>
 </li><li>
-<p>State management: Agents can save and load state from Redis.</p>
+<p>State management: Agents can save and load <a href="WorkflowAgent.html#attribute-i-state"><code>state</code></a> from Redis.</p>
 </li><li>
 <p>Real-time feedback: Provides visual feedback during processing.</p>
 </li><li>
@@ -109,7 +109,7 @@
 
 <p>== Relation to Workflow</p>
 
-<p><a href="WorkflowAgent.html"><code>WorkflowAgent</code></a> instances are typically: 1. Created and managed by the <a href="WorkflowOrchestrator.html"><code>WorkflowOrchestrator</code></a>. 2. Arranged in a sequence to form the text processing pipeline. 3. Called upon by the orchestrator to <a href="WorkflowAgent.html#method-i-process"><code>process</code></a> input and produce output. 4. Capable of maintaining state across multiple workflow steps or runs.</p>
+<p><a href="WorkflowAgent.html"><code>WorkflowAgent</code></a> instances are typically: 1. Created and managed by the <a href="WorkflowOrchestrator.html"><code>WorkflowOrchestrator</code></a>. 2. Arranged in a sequence to form the text processing pipeline. 3. Called upon by the orchestrator to <a href="WorkflowAgent.html#method-i-process"><code>process</code></a> input and produce output. 4. Capable of maintaining <a href="WorkflowAgent.html#attribute-i-state"><code>state</code></a> across multiple workflow steps or runs.</p>
 
 <p>== Example Usage</p>
 
@@ -118,6 +118,8 @@
 <p>== Integration</p>
 
 <p>The <a href="WorkflowOrchestrator.html"><code>WorkflowOrchestrator</code></a> would typically: * Initialize multiple WorkflowAgents for different stages of processing. * Call the #process method of each agent in sequence. * Manage the flow of data between agents in the workflow.</p>
+
+<p>This class represents a workflow agent that can <a href="WorkflowAgent.html#method-i-process"><code>process</code></a> input using a NanoBot.</p>
 
   </section>
 
@@ -134,6 +136,32 @@
       </dl>
     </section>
 
+    <section class="attribute-method-details" class="method-section">
+      <header>
+        <h3>Attributes</h3>
+      </header>
+
+      <div id="attribute-i-role" class="method-detail">
+        <div class="method-heading attribute-method-heading">
+          <span class="method-name">role</span><span
+            class="attribute-access-type">[R]</span>
+        </div>
+
+        <div class="method-description">
+
+        </div>
+      </div>
+      <div id="attribute-i-state" class="method-detail">
+        <div class="method-heading attribute-method-heading">
+          <span class="method-name">state</span><span
+            class="attribute-access-type">[R]</span>
+        </div>
+
+        <div class="method-description">
+
+        </div>
+      </div>
+    </section>
 
 
      <section id="public-class-5Buntitled-5D-method-details" class="method-section">
@@ -151,7 +179,7 @@
         <div class="method-description">
           <p>Initializes a <a href="WorkflowAgent.html#method-c-new"><code>new</code></a> <a href="WorkflowAgent.html"><code>WorkflowAgent</code></a> instance.</p>
 
-<p>@param role [String] The role of the agent. @param cartridge_file [String] The path to the cartridge file.</p>
+<p>@param <a href="WorkflowAgent.html#attribute-i-role"><code>role</code></a> [String] The <a href="WorkflowAgent.html#attribute-i-role"><code>role</code></a> of the agent. @param cartridge_file [String] The path to the cartridge file.</p>
 
 <p>@return [void]</p>
 
@@ -163,7 +191,7 @@
   <span class="ruby-ivar">@bot</span> = <span class="ruby-constant">NanoBot</span>.<span class="ruby-identifier">new</span>(
     <span class="ruby-value">cartridge:</span> <span class="ruby-identifier">cartridge_file</span>
   )
-  <span class="ruby-constant">Flowbots</span><span class="ruby-operator">::</span><span class="ruby-constant">UI</span>.<span class="ruby-identifier">info</span> <span class="ruby-node">&quot;Initialized WorkflowAgent with role: #{role}, cartridge: #{cartridge_file}&quot;</span>
+  <span class="ruby-constant">UI</span>.<span class="ruby-identifier">info</span> <span class="ruby-node">&quot;Initialized WorkflowAgent with role: #{role}, cartridge: #{cartridge_file}&quot;</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
         </div>
@@ -186,12 +214,12 @@
         </div>
 
         <div class="method-description">
-          <p>Loads the agent’s state from Redis.</p>
+          <p>Loads the agent’s <a href="WorkflowAgent.html#attribute-i-state"><code>state</code></a> from Redis.</p>
 
 <p>@return [void]</p>
 
           <div class="method-source-code" id="load_state-source">
-            <pre><span class="ruby-comment"># File lib/components/WorkflowAgent.rb, line 96</span>
+            <pre><span class="ruby-comment"># File lib/components/WorkflowAgent.rb, line 99</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">load_state</span>
   <span class="ruby-identifier">state_json</span> = <span class="ruby-constant">Jongleur</span><span class="ruby-operator">::</span><span class="ruby-constant">WorkerTask</span>.<span class="ruby-identifier">class_variable_get</span>(<span class="ruby-value">:@@redis</span>).<span class="ruby-identifier">hget</span>(
     <span class="ruby-constant">Process</span>.<span class="ruby-identifier">pid</span>.<span class="ruby-identifier">to_s</span>,
@@ -225,14 +253,17 @@
   <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;Processing input for #{@role}: #{input}&quot;</span>
 
   <span class="ruby-identifier">pastel</span> = <span class="ruby-constant">Pastel</span>.<span class="ruby-identifier">new</span>
+  <span class="ruby-identifier">puts</span> <span class="ruby-constant">UI</span><span class="ruby-operator">::</span><span class="ruby-constant">Box</span>.<span class="ruby-identifier">eval_result_box</span>(
+    <span class="ruby-ivar">@bot</span>.<span class="ruby-identifier">eval</span>(<span class="ruby-identifier">input</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">content</span>, <span class="ruby-identifier">fragment</span>, <span class="ruby-identifier">finished</span>, <span class="ruby-identifier">meta</span><span class="ruby-operator">|</span>
+      <span class="ruby-ivar">@response</span> = <span class="ruby-identifier">content</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">content</span>.<span class="ruby-identifier">nil?</span>
+      <span class="ruby-identifier">pastel</span>.<span class="ruby-identifier">blue</span>(<span class="ruby-identifier">fragment</span>) <span class="ruby-keyword">unless</span> <span class="ruby-identifier">fragment</span>.<span class="ruby-identifier">nil?</span>
+      <span class="ruby-identifier">sleep</span> <span class="ruby-value">0.025</span>
+    <span class="ruby-keyword">end</span>
+  )
 
-  <span class="ruby-ivar">@bot</span>.<span class="ruby-identifier">eval</span>(<span class="ruby-identifier">input</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">content</span>, <span class="ruby-identifier">fragment</span>, <span class="ruby-identifier">finished</span>, <span class="ruby-identifier">meta</span><span class="ruby-operator">|</span>
-    <span class="ruby-ivar">@response</span> = <span class="ruby-identifier">content</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">content</span>.<span class="ruby-identifier">nil?</span>
-    <span class="ruby-identifier">print</span> <span class="ruby-identifier">pastel</span>.<span class="ruby-identifier">blue</span>(<span class="ruby-identifier">fragment</span>) <span class="ruby-keyword">unless</span> <span class="ruby-identifier">fragment</span>.<span class="ruby-identifier">nil?</span>
-    <span class="ruby-identifier">sleep</span> <span class="ruby-value">0.025</span>
-  <span class="ruby-keyword">end</span>
+  <span class="ruby-identifier">sleep</span>(<span class="ruby-value">2</span>)
 
-  <span class="ruby-comment"># Flowbots::UI.info(@response)</span>
+  <span class="ruby-comment"># UI.info(@response)</span>
   <span class="ruby-identifier">update_state</span>(<span class="ruby-ivar">@response</span>)
   <span class="ruby-ivar">@response</span>
 <span class="ruby-keyword">end</span></pre>
@@ -250,12 +281,12 @@
         </div>
 
         <div class="method-description">
-          <p>Saves the agent’s state to Redis.</p>
+          <p>Saves the agent’s <a href="WorkflowAgent.html#attribute-i-state"><code>state</code></a> to Redis.</p>
 
 <p>@return [void]</p>
 
           <div class="method-source-code" id="save_state-source">
-            <pre><span class="ruby-comment"># File lib/components/WorkflowAgent.rb, line 85</span>
+            <pre><span class="ruby-comment"># File lib/components/WorkflowAgent.rb, line 88</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">save_state</span>
   <span class="ruby-constant">Jongleur</span><span class="ruby-operator">::</span><span class="ruby-constant">WorkerTask</span>.<span class="ruby-identifier">class_variable_get</span>(<span class="ruby-value">:@@redis</span>).<span class="ruby-identifier">hset</span>(
     <span class="ruby-constant">Process</span>.<span class="ruby-identifier">pid</span>.<span class="ruby-identifier">to_s</span>,
@@ -284,14 +315,14 @@
         </div>
 
         <div class="method-description">
-          <p>Updates the agent’s state with the latest response.</p>
+          <p>Updates the agent’s <a href="WorkflowAgent.html#attribute-i-state"><code>state</code></a> with the latest response.</p>
 
 <p>@param response [String] The agent’s response.</p>
 
 <p>@return [void]</p>
 
           <div class="method-source-code" id="update_state-source">
-            <pre><span class="ruby-comment"># File lib/components/WorkflowAgent.rb, line 111</span>
+            <pre><span class="ruby-comment"># File lib/components/WorkflowAgent.rb, line 114</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">update_state</span>(<span class="ruby-identifier">response</span>)
   <span class="ruby-ivar">@state</span>[<span class="ruby-value">:last_response</span>] = <span class="ruby-identifier">response</span>
 <span class="ruby-keyword">end</span></pre>
@@ -312,4 +343,3 @@
   <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.4.0.
   <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
 </footer>
-

@@ -86,13 +86,22 @@
 
   <section class="description">
     
-<p>Define a class to manage Redis connection</p>
+<p>Class to manage Redis connection.</p>
 
   </section>
 
   <section id="5Buntitled-5D" class="documentation-section">
 
 
+    <section class="constants-list">
+      <header>
+        <h3>Constants</h3>
+      </header>
+      <dl>
+        <dt id="REDIS_CONFIG">REDIS_CONFIG
+        <dd><p>Redis configuration.</p>
+      </dl>
+    </section>
 
     <section class="attribute-method-details" class="method-section">
       <header>
@@ -106,7 +115,9 @@
         </div>
 
         <div class="method-description">
-        
+        <p>Returns the Redis connection.</p>
+
+<p>@return [Redis] The Redis connection.</p>
         </div>
       </div>
     </section>
@@ -125,10 +136,12 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Initializes a <a href="RedisConnection.html#method-c-new"><code>new</code></a> <a href="RedisConnection.html"><code>RedisConnection</code></a> instance.</p>
+
+<p>@return [void]</p>
 
           <div class="method-source-code" id="new-source">
-            <pre><span class="ruby-comment"># File lib/flowbots.rb, line 49</span>
+            <pre><span class="ruby-comment"># File lib/flowbots.rb, line 72</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">initialize</span>
   <span class="ruby-ivar">@redis</span> = <span class="ruby-constant">Redis</span>.<span class="ruby-identifier">new</span>(<span class="ruby-constant">REDIS_CONFIG</span>)
 <span class="ruby-keyword">end</span></pre>

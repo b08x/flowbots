@@ -25,6 +25,7 @@ module Flowbots
     # @param workflow_name [String] The name of the workflow to run.
     #
     # @return [void]
+    # @raise [FileNotFoundError] If the workflow file is not found.
     def run(workflow_name)
       workflow_file = File.join(WORKFLOW_DIR, "#{workflow_name}.rb")
 
@@ -42,9 +43,8 @@ module Flowbots
       workflow.run
     end
 
-    private
-
-    # Loads all workflow files from the WORKFLOW_DIR directory.
+    # Class method to load all workflow files from the WORKFLOW_DIR directory.
+    # It also checks for user-defined workflows in a custom directory.
     #
     # @return [void]
     def self.load_workflows
@@ -76,9 +76,12 @@ module Flowbots
       end
     end
 
-    # Retrieves a list of available workflows.
+    private
+
+    # Retrieves a list of available workflows from the WORKFLOW_DIR directory.
     #
-    # @return [Array] An array of workflow names and descriptions.
+    # @return [Array<Array(String, String)>] An array of arrays, where each inner array contains
+    #   the workflow name and its description.
     def get_workflows
       Dir.glob(File.join(WORKFLOW_DIR, "*.rb")).map do |file|
         name = File.basename(file, ".rb")
@@ -89,7 +92,8 @@ module Flowbots
 
     # Displays a list of available workflows in a table format.
     #
-    # @param workflows [Array] An array of workflow names and descriptions.
+    # @param workflows [Array<Array(String, String)>] An array of arrays, where each inner array contains
+    #   the workflow name and its description.
     #
     # @return [void]
     def display_workflows(workflows)
@@ -99,16 +103,17 @@ module Flowbots
       end
 
       table = TTY::Table.new(
-        header: [PASTEL.cyan("Workflow"), PASTEL.cyan("Description")],
+        header: [UI::PASTEL.cyan("Workflow"), UI::PASTEL.cyan("Description")],
         rows: workflows
       )
 
       puts table.render(:unicode, padding: [0, 1])
     end
 
-    # Prompts the user to select a workflow from the list.
+    # Prompts the user to select a workflow from the list of available workflows.
     #
-    # @param workflows [Array] An array of workflow names and descriptions.
+    # @param workflows [Array<Array(String, String)>] An array of arrays, where each inner array contains
+    #   the workflow name and its description.
     #
     # @return [String, nil] The name of the selected workflow, or nil if no workflow is selected.
     def select_workflow(workflows)
@@ -117,10 +122,11 @@ module Flowbots
     end
 
     # Extracts the description of a workflow from its file.
+    # The description is assumed to be the first line of the file starting with "# Description:".
     #
     # @param file [String] The path to the workflow file.
     #
-    # @return [String] The workflow description.
+    # @return [String] The workflow description, or "No description available" if not found.
     def extract_workflow_description(file)
       first_line = File.open(file, &:readline).strip
       first_line.start_with?("# Description:") ? first_line[14..-1] : "No description available"
