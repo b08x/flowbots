@@ -30,8 +30,7 @@ class PreprocessTextFileTask < Task
       UI.exception("#{e.message}")
       @textfile.update(preprocessed_content: "", metadata: {})
     end
-
-    private
+  end
 
   private
 
