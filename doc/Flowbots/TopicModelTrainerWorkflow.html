@@ -41,7 +41,7 @@
     <div id="search-field-wrapper">
       <input id="search-field" role="combobox" aria-label="Search"
              aria-autocomplete="list" aria-controls="search-results"
-             type="text" name="search" placeholder="Search" spellcheck="false"
+             type="text" name="search" placeholder="Search (/) for a class, method, ..." spellcheck="false"
              title="Type to search, Up and Down to navigate, Enter to load">
     </div>
 
@@ -90,7 +90,7 @@
 
   <section class="description">
     
-<p>This class defines a workflow for training a topic model using a collection of text files. It utilizes a <a href="UnifiedFileProcessingPipeline.html"><code>UnifiedFileProcessingPipeline</code></a> to handle the file processing and segment filtering, and then trains a topic model using the filtered segments.</p>
+<p>This class defines a workflow for training a topic model using a collection of text files. It utilizes a UnifiedFileProcessingPipeline to handle the file processing and segment filtering, and then trains a topic model using the filtered segments.</p>
 
   </section>
 
@@ -122,16 +122,18 @@
        </header>
 
       <div id="method-c-new" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">new</span><span
-            class="method-args">(input_folder_path=nil)</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">new</span><span
+              class="method-args">(input_folder_path=nil)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
           <p>Initializes a <a href="TopicModelTrainerWorkflow.html#method-c-new"><code>new</code></a> <a href="TopicModelTrainerWorkflow.html"><code>TopicModelTrainerWorkflow</code></a> instance.</p>
 
-<p>@param input_folder_path [String, nil] The path to the folder containing the input files.  If nil, the user will be prompted to select a folder.</p>
+<p>@param input_folder_path [String, nil] The path to the folder containing the input files. If nil, the user will be prompted to select a folder.</p>
 
 <p>@return [void]</p>
 
@@ -155,10 +157,12 @@
        </header>
 
       <div id="method-i-run" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">run</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">run</span><span
+              class="method-args">()</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
@@ -199,10 +203,12 @@
        </header>
 
       <div id="method-i-clean_segments_for_modeling" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">clean_segments_for_modeling</span><span
-            class="method-args">(segments)</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">clean_segments_for_modeling</span><span
+              class="method-args">(segments)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
@@ -232,10 +238,12 @@
       </div>
 
       <div id="method-i-prompt_for_folder" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">prompt_for_folder</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">prompt_for_folder</span><span
+              class="method-args">()</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
@@ -260,10 +268,12 @@
       </div>
 
       <div id="method-i-train_topic_model" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">train_topic_model</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">train_topic_model</span><span
+              class="method-args">()</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
@@ -313,7 +323,7 @@
 
 <footer id="validator-badges" role="contentinfo">
   <p><a href="https://validator.w3.org/check/referer">Validate</a>
-  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.4.0.
+  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.6.3.1.
   <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
 </footer>
 

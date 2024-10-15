@@ -41,7 +41,7 @@
     <div id="search-field-wrapper">
       <input id="search-field" role="combobox" aria-label="Search"
              aria-autocomplete="list" aria-controls="search-results"
-             type="text" name="search" placeholder="Search" spellcheck="false"
+             type="text" name="search" placeholder="Search (/) for a class, method, ..." spellcheck="false"
              title="Type to search, Up and Down to navigate, Enter to load">
     </div>
 
@@ -111,10 +111,12 @@
        </header>
 
       <div id="method-c-initialize" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">initialize</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">initialize</span><span
+              class="method-args">()</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
@@ -135,10 +137,12 @@
       </div>
 
       <div id="method-c-shutdown" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">shutdown</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">shutdown</span><span
+              class="method-args">()</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
@@ -167,10 +171,12 @@
        </header>
 
       <div id="method-c-load_components" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">load_components</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">load_components</span><span
+              class="method-args">()</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
@@ -191,10 +197,12 @@
       </div>
 
       <div id="method-c-setup_redis" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">setup_redis</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">setup_redis</span><span
+              class="method-args">()</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
@@ -205,7 +213,7 @@
           <div class="method-source-code" id="setup_redis-source">
             <pre><span class="ruby-comment"># File lib/flowbots.rb, line 125</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">setup_redis</span>
-  <span class="ruby-constant">Ohm</span>.<span class="ruby-identifier">redis</span> = <span class="ruby-constant">Redic</span>.<span class="ruby-identifier">new</span>(<span class="ruby-string">&quot;redis://localhost:6379/0&quot;</span>)
+  <span class="ruby-constant">Ohm</span>.<span class="ruby-identifier">redis</span> = <span class="ruby-constant">Redic</span>.<span class="ruby-identifier">new</span>(<span class="ruby-string">&quot;redis://localhost:6378/0&quot;</span>)
 <span class="ruby-keyword">rescue</span> <span class="ruby-constant">Ohm</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span> <span class="ruby-operator">=&gt;</span> <span class="ruby-identifier">e</span>
   <span class="ruby-constant">ExceptionHandler</span>.<span class="ruby-identifier">handle_exception</span>(<span class="ruby-identifier">e</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -216,10 +224,12 @@
       </div>
 
       <div id="method-c-stop_running_workflows" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">stop_running_workflows</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">stop_running_workflows</span><span
+              class="method-args">()</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
@@ -246,7 +256,7 @@
 
 <footer id="validator-badges" role="contentinfo">
   <p><a href="https://validator.w3.org/check/referer">Validate</a>
-  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.4.0.
+  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.6.3.1.
   <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
 </footer>
 

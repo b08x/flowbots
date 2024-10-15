@@ -41,7 +41,7 @@
     <div id="search-field-wrapper">
       <input id="search-field" role="combobox" aria-label="Search"
              aria-autocomplete="list" aria-controls="search-results"
-             type="text" name="search" placeholder="Search" spellcheck="false"
+             type="text" name="search" placeholder="Search (/) for a class, method, ..." spellcheck="false"
              title="Type to search, Up and Down to navigate, Enter to load">
     </div>
 
@@ -143,16 +143,18 @@
        </header>
 
       <div id="method-c-new" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">new</span><span
-            class="method-args">(input_folder_path, batch_size=10, file_types=nil)</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">new</span><span
+              class="method-args">(input_folder_path, batch_size=10, file_types=nil)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
           <p>Initializes a <a href="BatchProcessor.html#method-c-new"><code>new</code></a> <code>BatchProcessor</code> instance.</p>
 
-<p>@param <a href="BatchProcessor.html#attribute-i-input_folder_path"><code>input_folder_path</code></a> [String] The path to the folder containing the files to be processed.  If not provided, it prompts the user to select a folder. @param <a href="BatchProcessor.html#attribute-i-batch_size"><code>batch_size</code></a> [Integer] The number of files to process in each batch. Defaults to 10. @param <a href="BatchProcessor.html#attribute-i-file_types"><code>file_types</code></a> [Array&lt;String&gt;] An array of file extensions to process.  Defaults to text files: [‘.txt’, ‘.md’, ‘.markdown’].</p>
+<p>@param <a href="BatchProcessor.html#attribute-i-input_folder_path"><code>input_folder_path</code></a> [String] The path to the folder containing the files to be processed. If not provided, it prompts the user to select a folder. @param <a href="BatchProcessor.html#attribute-i-batch_size"><code>batch_size</code></a> [Integer] The number of files to process in each batch. Defaults to 10. @param <a href="BatchProcessor.html#attribute-i-file_types"><code>file_types</code></a> [Array&lt;String&gt;] An array of file extensions to process. Defaults to text files: [‘.txt’, ‘.md’, ‘.markdown’].</p>
 
           <div class="method-source-code" id="new-source">
             <pre><span class="ruby-comment"># File lib/components/BatchProcessor.rb, line 23</span>
@@ -175,10 +177,12 @@
        </header>
 
       <div id="method-i-process_files" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">process_files</span><span
-            class="method-args">(&amp;block)</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">process_files</span><span
+              class="method-args">(&amp;block)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
@@ -219,10 +223,12 @@
        </header>
 
       <div id="method-i-discover_files" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">discover_files</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">discover_files</span><span
+              class="method-args">()</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
@@ -242,10 +248,12 @@
       </div>
 
       <div id="method-i-file_types_pattern" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">file_types_pattern</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">file_types_pattern</span><span
+              class="method-args">()</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
@@ -265,10 +273,12 @@
       </div>
 
       <div id="method-i-process_batch" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">process_batch</span><span
-            class="method-args">(batch_files) { |file_path| ... }</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">process_batch</span><span
+              class="method-args">(batch_files) { |file_path| ... }</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
@@ -293,10 +303,12 @@
       </div>
 
       <div id="method-i-prompt_for_folder" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">prompt_for_folder</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">prompt_for_folder</span><span
+              class="method-args">()</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
@@ -328,7 +340,7 @@
 
 <footer id="validator-badges" role="contentinfo">
   <p><a href="https://validator.w3.org/check/referer">Validate</a>
-  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.4.0.
+  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.6.3.1.
   <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
 </footer>
 

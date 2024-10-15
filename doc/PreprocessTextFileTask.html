@@ -41,7 +41,7 @@
     <div id="search-field-wrapper">
       <input id="search-field" role="combobox" aria-label="Search"
              aria-autocomplete="list" aria-controls="search-results"
-             type="text" name="search" placeholder="Search" spellcheck="false"
+             type="text" name="search" placeholder="Search (/) for a class, method, ..." spellcheck="false"
              title="Type to search, Up and Down to navigate, Enter to load">
     </div>
 
@@ -61,10 +61,18 @@
 <div id="parent-class-section" class="nav-section">
   <h3>Parent</h3>
 
-  <p class="link"><a href="Jongleur/WorkerTask.html">Jongleur::WorkerTask</a>
+  <p class="link"><a href="Task.html">Task</a>
 </div>
 
     
+<div id="includes-section" class="nav-section">
+  <h3>Included Modules</h3>
+
+  <ul class="link-list">
+    <li><span class="include">InputRetrieval</span>
+  </ul>
+</div>
+
     
     
 <!-- Method Quickref -->
@@ -74,8 +82,7 @@
   <ul class="link-list" role="directory">
     <li ><a href="#method-i-execute">#execute</a>
     <li ><a href="#method-i-extract_metadata">#extract_metadata</a>
-    <li ><a href="#method-i-normalize_text">#normalize_text</a>
-    <li ><a href="#method-i-retrieve_current_textfile">#retrieve_current_textfile</a>
+    <li ><a href="#method-i-retrieve_input">#retrieve_input</a>
     <li ><a href="#method-i-store_preprocessed_data">#store_preprocessed_data</a>
   </ul>
 </div>
@@ -90,8 +97,6 @@
 
   <section class="description">
     
-<p>This task preprocesses a text file, extracting metadata and content.</p>
-
   </section>
 
   <section id="5Buntitled-5D" class="documentation-section">
@@ -106,25 +111,23 @@
        </header>
 
       <div id="method-i-execute" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">execute</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">execute</span><span
+              class="method-args">()</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
-          <p>Executes the task.</p>
-
-<p>@return [void]</p>
+          
 
           <div class="method-source-code" id="execute-source">
-            <pre><span class="ruby-comment"># File lib/tasks/preprocess_text_file_task.rb, line 9</span>
+            <pre><span class="ruby-comment"># File lib/tasks/preprocess_text_file_task.rb, line 7</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">execute</span>
   <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-string">&quot;Starting PreprocessTextFileTask&quot;</span>
 
-  <span class="ruby-ivar">@textfile</span> = <span class="ruby-identifier">retrieve_current_textfile</span>
-
-  <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;File content: #{@textfile.content[0..500]}...&quot;</span> <span class="ruby-comment"># Log first 200 characters</span>
+  <span class="ruby-ivar">@textfile</span> = <span class="ruby-identifier">retrieve_input</span>
 
   <span class="ruby-keyword">begin</span>
     <span class="ruby-identifier">grammar_processor</span> = <span class="ruby-constant">Flowbots</span><span class="ruby-operator">::</span><span class="ruby-constant">GrammarProcessor</span>.<span class="ruby-identifier">new</span>(<span class="ruby-string">&quot;markdown_yaml&quot;</span>)
@@ -132,26 +135,21 @@
     <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;Parse result: #{parse_result.inspect}&quot;</span>
 
     <span class="ruby-keyword">if</span> <span class="ruby-identifier">parse_result</span>
-      <span class="ruby-identifier">content</span> = <span class="ruby-identifier">parse_result</span>[<span class="ruby-value">:markdown_content</span>]
-      <span class="ruby-identifier">metadata</span> = <span class="ruby-identifier">extract_metadata</span>(<span class="ruby-identifier">parse_result</span>[<span class="ruby-value">:yaml_front_matter</span>])
-      <span class="ruby-identifier">store_preprocessed_data</span>(<span class="ruby-identifier">content</span>, <span class="ruby-identifier">metadata</span>)
-      <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-string">&quot;Successfully preprocessed file with custom grammar&quot;</span>
+      <span class="ruby-identifier">sourcefile</span>.<span class="ruby-identifier">update</span>(
+        <span class="ruby-value">preprocessed_content:</span> <span class="ruby-identifier">parse_result</span>[<span class="ruby-value">:markdown_content</span>],
+        <span class="ruby-value">metadata:</span> <span class="ruby-identifier">extract_metadata</span>(<span class="ruby-identifier">parse_result</span>[<span class="ruby-value">:yaml_front_matter</span>])
+      )
+      <span class="ruby-node">&quot;Successfully preprocessed file: #{sourcefile.path}&quot;</span>
     <span class="ruby-keyword">else</span>
       <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">error</span> <span class="ruby-string">&quot;Failed to parse the document with custom grammar&quot;</span>
-      <span class="ruby-ivar">@textfile</span>.<span class="ruby-identifier">update</span>(<span class="ruby-value">preprocessed_content:</span> <span class="ruby-string">&quot;&quot;</span>)
-      <span class="ruby-ivar">@textfile</span>.<span class="ruby-identifier">update</span>(<span class="ruby-value">metadata:</span> {})
-      <span class="ruby-ivar">@textfile</span>.<span class="ruby-identifier">save</span>
+      <span class="ruby-ivar">@textfile</span>.<span class="ruby-identifier">update</span>(<span class="ruby-value">preprocessed_content:</span> <span class="ruby-string">&quot;&quot;</span>, <span class="ruby-value">metadata:</span> {})
     <span class="ruby-keyword">end</span>
   <span class="ruby-keyword">rescue</span> <span class="ruby-constant">StandardError</span> <span class="ruby-operator">=&gt;</span> <span class="ruby-identifier">e</span>
     <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">error</span> <span class="ruby-node">&quot;Error in grammar processing: #{e.message}&quot;</span>
     <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">error</span> <span class="ruby-identifier">e</span>.<span class="ruby-identifier">backtrace</span>.<span class="ruby-identifier">join</span>(<span class="ruby-string">&quot;\n&quot;</span>)
-    <span class="ruby-constant">Flowbots</span><span class="ruby-operator">::</span><span class="ruby-constant">UI</span>.<span class="ruby-identifier">exception</span>(<span class="ruby-node">&quot;#{e.message}&quot;</span>)
-    <span class="ruby-ivar">@textfile</span>.<span class="ruby-identifier">update</span>(<span class="ruby-value">preprocessed_content:</span> <span class="ruby-string">&quot;&quot;</span>)
-    <span class="ruby-ivar">@textfile</span>.<span class="ruby-identifier">update</span>(<span class="ruby-value">metadata:</span> {})
-    <span class="ruby-ivar">@textfile</span>.<span class="ruby-identifier">save</span>
+    <span class="ruby-constant">UI</span>.<span class="ruby-identifier">exception</span>(<span class="ruby-node">&quot;#{e.message}&quot;</span>)
+    <span class="ruby-ivar">@textfile</span>.<span class="ruby-identifier">update</span>(<span class="ruby-value">preprocessed_content:</span> <span class="ruby-string">&quot;&quot;</span>, <span class="ruby-value">metadata:</span> {})
   <span class="ruby-keyword">end</span>
-
-  <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-string">&quot;PreprocessTextFileTask completed&quot;</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
         </div>
@@ -167,30 +165,26 @@
        </header>
 
       <div id="method-i-extract_metadata" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">extract_metadata</span><span
-            class="method-args">(yaml_front_matter)</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">extract_metadata</span><span
+              class="method-args">(yaml_front_matter)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
-          <p>Extracts metadata from the YAML front matter.</p>
-
-<p>@param yaml_front_matter [String] The YAML front matter string.</p>
-
-<p>@return [Hash] The extracted metadata.</p>
+          
 
           <div class="method-source-code" id="extract_metadata-source">
-            <pre><span class="ruby-comment"># File lib/tasks/preprocess_text_file_task.rb, line 68</span>
+            <pre><span class="ruby-comment"># File lib/tasks/preprocess_text_file_task.rb, line 41</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">extract_metadata</span>(<span class="ruby-identifier">yaml_front_matter</span>)
   <span class="ruby-keyword">return</span> {} <span class="ruby-keyword">if</span> <span class="ruby-identifier">yaml_front_matter</span>.<span class="ruby-identifier">empty?</span>
 
-  <span class="ruby-keyword">begin</span>
-    <span class="ruby-constant">YAML</span>.<span class="ruby-identifier">safe_load</span>(<span class="ruby-identifier">yaml_front_matter</span>)
-  <span class="ruby-keyword">rescue</span> <span class="ruby-constant">StandardError</span> <span class="ruby-operator">=&gt;</span> <span class="ruby-identifier">e</span>
-    <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">error</span> <span class="ruby-node">&quot;Error parsing YAML front matter: #{e.message}&quot;</span>
-    {}
-  <span class="ruby-keyword">end</span>
+  <span class="ruby-constant">YAML</span>.<span class="ruby-identifier">safe_load</span>(<span class="ruby-identifier">yaml_front_matter</span>)
+<span class="ruby-keyword">rescue</span> <span class="ruby-constant">StandardError</span> <span class="ruby-operator">=&gt;</span> <span class="ruby-identifier">e</span>
+  <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">error</span> <span class="ruby-node">&quot;Error parsing YAML front matter: #{e.message}&quot;</span>
+  {}
 <span class="ruby-keyword">end</span></pre>
           </div>
         </div>
@@ -198,48 +192,22 @@
 
       </div>
 
-      <div id="method-i-normalize_text" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">normalize_text</span><span
-            class="method-args">(text)</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-
-        <div class="method-description">
-          <p>Normalizes the given text by converting it to lowercase and removing non-alphanumeric characters.</p>
-
-<p>@param text [String] The text to normalize.</p>
-
-<p>@return [String] The normalized text.</p>
-
-          <div class="method-source-code" id="normalize_text-source">
-            <pre><span class="ruby-comment"># File lib/tasks/preprocess_text_file_task.rb, line 51</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">normalize_text</span>(<span class="ruby-identifier">text</span>)
-  <span class="ruby-identifier">text</span>.<span class="ruby-identifier">downcase</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp">/[^a-z0-9\s]/i</span>, <span class="ruby-string">&quot;&quot;</span>)
-<span class="ruby-keyword">end</span></pre>
+      <div id="method-i-retrieve_input" class="method-detail ">
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">retrieve_input</span><span
+              class="method-args">()</span>
+            <span class="method-click-advice">click to toggle source</span>
           </div>
         </div>
 
-
-      </div>
-
-      <div id="method-i-retrieve_current_textfile" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">retrieve_current_textfile</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-
         <div class="method-description">
-          <p>Retrieves the current <a href="Textfile.html"><code>Textfile</code></a> object from Redis.</p>
+          
 
-<p>@return [Textfile] The <a href="Textfile.html"><code>Textfile</code></a> object representing the current file.</p>
-
-          <div class="method-source-code" id="retrieve_current_textfile-source">
-            <pre><span class="ruby-comment"># File lib/tasks/preprocess_text_file_task.rb, line 58</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">retrieve_current_textfile</span>
-  <span class="ruby-identifier">textfile_id</span> = <span class="ruby-constant">Jongleur</span><span class="ruby-operator">::</span><span class="ruby-constant">WorkerTask</span>.<span class="ruby-identifier">class_variable_get</span>(<span class="ruby-value">:@@redis</span>).<span class="ruby-identifier">get</span>(<span class="ruby-string">&quot;current_textfile_id&quot;</span>)
-  <span class="ruby-constant">Textfile</span>[<span class="ruby-identifier">textfile_id</span>]
+          <div class="method-source-code" id="retrieve_input-source">
+            <pre><span class="ruby-comment"># File lib/tasks/preprocess_text_file_task.rb, line 37</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">retrieve_input</span>
+  <span class="ruby-identifier">retrieve_textfile</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
         </div>
@@ -248,28 +216,21 @@
       </div>
 
       <div id="method-i-store_preprocessed_data" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">store_preprocessed_data</span><span
-            class="method-args">(content, metadata)</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">store_preprocessed_data</span><span
+              class="method-args">(content, metadata)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
-          <p>Stores the preprocessed content and metadata in the database.</p>
-
-<p>@param content [String] The preprocessed content. @param metadata [Hash] The extracted metadata.</p>
-
-<p>@return [void]</p>
+          
 
           <div class="method-source-code" id="store_preprocessed_data-source">
-            <pre><span class="ruby-comment"># File lib/tasks/preprocess_text_file_task.rb, line 85</span>
+            <pre><span class="ruby-comment"># File lib/tasks/preprocess_text_file_task.rb, line 50</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">store_preprocessed_data</span>(<span class="ruby-identifier">content</span>, <span class="ruby-identifier">metadata</span>)
-  <span class="ruby-comment"># redis = Jongleur::WorkerTask.class_variable_get(:@@redis)</span>
-  <span class="ruby-ivar">@textfile</span>.<span class="ruby-identifier">update</span>(<span class="ruby-value">preprocessed_content:</span> <span class="ruby-identifier">content</span>)
-  <span class="ruby-ivar">@textfile</span>.<span class="ruby-identifier">update</span>(<span class="ruby-value">metadata:</span>)
-  <span class="ruby-ivar">@textfile</span>.<span class="ruby-identifier">save</span>
-  <span class="ruby-comment"># redis.set(&quot;preprocessed_content&quot;, content)</span>
-  <span class="ruby-comment"># redis.set(&quot;file_metadata&quot;, metadata.to_json)</span>
+  <span class="ruby-ivar">@textfile</span>.<span class="ruby-identifier">update</span>(<span class="ruby-value">preprocessed_content:</span> <span class="ruby-identifier">content</span>, <span class="ruby-value">metadata:</span>)
   <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;Stored preprocessed content (first 100 chars): #{content[0..100]}&quot;</span>
   <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;Stored metadata: #{metadata.inspect}&quot;</span>
 <span class="ruby-keyword">end</span></pre>
@@ -287,7 +248,7 @@
 
 <footer id="validator-badges" role="contentinfo">
   <p><a href="https://validator.w3.org/check/referer">Validate</a>
-  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.4.0.
+  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.6.3.1.
   <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
 </footer>
 

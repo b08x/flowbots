@@ -41,7 +41,7 @@
     <div id="search-field-wrapper">
       <input id="search-field" role="combobox" aria-label="Search"
              aria-autocomplete="list" aria-controls="search-results"
-             type="text" name="search" placeholder="Search" spellcheck="false"
+             type="text" name="search" placeholder="Search (/) for a class, method, ..." spellcheck="false"
              title="Type to search, Up and Down to navigate, Enter to load">
     </div>
 
@@ -53,41 +53,38 @@
 
   </div>
 
-
+  
 
   <div id="class-metadata">
-
-
+    
+    
 <div id="parent-class-section" class="nav-section">
   <h3>Parent</h3>
 
-  <p class="link"><a href="Jongleur/WorkerTask.html">Jongleur::WorkerTask</a>
+  <p class="link"><a href="Task.html">Task</a>
 </div>
 
-
+    
 <div id="includes-section" class="nav-section">
   <h3>Included Modules</h3>
 
   <ul class="link-list">
-    <li><a class="include" href="InputRetrieval.html">InputRetrieval</a>
+    <li><span class="include">InputRetrieval</span>
   </ul>
 </div>
 
-
-
+    
+    
 <!-- Method Quickref -->
 <div id="method-list-section" class="nav-section">
   <h3>Methods</h3>
 
   <ul class="link-list" role="directory">
-    <li ><a href="#method-c-new">::new</a>
     <li ><a href="#method-i-execute">#execute</a>
     <li ><a href="#method-i-filter_segment_words">#filter_segment_words</a>
-    <li ><a href="#method-i-get_documents">#get_documents</a>
     <li ><a href="#method-i-retrieve_filtered_words">#retrieve_filtered_words</a>
     <li ><a href="#method-i-retrieve_input">#retrieve_input</a>
     <li ><a href="#method-i-store_topic_result">#store_topic_result</a>
-    <li ><a href="#method-i-store_topics">#store_topics</a>
   </ul>
 </div>
 
@@ -100,7 +97,7 @@
   </h1>
 
   <section class="description">
-
+    
 <p>This task performs topic modeling on a text file using a pre-trained model.</p>
 
   </section>
@@ -111,56 +108,53 @@
 
 
 
-     <section id="public-class-5Buntitled-5D-method-details" class="method-section">
-       <header>
-         <h3>Public Class Methods</h3>
-       </header>
-
-      <div id="method-c-new" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">new</span><span
-            class="method-args">(model_params)</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-
-        <div class="method-description">
-
-
-          <div class="method-source-code" id="new-source">
-            <pre><span class="ruby-comment"># File lib/general_task_agent.rb, line 63</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">initialize</span>(<span class="ruby-identifier">model_params</span>)
-  <span class="ruby-ivar">@model</span> = <span class="ruby-constant">TopicModel</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">model_params</span>)
-<span class="ruby-keyword">end</span></pre>
-          </div>
-        </div>
-
-
-      </div>
-
-    </section>
-
      <section id="public-instance-5Buntitled-5D-method-details" class="method-section">
        <header>
          <h3>Public Instance Methods</h3>
        </header>
 
       <div id="method-i-execute" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">execute</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">execute</span><span
+              class="method-args">()</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
+          <p>Executes the task to perform topic modeling on a <a href="FileObject.html"><code>FileObject</code></a>.</p>
 
+<p>Retrieves the <a href="FileObject.html"><code>FileObject</code></a> from Redis, extracts filtered words from its segments, loads or creates a topic model using the TopicModelProcessor, infers topics for each set of filtered words, stores the topic results in the <a href="FileObject.html"><code>FileObject</code></a>, and logs the progress.</p>
+
+<p>@return [void]</p>
 
           <div class="method-source-code" id="execute-source">
-            <pre><span class="ruby-comment"># File lib/general_task_agent.rb, line 67</span>
+            <pre><span class="ruby-comment"># File lib/tasks/topic_modeling_task.rb, line 17</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">execute</span>
-  <span class="ruby-comment"># Perform topic modeling</span>
-  <span class="ruby-identifier">documents</span> = <span class="ruby-identifier">get_documents</span>()
-  <span class="ruby-identifier">topics</span> = <span class="ruby-ivar">@model</span>.<span class="ruby-identifier">extract_topics</span>(<span class="ruby-identifier">documents</span>)
-  <span class="ruby-identifier">store_topics</span>(<span class="ruby-identifier">topics</span>)
+  <span class="ruby-comment"># Log the start of the task.</span>
+  <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-string">&quot;Starting TopicModelingTask&quot;</span>
+
+  <span class="ruby-comment"># Retrieve the FileObject from Redis.</span>
+  <span class="ruby-identifier">textfile</span> = <span class="ruby-identifier">retrieve_input</span>
+  <span class="ruby-comment"># Retrieve filtered words from the FileObject&#39;s segments.</span>
+  <span class="ruby-identifier">filtered_words</span> = <span class="ruby-identifier">retrieve_filtered_words</span>(<span class="ruby-identifier">textfile</span>)
+
+  <span class="ruby-comment"># Get an instance of the TopicModelProcessor.</span>
+  <span class="ruby-identifier">topic_processor</span> = <span class="ruby-constant">Flowbots</span><span class="ruby-operator">::</span><span class="ruby-constant">TopicModelProcessor</span>.<span class="ruby-identifier">instance</span>
+  <span class="ruby-comment"># Load or create a topic model.</span>
+  <span class="ruby-identifier">topic_processor</span>.<span class="ruby-identifier">load_or_create_model</span>
+
+  <span class="ruby-comment"># Infer topics for each set of filtered words.</span>
+  <span class="ruby-identifier">results</span> = <span class="ruby-identifier">filtered_words</span>.<span class="ruby-identifier">map</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">words</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">topic_processor</span>.<span class="ruby-identifier">infer_topics</span>(<span class="ruby-identifier">words</span>.<span class="ruby-identifier">join</span>(<span class="ruby-string">&quot; &quot;</span>))
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-comment"># Store the topic results in the FileObject.</span>
+  <span class="ruby-identifier">store_topic_result</span>(<span class="ruby-identifier">textfile</span>, <span class="ruby-identifier">results</span>)
+
+  <span class="ruby-comment"># Log the completion of the task.</span>
+  <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-string">&quot;TopicModelingTask completed&quot;</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
         </div>
@@ -176,10 +170,12 @@
        </header>
 
       <div id="method-i-filter_segment_words" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">filter_segment_words</span><span
-            class="method-args">(segment)</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">filter_segment_words</span><span
+              class="method-args">(segment)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
@@ -206,32 +202,13 @@
 
       </div>
 
-      <div id="method-i-get_documents" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">get_documents</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-
-        <div class="method-description">
-
-
-          <div class="method-source-code" id="get_documents-source">
-            <pre><span class="ruby-comment"># File lib/general_task_agent.rb, line 76</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">get_documents</span>
-  <span class="ruby-comment"># Retrieve documents for topic modeling</span>
-<span class="ruby-keyword">end</span></pre>
-          </div>
-        </div>
-
-
-      </div>
-
       <div id="method-i-retrieve_filtered_words" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">retrieve_filtered_words</span><span
-            class="method-args">(textfile)</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">retrieve_filtered_words</span><span
+              class="method-args">(textfile)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
@@ -239,7 +216,7 @@
 
 <p>@param textfile [FileObject] The <a href="FileObject.html"><code>FileObject</code></a> to retrieve filtered words from.</p>
 
-<p>@return [Array&lt;Array&lt;String&gt;&gt;] An array of arrays, where each inner array contains  filtered words from a segment.</p>
+<p>@return [Array&lt;Array&lt;String&gt;&gt;] An array of arrays, where each inner array contains filtered words from a segment.</p>
 
           <div class="method-source-code" id="retrieve_filtered_words-source">
             <pre><span class="ruby-comment"># File lib/tasks/topic_modeling_task.rb, line 58</span>
@@ -256,10 +233,12 @@
       </div>
 
       <div id="method-i-retrieve_input" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">retrieve_input</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">retrieve_input</span><span
+              class="method-args">()</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
@@ -279,10 +258,12 @@
       </div>
 
       <div id="method-i-store_topic_result" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">store_topic_result</span><span
-            class="method-args">(textfile, result)</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">store_topic_result</span><span
+              class="method-args">(textfile, result)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
@@ -320,27 +301,6 @@
 
       </div>
 
-      <div id="method-i-store_topics" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">store_topics</span><span
-            class="method-args">(topics)</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-
-        <div class="method-description">
-
-
-          <div class="method-source-code" id="store_topics-source">
-            <pre><span class="ruby-comment"># File lib/general_task_agent.rb, line 80</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">store_topics</span>(<span class="ruby-identifier">topics</span>)
-  <span class="ruby-comment"># Store the extracted topics</span>
-<span class="ruby-keyword">end</span></pre>
-          </div>
-        </div>
-
-
-      </div>
-
     </section>
 
   </section>
@@ -349,6 +309,7 @@
 
 <footer id="validator-badges" role="contentinfo">
   <p><a href="https://validator.w3.org/check/referer">Validate</a>
-  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.4.0.
+  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.6.3.1.
   <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
 </footer>
+

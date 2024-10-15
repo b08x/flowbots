@@ -41,7 +41,7 @@
     <div id="search-field-wrapper">
       <input id="search-field" role="combobox" aria-label="Search"
              aria-autocomplete="list" aria-controls="search-results"
-             type="text" name="search" placeholder="Search" spellcheck="false"
+             type="text" name="search" placeholder="Search (/) for a class, method, ..." spellcheck="false"
              title="Type to search, Up and Down to navigate, Enter to load">
     </div>
 
@@ -69,7 +69,7 @@
   <h3>Included Modules</h3>
 
   <ul class="link-list">
-    <li><a class="include" href="InputRetrieval.html">InputRetrieval</a>
+    <li><span class="include">InputRetrieval</span>
   </ul>
 </div>
 
@@ -87,7 +87,6 @@
     <li ><a href="#method-i-retrieve_input">#retrieve_input</a>
     <li ><a href="#method-i-retrieve_nlp_result">#retrieve_nlp_result</a>
     <li ><a href="#method-i-store_analysis_result">#store_analysis_result</a>
-    <li ><a href="#method-i-write_markdown">#write_markdown</a>
     <li ><a href="#method-i-write_markdown_report">#write_markdown_report</a>
   </ul>
 </div>
@@ -104,8 +103,6 @@
     
 <p>This task performs LLM analysis on a text file using a pre-trained model.</p>
 
-<p>This task performs LLM analysis on a text file using a pre-trained model.</p>
-
   </section>
 
   <section id="5Buntitled-5D" class="documentation-section">
@@ -120,10 +117,12 @@
        </header>
 
       <div id="method-i-execute" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">execute</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">execute</span><span
+              class="method-args">()</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
@@ -159,6 +158,9 @@
 
     <span class="ruby-comment"># Generate a prompt for the agent based on the retrieved information.</span>
     <span class="ruby-identifier">prompt</span> = <span class="ruby-identifier">generate_analysis_prompt</span>(<span class="ruby-identifier">textfile</span>, <span class="ruby-identifier">content</span>, <span class="ruby-identifier">metadata</span>, <span class="ruby-identifier">nlp_result</span>)
+
+    <span class="ruby-identifier">puts</span> <span class="ruby-identifier">prompt</span>
+    <span class="ruby-identifier">raise</span>
 
     <span class="ruby-identifier">analysis_result</span> = <span class="ruby-identifier">agent</span>.<span class="ruby-identifier">process</span>(<span class="ruby-identifier">prompt</span>)
 
@@ -197,10 +199,12 @@
        </header>
 
       <div id="method-i-format_nlp_result" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">format_nlp_result</span><span
-            class="method-args">(nlp_result)</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">format_nlp_result</span><span
+              class="method-args">(nlp_result)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
@@ -211,7 +215,7 @@
 <p>@return [String] The formatted NLP results.</p>
 
           <div class="method-source-code" id="format_nlp_result-source">
-            <pre><span class="ruby-comment"># File lib/tasks/llm_analysis_task.rb, line 152</span>
+            <pre><span class="ruby-comment"># File lib/tasks/llm_analysis_task.rb, line 153</span>
   <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">format_nlp_result</span>(<span class="ruby-identifier">nlp_result</span>)
     <span class="ruby-identifier">nlp_result</span>.<span class="ruby-identifier">first</span>(<span class="ruby-value">10</span>).<span class="ruby-identifier">map</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">segment</span><span class="ruby-operator">|</span>
       <span class="ruby-identifier">&lt;&lt;~SEGMENT</span>
@@ -228,10 +232,12 @@
       </div>
 
       <div id="method-i-generate_analysis_prompt" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">generate_analysis_prompt</span><span
-            class="method-args">(textfile, content, metadata, nlp_result)</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">generate_analysis_prompt</span><span
+              class="method-args">(textfile, content, metadata, nlp_result)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
@@ -240,7 +246,7 @@
 <p>PROMPT end</p>
 
           <div class="method-source-code" id="generate_analysis_prompt-source">
-            <pre><span class="ruby-comment"># File lib/tasks/llm_analysis_task.rb, line 133</span>
+            <pre><span class="ruby-comment"># File lib/tasks/llm_analysis_task.rb, line 136</span>
   <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">generate_analysis_prompt</span>(<span class="ruby-identifier">textfile</span>, <span class="ruby-identifier">content</span>, <span class="ruby-identifier">metadata</span>, <span class="ruby-identifier">nlp_result</span>)
     <span class="ruby-identifier">&lt;&lt;~PROMPT</span>
 <span class="ruby-value">      Greetings, Here&#39;s what we have:
@@ -250,8 +256,6 @@
       Content:
       #{content}
 
-      NLP Analysis:
-      #{format_nlp_result(nlp_result)}
 </span><span class="ruby-identifier">    PROMPT</span>
   <span class="ruby-keyword">end</span></pre>
           </div>
@@ -261,10 +265,12 @@
       </div>
 
       <div id="method-i-retrieve_file_metadata" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">retrieve_file_metadata</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">retrieve_file_metadata</span><span
+              class="method-args">()</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
@@ -273,7 +279,7 @@
 <p>@return [Hash] The file metadata.</p>
 
           <div class="method-source-code" id="retrieve_file_metadata-source">
-            <pre><span class="ruby-comment"># File lib/tasks/llm_analysis_task.rb, line 85</span>
+            <pre><span class="ruby-comment"># File lib/tasks/llm_analysis_task.rb, line 88</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">retrieve_file_metadata</span>
   <span class="ruby-constant">JSON</span>.<span class="ruby-identifier">parse</span>(<span class="ruby-constant">Jongleur</span><span class="ruby-operator">::</span><span class="ruby-constant">WorkerTask</span>.<span class="ruby-identifier">class_variable_get</span>(<span class="ruby-value">:@@redis</span>).<span class="ruby-identifier">get</span>(<span class="ruby-string">&quot;file_metadata&quot;</span>) <span class="ruby-operator">||</span> <span class="ruby-string">&quot;{}&quot;</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -284,17 +290,19 @@
       </div>
 
       <div id="method-i-retrieve_input" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">retrieve_input</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">retrieve_input</span><span
+              class="method-args">()</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
           
 
           <div class="method-source-code" id="retrieve_input-source">
-            <pre><span class="ruby-comment"># File lib/tasks/llm_analysis_task.rb, line 63</span>
+            <pre><span class="ruby-comment"># File lib/tasks/llm_analysis_task.rb, line 66</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">retrieve_input</span>
   <span class="ruby-identifier">retrieve_file_object</span>
 <span class="ruby-keyword">end</span></pre>
@@ -305,10 +313,12 @@
       </div>
 
       <div id="method-i-retrieve_nlp_result" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">retrieve_nlp_result</span><span
-            class="method-args">(textfile)</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">retrieve_nlp_result</span><span
+              class="method-args">(textfile)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
@@ -319,7 +329,7 @@
 <p>@return [Array] An array of NLP results for each segment.</p>
 
           <div class="method-source-code" id="retrieve_nlp_result-source">
-            <pre><span class="ruby-comment"># File lib/tasks/llm_analysis_task.rb, line 94</span>
+            <pre><span class="ruby-comment"># File lib/tasks/llm_analysis_task.rb, line 97</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">retrieve_nlp_result</span>(<span class="ruby-identifier">textfile</span>)
   <span class="ruby-identifier">textfile</span>.<span class="ruby-identifier">retrieve_segments</span>.<span class="ruby-identifier">map</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">segment</span><span class="ruby-operator">|</span>
     {
@@ -335,10 +345,12 @@
       </div>
 
       <div id="method-i-store_analysis_result" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">store_analysis_result</span><span
-            class="method-args">(textfile, result)</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">store_analysis_result</span><span
+              class="method-args">(textfile, result)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
@@ -349,7 +361,7 @@
 <p>@return [void]</p>
 
           <div class="method-source-code" id="store_analysis_result-source">
-            <pre><span class="ruby-comment"># File lib/tasks/llm_analysis_task.rb, line 168</span>
+            <pre><span class="ruby-comment"># File lib/tasks/llm_analysis_task.rb, line 169</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">store_analysis_result</span>(<span class="ruby-identifier">textfile</span>, <span class="ruby-identifier">result</span>)
   <span class="ruby-identifier">textfile</span>.<span class="ruby-identifier">update</span>(<span class="ruby-value">llm_analysis:</span> <span class="ruby-identifier">result</span>)
   <span class="ruby-comment"># Jongleur::WorkerTask.class_variable_get(:@@redis).set(&quot;analysis_result&quot;, result.to_json)</span>
@@ -360,40 +372,13 @@
 
       </div>
 
-      <div id="method-i-write_markdown" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">write_markdown</span><span
-            class="method-args">(textfile, analysis_result)</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-
-        <div class="method-description">
-          <p>Writes the LLM analysis result to a Markdown file.</p>
-
-<p>@param textfile [Textfile] The Textfile object. @param analysis_result [String] The LLM analysis result.</p>
-
-<p>@return [void]</p>
-
-          <div class="method-source-code" id="write_markdown-source">
-            <pre><span class="ruby-comment"># File lib/ui.rb, line 126</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">write_markdown</span>(<span class="ruby-identifier">textfile</span>, <span class="ruby-identifier">analysis_result</span>)
-  <span class="ruby-comment"># Create a Markdown file name based on the Textfile name.</span>
-  <span class="ruby-identifier">markdown_file</span> = <span class="ruby-node">&quot;#{textfile.name.gsub(/\s+/, &#39;_&#39;)}_analysis.md&quot;</span>
-
-  <span class="ruby-comment"># Write the analysis result to the Markdown file.</span>
-  <span class="ruby-constant">File</span>.<span class="ruby-identifier">write</span>(<span class="ruby-identifier">markdown_file</span>, <span class="ruby-identifier">analysis_result</span>)
-<span class="ruby-keyword">end</span></pre>
-          </div>
-        </div>
-
-
-      </div>
-
       <div id="method-i-write_markdown_report" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">write_markdown_report</span><span
-            class="method-args">(result)</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">write_markdown_report</span><span
+              class="method-args">(result)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
@@ -404,7 +389,7 @@
 <p>@return [void]</p>
 
           <div class="method-source-code" id="write_markdown_report-source">
-            <pre><span class="ruby-comment"># File lib/tasks/llm_analysis_task.rb, line 179</span>
+            <pre><span class="ruby-comment"># File lib/tasks/llm_analysis_task.rb, line 180</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">write_markdown_report</span>(<span class="ruby-identifier">result</span>)
   <span class="ruby-identifier">timestamp</span> = <span class="ruby-constant">Time</span>.<span class="ruby-identifier">now</span>.<span class="ruby-identifier">strftime</span>(<span class="ruby-string">&quot;%Y%m%d_%H%M%S&quot;</span>)
   <span class="ruby-identifier">filename</span> = <span class="ruby-node">&quot;llm_analysis_task_#{timestamp}.md&quot;</span>
@@ -429,7 +414,7 @@
 
 <footer id="validator-badges" role="contentinfo">
   <p><a href="https://validator.w3.org/check/referer">Validate</a>
-  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.4.0.
+  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.6.3.1.
   <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
 </footer>
 

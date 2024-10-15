@@ -41,7 +41,7 @@
     <div id="search-field-wrapper">
       <input id="search-field" role="combobox" aria-label="Search"
              aria-autocomplete="list" aria-controls="search-results"
-             type="text" name="search" placeholder="Search" spellcheck="false"
+             type="text" name="search" placeholder="Search (/) for a class, method, ..." spellcheck="false"
              title="Type to search, Up and Down to navigate, Enter to load">
     </div>
 
@@ -109,10 +109,12 @@
        </header>
 
       <div id="method-c-load_workflows" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">load_workflows</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">load_workflows</span><span
+              class="method-args">()</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
@@ -157,10 +159,12 @@
       </div>
 
       <div id="method-c-new" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">new</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">new</span><span
+              class="method-args">()</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
@@ -187,10 +191,12 @@
        </header>
 
       <div id="method-i-list_and_select" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">list_and_select</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">list_and_select</span><span
+              class="method-args">()</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
@@ -212,10 +218,12 @@
       </div>
 
       <div id="method-i-run" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">run</span><span
-            class="method-args">(workflow_name)</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">run</span><span
+              class="method-args">(workflow_name)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
@@ -257,16 +265,18 @@
        </header>
 
       <div id="method-i-display_workflows" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">display_workflows</span><span
-            class="method-args">(workflows)</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">display_workflows</span><span
+              class="method-args">(workflows)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
           <p>Displays a list of available workflows in a table format.</p>
 
-<p>@param workflows [Array&lt;Array(String, String)&gt;] An array of arrays, where each inner array contains  the workflow name and its description.</p>
+<p>@param workflows [Array&lt;Array(String, String)>] An array of arrays, where each inner array contains the workflow name and its description.</p>
 
 <p>@return [void]</p>
 
@@ -292,10 +302,12 @@
       </div>
 
       <div id="method-i-extract_workflow_description" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">extract_workflow_description</span><span
-            class="method-args">(file)</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">extract_workflow_description</span><span
+              class="method-args">(file)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
@@ -318,16 +330,18 @@
       </div>
 
       <div id="method-i-get_workflows" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">get_workflows</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">get_workflows</span><span
+              class="method-args">()</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
           <p>Retrieves a list of available workflows from the WORKFLOW_DIR directory.</p>
 
-<p>@return [Array&lt;Array(String, String)&gt;] An array of arrays, where each inner array contains  the workflow name and its description.</p>
+<p>@return [Array&lt;Array(String, String)>] An array of arrays, where each inner array contains the workflow name and its description.</p>
 
           <div class="method-source-code" id="get_workflows-source">
             <pre><span class="ruby-comment"># File lib/workflows.rb, line 85</span>
@@ -345,16 +359,18 @@
       </div>
 
       <div id="method-i-select_workflow" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">select_workflow</span><span
-            class="method-args">(workflows)</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">select_workflow</span><span
+              class="method-args">(workflows)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
           <p>Prompts the user to select a workflow from the list of available workflows.</p>
 
-<p>@param workflows [Array&lt;Array(String, String)&gt;] An array of arrays, where each inner array contains  the workflow name and its description.</p>
+<p>@param workflows [Array&lt;Array(String, String)>] An array of arrays, where each inner array contains the workflow name and its description.</p>
 
 <p>@return [String, nil] The name of the selected workflow, or nil if no workflow is selected.</p>
 
@@ -378,7 +394,7 @@
 
 <footer id="validator-badges" role="contentinfo">
   <p><a href="https://validator.w3.org/check/referer">Validate</a>
-  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.4.0.
+  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.6.3.1.
   <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
 </footer>
 

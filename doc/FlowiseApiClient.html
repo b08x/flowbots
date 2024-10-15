@@ -41,7 +41,7 @@
     <div id="search-field-wrapper">
       <input id="search-field" role="combobox" aria-label="Search"
              aria-autocomplete="list" aria-controls="search-results"
-             type="text" name="search" placeholder="Search" spellcheck="false"
+             type="text" name="search" placeholder="Search (/) for a class, method, ..." spellcheck="false"
              title="Type to search, Up and Down to navigate, Enter to load">
     </div>
 
@@ -105,10 +105,12 @@
        </header>
 
       <div id="method-c-new" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">new</span><span
-            class="method-args">(base_url)</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">new</span><span
+              class="method-args">(base_url)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
@@ -142,16 +144,18 @@
        </header>
 
       <div id="method-i-predict" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">predict</span><span
-            class="method-args">(chatflow_id, options={})</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">predict</span><span
+              class="method-args">(chatflow_id, options={})</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
           <p>Sends a prediction request to the Flowise <a href="API.html"><code>API</code></a>.</p>
 
-<p>@param chatflow_id [String] The ID of the chatflow to use for prediction. @param options [Hash] A hash of options for the prediction request.  - :question [String] The question to ask the chatflow.  - :history [Array] A list of previous questions and answers.  - :overrideConfig [Hash] A hash of configuration overrides for the chatflow.  - :socketIOClientId [String] The socket.io client ID.  - :file_path [String] The path to a file to upload for prediction.  - :worker_name [String] The name of the worker to use for prediction.  - :worker_prompt [String] The prompt to use for the worker.  - :prompt_values [Hash] A hash of prompt values to use for the worker.</p>
+<p>@param chatflow_id [String] The ID of the chatflow to use for prediction. @param options [Hash] A hash of options for the prediction request. - :question [String] The question to ask the chatflow. - :history [Array] A list of previous questions and answers. - :overrideConfig [Hash] A hash of configuration overrides for the chatflow. - :socketIOClientId [String] The socket.io client ID. - :file_path [String] The path to a file to upload for prediction. - :worker_name [String] The name of the worker to use for prediction. - :worker_prompt [String] The prompt to use for the worker. - :prompt_values [Hash] A hash of prompt values to use for the worker.</p>
 
 <p>@return [Hash] The response from the Flowise <a href="API.html"><code>API</code></a>.</p>
 
@@ -196,16 +200,18 @@
       </div>
 
       <div id="method-i-upsert_document" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">upsert_document</span><span
-            class="method-args">(chatflow_id, file_path, local_ai_config={})</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">upsert_document</span><span
+              class="method-args">(chatflow_id, file_path, local_ai_config={})</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
           <p>Sends a document upsert request to the Flowise <a href="API.html"><code>API</code></a>.</p>
 
-<p>@param chatflow_id [String] The ID of the chatflow to use for document upsert. @param file_path [String] The path to the file to upload. @param local_ai_config [Hash] A hash of configuration options for the local AI.  - :api_key [String] The <a href="API.html"><code>API</code></a> key for the local AI.  - :base_path [String] The base path for the local AI.  - :model_name [String] The name of the model to use for the local AI.</p>
+<p>@param chatflow_id [String] The ID of the chatflow to use for document upsert. @param file_path [String] The path to the file to upload. @param local_ai_config [Hash] A hash of configuration options for the local AI. - :api_key [String] The <a href="API.html"><code>API</code></a> key for the local AI. - :base_path [String] The base path for the local AI. - :model_name [String] The name of the model to use for the local AI.</p>
 
 <p>@return [Hash] The response from the Flowise <a href="API.html"><code>API</code></a>.</p>
 
@@ -246,10 +252,12 @@
        </header>
 
       <div id="method-i-handle_response" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">handle_response</span><span
-            class="method-args">(response)</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">handle_response</span><span
+              class="method-args">(response)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
@@ -283,7 +291,7 @@
 
 <footer id="validator-badges" role="contentinfo">
   <p><a href="https://validator.w3.org/check/referer">Validate</a>
-  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.4.0.
+  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.6.3.1.
   <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
 </footer>
 

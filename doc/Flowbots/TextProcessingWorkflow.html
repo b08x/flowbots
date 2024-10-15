@@ -41,7 +41,7 @@
     <div id="search-field-wrapper">
       <input id="search-field" role="combobox" aria-label="Search"
              aria-autocomplete="list" aria-controls="search-results"
-             type="text" name="search" placeholder="Search" spellcheck="false"
+             type="text" name="search" placeholder="Search (/) for a class, method, ..." spellcheck="false"
              title="Type to search, Up and Down to navigate, Enter to load">
     </div>
 
@@ -93,7 +93,7 @@
 
   <section class="description">
     
-<p>This class defines a workflow for processing text files, either individually or in batch mode. It utilizes a <a href="UnifiedFileProcessingPipeline.html"><code>UnifiedFileProcessingPipeline</code></a> to handle the initial processing steps and then performs additional tasks like text tagging, topic modeling, LLM analysis, and result display.</p>
+<p>This class defines a workflow for processing text files, either individually or in batch mode. It utilizes a UnifiedFileProcessingPipeline to handle the initial processing steps and then performs additional tasks like text tagging, topic modeling, LLM analysis, and result display.</p>
 
   </section>
 
@@ -125,10 +125,12 @@
        </header>
 
       <div id="method-c-new" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">new</span><span
-            class="method-args">(input_file_path=nil, batch_mode=false)</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">new</span><span
+              class="method-args">(input_file_path=nil, batch_mode=false)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
@@ -163,10 +165,12 @@
        </header>
 
       <div id="method-i-run" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">run</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">run</span><span
+              class="method-args">()</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
@@ -211,10 +215,12 @@
        </header>
 
       <div id="method-i-create_or_fetch_file_object" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">create_or_fetch_file_object</span><span
-            class="method-args">(file_path)</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">create_or_fetch_file_object</span><span
+              class="method-args">(file_path)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
@@ -225,12 +231,15 @@
 <p>@return [FileObject] The created or fetched <a href="../FileObject.html"><code>FileObject</code></a>.</p>
 
           <div class="method-source-code" id="create_or_fetch_file_object-source">
-            <pre><span class="ruby-comment"># File lib/workflows/text_processing_workflow.rb, line 97</span>
+            <pre><span class="ruby-comment"># File lib/workflows/text_processing_workflow.rb, line 108</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_or_fetch_file_object</span>(<span class="ruby-identifier">file_path</span>)
-  <span class="ruby-comment"># Assuming we&#39;re using ActiveRecord and there&#39;s a FileObject model</span>
-  <span class="ruby-comment"># This method should create a new FileObject or fetch an existing one</span>
-  <span class="ruby-identifier">file_path</span> = <span class="ruby-identifier">file_path</span>[<span class="ruby-value">:path</span>] <span class="ruby-keyword">if</span> <span class="ruby-identifier">file_path</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Hash</span>)
-  <span class="ruby-constant">FileObject</span>.<span class="ruby-identifier">find_or_create_by_path</span>(<span class="ruby-value">path:</span> <span class="ruby-identifier">file_path</span>)
+  <span class="ruby-constant">FileObject</span>.<span class="ruby-identifier">find_or_create_by_path</span>(<span class="ruby-identifier">file_path</span>)
+<span class="ruby-keyword">rescue</span> <span class="ruby-constant">ArgumentError</span> <span class="ruby-operator">=&gt;</span> <span class="ruby-identifier">e</span>
+  <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">error</span> <span class="ruby-node">&quot;Invalid file path: #{e.message}&quot;</span>
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">FlowbotError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-string">&quot;Invalid file path&quot;</span>, <span class="ruby-string">&quot;INVALID_FILE_PATH&quot;</span>, <span class="ruby-value">details:</span> <span class="ruby-identifier">e</span>.<span class="ruby-identifier">message</span>)
+<span class="ruby-keyword">rescue</span> <span class="ruby-constant">StandardError</span> <span class="ruby-operator">=&gt;</span> <span class="ruby-identifier">e</span>
+  <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">error</span> <span class="ruby-node">&quot;Error creating or fetching FileObject: #{e.message}&quot;</span>
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">FlowbotError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-string">&quot;Error processing file&quot;</span>, <span class="ruby-string">&quot;FILE_PROCESSING_ERROR&quot;</span>, <span class="ruby-value">details:</span> <span class="ruby-identifier">e</span>.<span class="ruby-identifier">message</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
         </div>
@@ -239,10 +248,12 @@
       </div>
 
       <div id="method-i-fetch_unprocessed_file_ids" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">fetch_unprocessed_file_ids</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">fetch_unprocessed_file_ids</span><span
+              class="method-args">()</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
@@ -251,7 +262,7 @@
 <p>@return [Array&lt;Integer&gt;] An array of unprocessed file IDs.</p>
 
           <div class="method-source-code" id="fetch_unprocessed_file_ids-source">
-            <pre><span class="ruby-comment"># File lib/workflows/text_processing_workflow.rb, line 107</span>
+            <pre><span class="ruby-comment"># File lib/workflows/text_processing_workflow.rb, line 121</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">fetch_unprocessed_file_ids</span>
   <span class="ruby-comment"># Assuming we&#39;re using ActiveRecord and there&#39;s a FileObject model</span>
   <span class="ruby-comment"># This query fetches all file IDs where llm_analysis is nil or an empty string</span>
@@ -266,10 +277,12 @@
       </div>
 
       <div id="method-i-perform_additional_tasks" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">perform_additional_tasks</span><span
-            class="method-args">(file_id)</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">perform_additional_tasks</span><span
+              class="method-args">(_file_id)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
@@ -277,18 +290,17 @@
 
 <p>Defines the workflow for additional tasks and runs the workflow using the orchestrator.</p>
 
-<p>@param file_id [Integer] The ID of the file to process.</p>
+<p>@param _file_id [Integer] The ID of the file to process (unused).</p>
 
 <p>@return [void]</p>
 
           <div class="method-source-code" id="perform_additional_tasks-source">
-            <pre><span class="ruby-comment"># File lib/workflows/text_processing_workflow.rb, line 122</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">perform_additional_tasks</span>(<span class="ruby-identifier">file_id</span>)
+            <pre><span class="ruby-comment"># File lib/workflows/text_processing_workflow.rb, line 136</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">perform_additional_tasks</span>(<span class="ruby-identifier">_file_id</span>)
   <span class="ruby-identifier">additional_tasks</span> = {
     <span class="ruby-value">TextTaggerTask:</span> [<span class="ruby-value">:TopicModelingTask</span>],
     <span class="ruby-value">TopicModelingTask:</span> [<span class="ruby-value">:LlmAnalysisTask</span>],
-    <span class="ruby-value">LlmAnalysisTask:</span> [<span class="ruby-value">:DisplayResultsTask</span>],
-    <span class="ruby-value">DisplayResultsTask:</span> []
+    <span class="ruby-value">LlmAnalysisTask:</span> []
   }
 
   <span class="ruby-ivar">@pipeline</span>.<span class="ruby-identifier">orchestrator</span>.<span class="ruby-identifier">define_workflow</span>(<span class="ruby-identifier">additional_tasks</span>)
@@ -301,10 +313,12 @@
       </div>
 
       <div id="method-i-process_batch" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">process_batch</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">process_batch</span><span
+              class="method-args">()</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
@@ -329,10 +343,12 @@
       </div>
 
       <div id="method-i-process_single_file" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">process_single_file</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">process_single_file</span><span
+              class="method-args">()</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
@@ -345,10 +361,21 @@
           <div class="method-source-code" id="process_single_file-source">
             <pre><span class="ruby-comment"># File lib/workflows/text_processing_workflow.rb, line 85</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">process_single_file</span>
-  <span class="ruby-identifier">p</span> <span class="ruby-ivar">@input_file_path</span>
-  <span class="ruby-identifier">puts</span> <span class="ruby-string">&quot;-----&quot;</span>
   <span class="ruby-identifier">file_object</span> = <span class="ruby-identifier">create_or_fetch_file_object</span>(<span class="ruby-ivar">@input_file_path</span>)
   <span class="ruby-identifier">perform_additional_tasks</span>(<span class="ruby-identifier">file_object</span>.<span class="ruby-identifier">id</span>)
+<span class="ruby-keyword">rescue</span> <span class="ruby-constant">ArgumentError</span> <span class="ruby-operator">=&gt;</span> <span class="ruby-identifier">e</span>
+  <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">error</span> <span class="ruby-node">&quot;Invalid input for file object: #{e.message}&quot;</span>
+  <span class="ruby-constant">UI</span>.<span class="ruby-identifier">say</span>(<span class="ruby-value">:error</span>, <span class="ruby-node">&quot;Invalid input for file object: #{e.message}&quot;</span>)
+<span class="ruby-keyword">rescue</span> <span class="ruby-constant">FileNotFoundError</span> <span class="ruby-operator">=&gt;</span> <span class="ruby-identifier">e</span>
+  <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">error</span> <span class="ruby-identifier">e</span>.<span class="ruby-identifier">message</span>
+  <span class="ruby-constant">UI</span>.<span class="ruby-identifier">say</span>(<span class="ruby-value">:error</span>, <span class="ruby-identifier">e</span>.<span class="ruby-identifier">message</span>)
+<span class="ruby-keyword">rescue</span> <span class="ruby-constant">FileObjectError</span> <span class="ruby-operator">=&gt;</span> <span class="ruby-identifier">e</span>
+  <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">error</span> <span class="ruby-node">&quot;Error processing file: #{e.message}&quot;</span>
+  <span class="ruby-constant">UI</span>.<span class="ruby-identifier">say</span>(<span class="ruby-value">:error</span>, <span class="ruby-node">&quot;Error processing file: #{e.message}&quot;</span>)
+<span class="ruby-keyword">rescue</span> <span class="ruby-constant">StandardError</span> <span class="ruby-operator">=&gt;</span> <span class="ruby-identifier">e</span>
+  <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">error</span> <span class="ruby-node">&quot;Unexpected error in text processing: #{e.message}&quot;</span>
+  <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">error</span> <span class="ruby-identifier">e</span>.<span class="ruby-identifier">backtrace</span>.<span class="ruby-identifier">join</span>(<span class="ruby-string">&quot;\n&quot;</span>)
+  <span class="ruby-constant">UI</span>.<span class="ruby-identifier">say</span>(<span class="ruby-value">:error</span>, <span class="ruby-string">&quot;Unexpected error in text processing. Check logs for details.&quot;</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
         </div>
@@ -357,10 +384,12 @@
       </div>
 
       <div id="method-i-prompt_for_file" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">prompt_for_file</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">prompt_for_file</span><span
+              class="method-args">()</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
@@ -392,7 +421,7 @@
 
 <footer id="validator-badges" role="contentinfo">
   <p><a href="https://validator.w3.org/check/referer">Validate</a>
-  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.4.0.
+  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.6.3.1.
   <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
 </footer>
 

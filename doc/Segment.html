@@ -41,7 +41,7 @@
     <div id="search-field-wrapper">
       <input id="search-field" role="combobox" aria-label="Search"
              aria-autocomplete="list" aria-controls="search-results"
-             type="text" name="search" placeholder="Search" spellcheck="false"
+             type="text" name="search" placeholder="Search (/) for a class, method, ..." spellcheck="false"
              title="Type to search, Up and Down to navigate, Enter to load">
     </div>
 
@@ -112,17 +112,19 @@
        </header>
 
       <div id="method-i-add_word" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">add_word</span><span
-            class="method-args">(word_data)</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">add_word</span><span
+              class="method-args">(word_data)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
           
 
           <div class="method-source-code" id="add_word-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 206</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 212</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">add_word</span>(<span class="ruby-identifier">word_data</span>)
   <span class="ruby-identifier">word</span> = <span class="ruby-constant">Word</span>.<span class="ruby-identifier">create</span>(<span class="ruby-identifier">word_data</span>.<span class="ruby-identifier">merge</span>(<span class="ruby-value">segment:</span> <span class="ruby-keyword">self</span>))
   <span class="ruby-identifier">words</span>.<span class="ruby-identifier">push</span>(<span class="ruby-identifier">word</span>)
@@ -136,17 +138,19 @@
       </div>
 
       <div id="method-i-add_words" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">add_words</span><span
-            class="method-args">(new_words)</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">add_words</span><span
+              class="method-args">(new_words)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
           
 
           <div class="method-source-code" id="add_words-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 213</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 219</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">add_words</span>(<span class="ruby-identifier">new_words</span>)
   <span class="ruby-identifier">new_words</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">word_data</span><span class="ruby-operator">|</span>
     <span class="ruby-identifier">word</span> = <span class="ruby-constant">Word</span>.<span class="ruby-identifier">create</span>(<span class="ruby-identifier">word_data</span>.<span class="ruby-identifier">merge</span>(<span class="ruby-value">segment:</span> <span class="ruby-keyword">self</span>))
@@ -161,17 +165,19 @@
       </div>
 
       <div id="method-i-retrieve_word_texts" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">retrieve_word_texts</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">retrieve_word_texts</span><span
+              class="method-args">()</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
           
 
           <div class="method-source-code" id="retrieve_word_texts-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 225</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 231</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">retrieve_word_texts</span>
   <span class="ruby-identifier">retrieve_words</span>.<span class="ruby-identifier">map</span>(<span class="ruby-operator">&amp;</span><span class="ruby-value">:word</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -182,17 +188,19 @@
       </div>
 
       <div id="method-i-retrieve_words" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">retrieve_words</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">retrieve_words</span><span
+              class="method-args">()</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
           
 
           <div class="method-source-code" id="retrieve_words-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 221</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 227</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">retrieve_words</span>
   <span class="ruby-identifier">words</span>.<span class="ruby-identifier">to_a</span>
 <span class="ruby-keyword">end</span></pre>
@@ -210,7 +218,7 @@
 
 <footer id="validator-badges" role="contentinfo">
   <p><a href="https://validator.w3.org/check/referer">Validate</a>
-  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.4.0.
+  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.6.3.1.
   <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
 </footer>
 

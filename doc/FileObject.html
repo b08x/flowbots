@@ -41,7 +41,7 @@
     <div id="search-field-wrapper">
       <input id="search-field" role="combobox" aria-label="Search"
              aria-autocomplete="list" aria-controls="search-results"
-             type="text" name="search" placeholder="Search" spellcheck="false"
+             type="text" name="search" placeholder="Search (/) for a class, method, ..." spellcheck="false"
              title="Type to search, Up and Down to navigate, Enter to load">
     </div>
 
@@ -122,17 +122,19 @@
        </header>
 
       <div id="method-c-current_batch" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">current_batch</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">current_batch</span><span
+              class="method-args">()</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
           
 
           <div class="method-source-code" id="current_batch-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 177</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 183</span>
 <span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">current_batch</span>
   <span class="ruby-identifier">batch_id</span> = <span class="ruby-identifier">redis</span>.<span class="ruby-identifier">call</span>(<span class="ruby-string">&quot;GET&quot;</span>, <span class="ruby-string">&quot;current_batch_id&quot;</span>)
   <span class="ruby-identifier">find</span>(<span class="ruby-value">batch:</span> <span class="ruby-identifier">batch_id</span>)
@@ -144,10 +146,12 @@
       </div>
 
       <div id="method-c-find_or_create_by_path" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">find_or_create_by_path</span><span
-            class="method-args">(file_path, attributes={})</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">find_or_create_by_path</span><span
+              class="method-args">(file_path, attributes={})</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
@@ -156,6 +160,8 @@
           <div class="method-source-code" id="find_or_create_by_path-source">
             <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 94</span>
 <span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">find_or_create_by_path</span>(<span class="ruby-identifier">file_path</span>, <span class="ruby-identifier">attributes</span>={})
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-node">&quot;file_path must be a String, got #{file_path.class}&quot;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">file_path</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">String</span>)
+
   <span class="ruby-identifier">existing_file</span> = <span class="ruby-identifier">find</span>(<span class="ruby-value">path:</span> <span class="ruby-identifier">file_path</span>).<span class="ruby-identifier">first</span>
   <span class="ruby-keyword">return</span> <span class="ruby-identifier">existing_file</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">existing_file</span>
 
@@ -170,6 +176,10 @@
       <span class="ruby-value">content:</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">read</span>(<span class="ruby-identifier">file_path</span>)
     )
   )
+<span class="ruby-keyword">rescue</span> <span class="ruby-constant">Errno</span><span class="ruby-operator">::</span><span class="ruby-constant">ENOENT</span>
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">FileNotFoundError</span>, <span class="ruby-node">&quot;File not found: #{file_path}&quot;</span>
+<span class="ruby-keyword">rescue</span> <span class="ruby-constant">StandardError</span> <span class="ruby-operator">=&gt;</span> <span class="ruby-identifier">e</span>
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">FileObjectError</span>, <span class="ruby-node">&quot;Error creating FileObject: #{e.message}&quot;</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
         </div>
@@ -178,17 +188,19 @@
       </div>
 
       <div id="method-c-latest" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">latest</span><span
-            class="method-args">(limit=nil)</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">latest</span><span
+              class="method-args">(limit=nil)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
           
 
           <div class="method-source-code" id="latest-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 166</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 172</span>
 <span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">latest</span>(<span class="ruby-identifier">limit</span>=<span class="ruby-keyword">nil</span>)
   <span class="ruby-keyword">if</span> <span class="ruby-identifier">limit</span>.<span class="ruby-identifier">nil?</span>
     <span class="ruby-identifier">ids</span> = <span class="ruby-identifier">redis</span>.<span class="ruby-identifier">call</span>(<span class="ruby-string">&quot;ZREVRANGE&quot;</span>, <span class="ruby-identifier">key</span>[<span class="ruby-value">:latest</span>], <span class="ruby-value">0</span>, <span class="ruby-value">0</span>)
@@ -213,17 +225,19 @@
        </header>
 
       <div id="method-i-add_lemma" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">add_lemma</span><span
-            class="method-args">(lemma_data)</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">add_lemma</span><span
+              class="method-args">(lemma_data)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
           
 
           <div class="method-source-code" id="add_lemma-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 124</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 130</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">add_lemma</span>(<span class="ruby-identifier">lemma_data</span>)
   <span class="ruby-identifier">lemma</span> = <span class="ruby-constant">Lemma</span>.<span class="ruby-identifier">create</span>(<span class="ruby-identifier">lemma_data</span>.<span class="ruby-identifier">merge</span>(<span class="ruby-value">file_object:</span> <span class="ruby-keyword">self</span>))
   <span class="ruby-identifier">lemmas</span>.<span class="ruby-identifier">push</span>(<span class="ruby-identifier">lemma</span>)
@@ -237,17 +251,19 @@
       </div>
 
       <div id="method-i-add_lemmas" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">add_lemmas</span><span
-            class="method-args">(lemmas_data)</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">add_lemmas</span><span
+              class="method-args">(lemmas_data)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
           
 
           <div class="method-source-code" id="add_lemmas-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 131</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 137</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">add_lemmas</span>(<span class="ruby-identifier">lemmas_data</span>)
   <span class="ruby-identifier">new_lemmas</span> = <span class="ruby-identifier">lemmas_data</span>.<span class="ruby-identifier">map</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">lemma_data</span><span class="ruby-operator">|</span>
     <span class="ruby-identifier">lemma</span> = <span class="ruby-constant">Lemma</span>.<span class="ruby-identifier">create</span>(<span class="ruby-identifier">lemma_data</span>.<span class="ruby-identifier">merge</span>(<span class="ruby-value">file_object:</span> <span class="ruby-keyword">self</span>))
@@ -264,17 +280,19 @@
       </div>
 
       <div id="method-i-add_segment" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">add_segment</span><span
-            class="method-args">(text)</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">add_segment</span><span
+              class="method-args">(text)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
           
 
           <div class="method-source-code" id="add_segment-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 111</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 117</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">add_segment</span>(<span class="ruby-identifier">text</span>)
   <span class="ruby-identifier">segment</span> = <span class="ruby-constant">Segment</span>.<span class="ruby-identifier">create</span>(<span class="ruby-value">text:</span>, <span class="ruby-value">file_object:</span> <span class="ruby-keyword">self</span>)
   <span class="ruby-identifier">segments</span>.<span class="ruby-identifier">push</span>(<span class="ruby-identifier">segment</span>)
@@ -288,17 +306,19 @@
       </div>
 
       <div id="method-i-add_segments" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">add_segments</span><span
-            class="method-args">(new_segments)</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">add_segments</span><span
+              class="method-args">(new_segments)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
           
 
           <div class="method-source-code" id="add_segments-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 118</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 124</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">add_segments</span>(<span class="ruby-identifier">new_segments</span>)
   <span class="ruby-identifier">new_segments</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">segment_text</span><span class="ruby-operator">|</span>
     <span class="ruby-identifier">add_segment</span>(<span class="ruby-identifier">segment_text</span>)
@@ -311,17 +331,19 @@
       </div>
 
       <div id="method-i-add_topics" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">add_topics</span><span
-            class="method-args">(new_topics)</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">add_topics</span><span
+              class="method-args">(new_topics)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
           
 
           <div class="method-source-code" id="add_topics-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 141</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 147</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">add_topics</span>(<span class="ruby-identifier">new_topics</span>)
   <span class="ruby-identifier">new_topics</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">word</span><span class="ruby-operator">|</span>
     <span class="ruby-identifier">topics</span>.<span class="ruby-identifier">add</span>(<span class="ruby-constant">Topic</span>.<span class="ruby-identifier">create</span>(<span class="ruby-value">name:</span> <span class="ruby-identifier">word</span>))
@@ -337,17 +359,19 @@
       </div>
 
       <div id="method-i-retrieve_segment_texts" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">retrieve_segment_texts</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">retrieve_segment_texts</span><span
+              class="method-args">()</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
           
 
           <div class="method-source-code" id="retrieve_segment_texts-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 154</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 160</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">retrieve_segment_texts</span>
   <span class="ruby-identifier">retrieve_segments</span>.<span class="ruby-identifier">map</span>(<span class="ruby-operator">&amp;</span><span class="ruby-value">:text</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -358,17 +382,19 @@
       </div>
 
       <div id="method-i-retrieve_segments" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">retrieve_segments</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">retrieve_segments</span><span
+              class="method-args">()</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
           
 
           <div class="method-source-code" id="retrieve_segments-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 150</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 156</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">retrieve_segments</span>
   <span class="ruby-identifier">segments</span>.<span class="ruby-identifier">to_a</span>
 <span class="ruby-keyword">end</span></pre>
@@ -379,17 +405,19 @@
       </div>
 
       <div id="method-i-retrieve_word_texts" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">retrieve_word_texts</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">retrieve_word_texts</span><span
+              class="method-args">()</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
           
 
           <div class="method-source-code" id="retrieve_word_texts-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 162</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 168</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">retrieve_word_texts</span>
   <span class="ruby-identifier">retrieve_words</span>.<span class="ruby-identifier">map</span>(<span class="ruby-operator">&amp;</span><span class="ruby-value">:word</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -400,17 +428,19 @@
       </div>
 
       <div id="method-i-retrieve_words" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">retrieve_words</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">retrieve_words</span><span
+              class="method-args">()</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
           
 
           <div class="method-source-code" id="retrieve_words-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 158</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 164</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">retrieve_words</span>
   <span class="ruby-identifier">segments</span>.<span class="ruby-identifier">to_a</span>.<span class="ruby-identifier">flat_map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">segment</span><span class="ruby-operator">|</span> <span class="ruby-identifier">segment</span>.<span class="ruby-identifier">words</span>.<span class="ruby-identifier">to_a</span> }
 <span class="ruby-keyword">end</span></pre>
@@ -428,17 +458,19 @@
        </header>
 
       <div id="method-i-after_delete" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">after_delete</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">after_delete</span><span
+              class="method-args">()</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
           
 
           <div class="method-source-code" id="after_delete-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 188</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 194</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">after_delete</span>
   <span class="ruby-identifier">redis</span>.<span class="ruby-identifier">call</span>(<span class="ruby-string">&quot;ZREM&quot;</span>, <span class="ruby-identifier">model</span>.<span class="ruby-identifier">key</span>[<span class="ruby-value">:latest</span>], <span class="ruby-identifier">id</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -449,17 +481,19 @@
       </div>
 
       <div id="method-i-after_save" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">after_save</span><span
-            class="method-args">()</span>
-          <span class="method-click-advice">click to toggle source</span>
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">after_save</span><span
+              class="method-args">()</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
         </div>
 
         <div class="method-description">
           
 
           <div class="method-source-code" id="after_save-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 184</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 190</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">after_save</span>
   <span class="ruby-identifier">redis</span>.<span class="ruby-identifier">call</span>(<span class="ruby-string">&quot;ZADD&quot;</span>, <span class="ruby-identifier">model</span>.<span class="ruby-identifier">key</span>[<span class="ruby-value">:latest</span>], <span class="ruby-constant">Time</span>.<span class="ruby-identifier">now</span>.<span class="ruby-identifier">to_f</span>, <span class="ruby-identifier">id</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -477,7 +511,7 @@
 
 <footer id="validator-badges" role="contentinfo">
   <p><a href="https://validator.w3.org/check/referer">Validate</a>
-  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.4.0.
+  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.6.3.1.
   <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
 </footer>
 
