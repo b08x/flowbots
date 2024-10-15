@@ -62,7 +62,7 @@ class RedisConnection
   # Redis configuration.
   REDIS_CONFIG = {
     host: ENV.fetch("REDIS_HOST", "localhost"),
-    port: 6379,
+    port: 6378,
     db: 15
   }.freeze
 
@@ -85,7 +85,7 @@ class Jongleur::WorkerTask
   begin
     redis_connection = RedisConnection.new
     @@redis = redis_connection.redis
-  rescue Redis::CannotConnectError => e
+  rescue Redis::CannotConnectError => _e
     puts "heeeey! Unable to connect to redis\n"
     exit
   end
@@ -123,7 +123,7 @@ module Flowbots
     # @return [void]
     # @raise [Ohm::Error] If there is an error connecting to Redis.
     def setup_redis
-      Ohm.redis = Redic.new("redis://localhost:6379/0")
+      Ohm.redis = Redic.new("redis://localhost:6378/0")
     rescue Ohm::Error => e
       ExceptionHandler.handle_exception(e)
     end

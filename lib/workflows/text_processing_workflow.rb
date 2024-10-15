@@ -100,12 +100,6 @@ module Flowbots
       UI.say(:error, "Unexpected error in text processing. Check logs for details.")
     end
 
-    private
-
-    def create_or_fetch_file_object(file_path)
-      FileObject.find_or_create_by_path(file_path)
-    end
-
     # Creates or fetches a FileObject for the given file path.
     #
     # @param file_path [String, Hash] The path to the file or a hash containing the path.
@@ -136,21 +130,10 @@ module Flowbots
     #
     # Defines the workflow for additional tasks and runs the workflow using the orchestrator.
     #
-    # @param file_id [Integer] The ID of the file to process.
+    # @param _file_id [Integer] The ID of the file to process (unused).
     #
     # @return [void]
-    # def perform_additional_tasks(file_id)
-    #   additional_tasks = {
-    #     TextTaggerTask: [:TopicModelingTask],
-    #     TopicModelingTask: [:LlmAnalysisTask],
-    #     LlmAnalysisTask: [:DisplayResultsTask],
-    #     DisplayResultsTask: []
-    #   }
-    #
-    #   @pipeline.orchestrator.define_workflow(additional_tasks)
-    #   @pipeline.orchestrator.run_workflow
-    # end
-    def perform_additional_tasks(file_id)
+    def perform_additional_tasks(_file_id)
       additional_tasks = {
         TextTaggerTask: [:TopicModelingTask],
         TopicModelingTask: [:LlmAnalysisTask],

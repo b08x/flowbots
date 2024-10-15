@@ -23,12 +23,12 @@ require "logging"
 include Logging
 
 # Define the directory for cartridges
-CARTRIDGE_DIR = File.expand_path("../nano-bots/cartridges", __dir__)
+CARTRIDGE_DIR = File.expand_path("../nano-bots/cartridges/@b08x/cartridges/compressor", __dir__)
 
 # Define a Redis connection for Jongleur::WorkerTask
 class Jongleur::WorkerTask
   # @return [Redis] The Redis connection for Jongleur::WorkerTask.
-  @@redis = Redis.new(host: "localhost", port: 6379, db: 15)
+  @@redis = Redis.new(host: "localhost", port: 6378, db: 15)
 end
 
 # This class represents a workflow agent that can process input using a NanoBot.
@@ -40,10 +40,11 @@ class WorkflowAgent
   #
   # @return [void]
   def initialize(role, cartridge_file)
+    cart = File.join(CARTRIDGE_DIR, cartridge_file)
     @role = role
     @state = {}
     @bot = NanoBot.new(
-      cartridge: cartridge_file
+      cartridge: cart
     )
   end
 
