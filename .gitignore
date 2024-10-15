@@ -28,3 +28,5 @@ flowbots.json
 /exception_reports/
 *.text.json
 .gh_pages
+claude_chats/
+claude_chatsB/
