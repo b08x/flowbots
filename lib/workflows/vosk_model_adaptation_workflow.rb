@@ -2,6 +2,10 @@
 
 require "fileutils"
 require "logger"
+require "down"
+require "zip"
+require "ffi"
+require "wav-file"
 
 module Workflows
   # VoskModelAdaptationWorkflow
@@ -24,6 +28,107 @@ module Workflows
   #   workflow.update_big_model_vocabulary('/path/to/lexicon.txt', '/path/to/language_model.arpa')
   #   workflow.finetune_acoustic_model('/path/to/finetuning/data')
   class VoskModelAdaptationWorkflow
+    # VOSK FFI bindings
+    module VOSK
+      extend FFI::Library
+      ffi_lib "libvosk.so"
+
+      attach_function :vosk_model_new, [:string], :pointer
+      attach_function :vosk_recognizer_new, %i[pointer float], :pointer
+      attach_function :vosk_recognizer_accept_waveform, %i[pointer pointer int], :int
+      attach_function :vosk_recognizer_result, [:pointer], :string
+      attach_function :vosk_recognizer_free, [:pointer], :void
+      attach_function :vosk_model_free, [:pointer], :void
+    end
+
+    # Manages downloading and extracting VOSK models
+    class VOSKModelManager
+      VOSK_MODEL_URL = "https://alphacephei.com/vosk/models/vosk-model-small-en-us-0.15.zip"
+      MODEL_DIR = "vosk_model"
+
+      def download_and_extract
+        return if Dir.exist?(MODEL_DIR)
+
+        Down.download(VOSK_MODEL_URL, destination: "vosk_model.zip")
+        Zip::File.open("vosk_model.zip") do |zip_file|
+          zip_file.each do |f|
+            fpath = File.join(MODEL_DIR, f.name)
+            zip_file.extract(f, fpath) unless File.exist?(fpath)
+          end
+        end
+        File.delete("vosk_model.zip")
+      end
+    end
+
+    # Manages downloading and loading example sentences
+    class SentenceManager
+      SENTENCES_URL = "https://example.com/sentences.txt" # Replace with actual URL
+      SENTENCES_FILE = "sentences.txt"
+
+      def download_sentences
+        return if File.exist?(SENTENCES_FILE)
+
+        Down.download(SENTENCES_URL, destination: SENTENCES_FILE)
+      end
+
+      def load_sentences
+        File.readlines(SENTENCES_FILE).map(&:chomp)
+      end
+    end
+
+    # Records audio for sentences
+    class AudioRecorder
+      def record_sentence(sentence_number)
+        puts "Press Enter to start recording sentence #{sentence_number}, then speak."
+        gets
+        system("arecord -d 5 -f S16_LE -r 16000 sentence_#{sentence_number}.wav")
+        puts "Recording complete."
+      end
+
+      def record_all_sentences(sentences)
+        sentences.each_with_index do |sentence, index|
+          puts "Sentence #{index + 1}: #{sentence}"
+          record_sentence(index + 1)
+        end
+      end
+    end
+
+    # Decodes audio files and scores the results
+    class Decoder
+      def initialize(model_path)
+        @model = VOSK.vosk_model_new(model_path)
+      end
+
+      def decode_file(file_path)
+        recognizer = VOSK.vosk_recognizer_new(@model, 16_000.0)
+        File.open(file_path, "rb") do |file|
+          while (data = file.read(4096))
+            VOSK.vosk_recognizer_accept_waveform(recognizer, data, data.size)
+          end
+        end
+        result = VOSK.vosk_recognizer_result(recognizer)
+        VOSK.vosk_recognizer_free(recognizer)
+        JSON.parse(result)["text"]
+      end
+
+      def score_sentences(sentences, decoded_sentences)
+        correct_words = sentences.zip(decoded_sentences).sum do |original, decoded|
+          original.split.zip(decoded.split).count { |a, b| a.downcase == b.downcase }
+        end
+        total_words = sentences.sum { |s| s.split.size }
+        (correct_words.to_f / total_words * 100).round(2)
+      end
+    end
+
+    # Adapts the acoustic model using recorded audio
+    class ModelAdapter
+      def adapt_model(base_model_path, adapted_model_path, audio_files)
+        # This is a placeholder. Actual implementation will depend on VOSK's adaptation API
+        # You might need to use system calls to run external tools for adaptation
+        system("vosk-adapt #{base_model_path} #{adapted_model_path} #{audio_files.join(' ')}")
+      end
+    end
+
     def initialize(model_path)
       @model_path = model_path
       @temp_dir = File.join(Dir.tmpdir, "vosk_adaptation")
@@ -95,6 +200,36 @@ module Workflows
       rescue StandardError => e
         @logger.error("Error finetuning acoustic model: #{e.message}")
       end
+    end
+
+    # Orchestrates the entire workflow
+    def run
+      model_manager = VOSKModelManager.new
+      model_manager.download_and_extract
+
+      sentence_manager = SentenceManager.new
+      sentence_manager.download_sentences
+      sentences = sentence_manager.load_sentences
+
+      recorder = AudioRecorder.new
+      recorder.record_all_sentences(sentences)
+
+      base_decoder = Decoder.new("vosk_model")
+      base_decoded = sentences.map.with_index(1) do |_, i|
+        base_decoder.decode_file("sentence_#{i}.wav")
+      end
+      base_score = base_decoder.score_sentences(sentences, base_decoded)
+      puts "Base model score: #{base_score}%"
+
+      adapter = ModelAdapter.new
+      adapter.adapt_model("vosk_model", "adapted_model", Dir["sentence_*.wav"])
+
+      adapted_decoder = Decoder.new("adapted_model")
+      adapted_decoded = sentences.map.with_index(1) do |_, i|
+        adapted_decoder.decode_file("sentence_#{i}.wav")
+      end
+      adapted_score = adapted_decoder.score_sentences(sentences, adapted_decoded)
+      puts "Adapted model score: #{adapted_score}%"
     end
 
     private
