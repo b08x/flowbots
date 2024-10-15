@@ -81,7 +81,7 @@ ARG USE_BOOKNLP=False
 RUN python3 -m venv .venv && \
     . /app/.venv/bin/activate && \
     echo "[[ -f /app/.venv ]] && cd /app && . /app/.venv/bin/activate" >> /home/flowbots/.bashrc && \
-    echo "gem: --user-instal --no-document" >> /home/flowbots/.gemrc && \
+    echo "gem: --user-install --no-document" >> /home/flowbots/.gemrc && \
     pip3 install -U setuptools wheel && \
     pip3 install -U spacy 'pdfminer.six[image]' && \
     python3 -m spacy download en_core_web_lg && \

@@ -286,8 +286,8 @@ Rake::RDocTask.new do |rdoc|
   rdoc.rdoc_files.include "lib/workflows/topic_model_trainer_workflowtest.rb"
 end
 
-Gokdok::Dokker.new do |gd|
-  gd.remote_path = "" # Put into the root directory
-  gd.repo_url = "git@github.com:b08x/flowbots.git"
-  gd.doc_home = "#{APP_ROOT}/doc"
-end
+# Gokdok::Dokker.new do |gd|
+#   gd.remote_path = "" # Put into the root directory
+#   gd.repo_url = "git@github.com:b08x/flowbots.git"
+#   gd.doc_home = "#{APP_ROOT}/doc"
+# end
