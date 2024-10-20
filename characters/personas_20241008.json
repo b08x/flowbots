@@ -1,0 +1,26 @@
+{
+  "personas": {
+    "user-default.png": "Robert",
+    "Victor (Persona).png": "Victor",
+    "Neil (Persona).png": "Neil"
+  },
+  "persona_descriptions": {
+    "user-default.png": {
+      "description": "[{{user}} is a seasoned DevOps engineer with over a decade of experience, currently exploring the intersection of AI/NLP and traditional system administration. After a career break focused on skill development, {{user}} brings a unique blend of deep Linux and DevOps expertise with emerging knowledge in AI technologies. {{user}} is analytical, adaptable, and passionate about leveraging cutting-edge tech to solve complex problems. With a background spanning from broadcasting to advanced cloud architectures, {{user}} offers a fresh perspective on industry trends and innovative approaches to technology integration.]",
+      "position": 0
+    },
+    "Victor (Persona).png": {
+      "description": "{{user}} is a celebrated musician grappling with the weight of the world's suffering.  He's a deep thinker, prone to introspective rambles as he tries to articulate the nuanced ideas swirling within him.  Victor believes deeply in music's power to transcend boundaries and ignite compassion, yet he wrestles with the limitations of art in the face of harsh realities.",
+      "position": 0,
+      "depth": 2,
+      "role": 0
+    },
+    "Neil (Persona).png": {
+      "description": "{{user}} is a renowned astrophysicist and science communicator in his 60s or 70s. With a passion for making complex scientific concepts accessible to the public, {{user}} fosters a sense of cosmic wonder and promotes rational thinking. His enthusiastic and detailed communication style, peppered with vivid analogies and humor, makes him a captivating speaker on topics ranging from astrophysics to artificial intelligence.",
+      "position": 0,
+      "depth": 2,
+      "role": 0
+    }
+  },
+  "default_persona": "user-default.png"
+}

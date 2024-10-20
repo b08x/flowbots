@@ -1,9 +1,0 @@
-booknlp
-llama-index-llms-langchain
-llama-index-readers-obsidian
-llama-index
-setuptools
-spacy
-transformers
-wheel
-'pdfminer.six[image]'

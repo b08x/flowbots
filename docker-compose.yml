@@ -24,21 +24,6 @@ services:
   #     - flowbots
   #   depends_on:
   #     - redis_service
-  redis_service:
-    image: redis/redis-stack:latest
-    container_name: flowbots-redis
-    restart: unless-stopped
-    environment:
-      PUID: 1000
-      PGID: 1000
-    volumes:
-      - ./data/redis/data:/data
-    ports:
-      - "6378:6379"
-      - "8081:8081"
-      - "8001:8001"
-    networks:
-      - flowbots
   flowise_service:
     image: flowiseai/flowise
     container_name: flowbots-flowise
@@ -57,6 +42,40 @@ services:
     ports:
       - "3002:3002"
     entrypoint: /bin/sh -c "sleep 3; flowise start"
+    networks:
+      - flowbots
+  langfuse_service:
+    image: ghcr.io/langfuse/langfuse:latest
+    container_name: flowbots-langfuse
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://postgres:postgres@postgres_service:5432/flowbots
+      - NEXTAUTH_SECRET=mysecret
+      - SALT=mysalt
+      - NEXTAUTH_URL=http://localhost:3000
+      - TELEMETRY_ENABLED=${TELEMETRY_ENABLED:-true}
+      - NEXT_PUBLIC_SIGN_UP_DISABLED=${NEXT_PUBLIC_SIGN_UP_DISABLED:-false}
+      - LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES=${LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES:-false}
+    depends_on:
+      - postgres_service
+    networks:
+      - flowbots
+  redis_service:
+    image: redis/redis-stack:latest
+    container_name: flowbots-redis
+    restart: unless-stopped
+    environment:
+      PUID: 1000
+      PGID: 1000
+    volumes:
+      - ./data/redis/data:/data
+    ports:
+      - "6378:6379"
+      - "8081:8081"
+      - "8001:8001"
     networks:
       - flowbots
   chroma_service:
@@ -84,31 +103,13 @@ services:
       POSTGRES_DB: flowbots
       POSTGRES_USER: postgres
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - ./data/pgvector/local-data:/data
       - ./data/pgvector/pgdata:/var/lib/postgresql/data
     networks:
       - flowbots
-  langfuse_service:
-    image: ghcr.io/langfuse/langfuse:latest
-    container_name: flowbots-langfuse
-    restart: unless-stopped
-    ports:
-      - "3000:3000"
-    environment:
-      - NODE_ENV=production
-      - DATABASE_URL=postgresql://postgres:postgres@postgres_service:5432/flowbots
-      - NEXTAUTH_SECRET=mysecret
-      - SALT=mysalt
-      - NEXTAUTH_URL=http://localhost:3000
-      - TELEMETRY_ENABLED=${TELEMETRY_ENABLED:-true}
-      - NEXT_PUBLIC_SIGN_UP_DISABLED=${NEXT_PUBLIC_SIGN_UP_DISABLED:-false}
-      - LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES=${LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES:-false}
-    depends_on:
-      - postgres_service
-    networks:
-      - flowbots
+
 
 networks:
   flowbots:
