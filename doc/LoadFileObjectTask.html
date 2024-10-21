@@ -96,7 +96,7 @@
 
   <section class="description">
     
-<p><a href="Task.html"><code>Task</code></a> to load a <a href="FileObject.html"><code>FileObject</code></a> based on a file path stored in Redis.</p>
+<p>This task loads a <a href="FileObject.html"><code>FileObject</code></a> from the file system and stores its ID in Redis.</p>
 
   </section>
 
@@ -123,12 +123,25 @@
         <div class="method-description">
           <p>Executes the task to load a <a href="FileObject.html"><code>FileObject</code></a>.</p>
 
-<p>Retrieves the file path from Redis, finds or creates a <a href="FileObject.html"><code>FileObject</code></a> associated with the path, stores the <a href="FileObject.html"><code>FileObject</code></a> ID in Redis, and logs the progress.</p>
+<p>This method retrieves the file path from Redis, finds or creates a <a href="FileObject.html"><code>FileObject</code></a> associated with the path, stores the <a href="FileObject.html"><code>FileObject</code></a> ID in Redis, and logs the progress.</p>
+
+<p>The loading process involves:</p>
+<ol><li>
+<p><strong>Retrieving the file path:</strong> The <code>retrieve_file_path</code> method is called to retrieve the file path from Redis.</p>
+</li><li>
+<p><strong>Finding or creating a FileObject:</strong> The <code>FileObject.find_or_create_by_path</code> method is called with the retrieved file path to find an existing <a href="FileObject.html"><code>FileObject</code></a> or create a new one if it doesn’t exist. The result is stored in the <code>file_object</code> variable.</p>
+</li><li>
+<p><strong>Handling errors:</strong> If the <code>file_object</code> is nil, meaning the <a href="FileObject.html"><code>FileObject</code></a> could not be found or created, an error message is logged and a <code>RuntimeError</code> is raised.</p>
+</li><li>
+<p><strong>Storing the FileObject ID:</strong> If the <a href="FileObject.html"><code>FileObject</code></a> was successfully found or created, the <code>store_file_object_id</code> method is called to store the <a href="FileObject.html"><code>FileObject</code></a> ID in Redis.</p>
+</li><li>
+<p><strong>Logging information:</strong> The <code>logger</code> object is used to log relevant information about the loading process, including success messages and error messages.</p>
+</li></ol>
 
 <p>@return [void] @raises [RuntimeError] If the <a href="FileObject.html"><code>FileObject</code></a> cannot be created or found, or if there is an error during file loading.</p>
 
           <div class="method-source-code" id="execute-source">
-            <pre><span class="ruby-comment"># File lib/tasks/load_file_object_task.rb, line 18</span>
+            <pre><span class="ruby-comment"># File lib/tasks/load_file_object_task.rb, line 32</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">execute</span>
   <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-string">&quot;Starting LoadFileObjectTask&quot;</span>
 
@@ -191,10 +204,12 @@
         <div class="method-description">
           <p>Retrieves the file path from Redis.</p>
 
+<p>This method retrieves the file path from Redis using the <code>RedisKeys</code> class. It gets the value of the <code>RedisKeys::CURRENT_FILE_PATH</code> key, which represents the current file path being processed.</p>
+
 <p>@return [String] The file path retrieved from Redis.</p>
 
           <div class="method-source-code" id="retrieve_file_path-source">
-            <pre><span class="ruby-comment"># File lib/tasks/load_file_object_task.rb, line 61</span>
+            <pre><span class="ruby-comment"># File lib/tasks/load_file_object_task.rb, line 79</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">retrieve_file_path</span>
   <span class="ruby-constant">RedisKeys</span>.<span class="ruby-identifier">get</span>(<span class="ruby-constant">RedisKeys</span><span class="ruby-operator">::</span><span class="ruby-constant">CURRENT_FILE_PATH</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -216,10 +231,12 @@
         <div class="method-description">
           <p>Stores the <a href="FileObject.html"><code>FileObject</code></a> ID in Redis.</p>
 
+<p>This method stores the <a href="FileObject.html"><code>FileObject</code></a> ID in Redis using the <code>RedisKeys</code> class. It sets the value of the <code>RedisKeys::CURRENT_FILE_OBJECT_ID</code> key to the provided <code>id</code>. This key is used to track the currently loaded <a href="FileObject.html"><code>FileObject</code></a>.</p>
+
 <p>@param id [Integer] The ID of the <a href="FileObject.html"><code>FileObject</code></a> to store. @return [void]</p>
 
           <div class="method-source-code" id="store_file_object_id-source">
-            <pre><span class="ruby-comment"># File lib/tasks/load_file_object_task.rb, line 69</span>
+            <pre><span class="ruby-comment"># File lib/tasks/load_file_object_task.rb, line 91</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">store_file_object_id</span>(<span class="ruby-identifier">id</span>)
   <span class="ruby-constant">RedisKeys</span>.<span class="ruby-identifier">set</span>(<span class="ruby-constant">RedisKeys</span><span class="ruby-operator">::</span><span class="ruby-constant">CURRENT_FILE_OBJECT_ID</span>, <span class="ruby-identifier">id</span>)
 <span class="ruby-keyword">end</span></pre>

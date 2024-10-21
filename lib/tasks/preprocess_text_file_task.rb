@@ -7,9 +7,26 @@ class PreprocessTextFileTask < Task
 
   # Executes the text file preprocessing task.
   #
-  # Retrieves the text file object, parses it using a custom grammar,
+  # This method retrieves the text file object, parses it using a custom grammar,
   # extracts metadata, updates the text file with preprocessed content and metadata,
   # and logs relevant information.
+  #
+  # The preprocessing process involves:
+  #
+  # 1. **Retrieving the text file object:** The `retrieve_input` method is called to retrieve the
+  #    text file object from the appropriate source (e.g., Redis).
+  # 2. **Parsing the text file:** The `Flowbots::GrammarProcessor` is used to parse the text file
+  #    content using a custom grammar (e.g., "markdown_yaml"). The parsing result is stored in
+  #    the `parse_result` variable.
+  # 3. **Extracting metadata:** If the parsing is successful, the `extract_metadata` method is
+  #    called to extract metadata from the YAML front matter of the parsed text file. The
+  #    extracted metadata is stored in the `metadata` variable.
+  # 4. **Updating the text file:** The `update` method is called on the text file object to
+  #    store the preprocessed content (extracted from the parsing result) and the extracted
+  #    metadata.
+  # 5. **Logging information:** The `logger` object is used to log relevant information about
+  #    the preprocessing process, including success messages, error messages, and debug
+  #    information.
   #
   # @return [String] A success message if the preprocessing is successful, otherwise an error message.
   def execute
@@ -44,12 +61,19 @@ class PreprocessTextFileTask < Task
 
   # Retrieves the input text file object.
   #
+  # This method retrieves the text file object from the appropriate source (e.g., Redis).
+  #
   # @return [Textfile] The retrieved text file object.
   def retrieve_input
     retrieve_textfile
   end
 
   # Extracts metadata from the YAML front matter of the parsed text file.
+  #
+  # This method extracts metadata from the YAML front matter of the parsed text file.
+  # It uses the `YAML.safe_load` method to parse the YAML front matter and returns a hash
+  # containing the extracted metadata. If the YAML front matter is empty or an error
+  # occurs during parsing, an empty hash is returned.
   #
   # @param yaml_front_matter [String] The YAML front matter extracted from the text file.
   #
@@ -64,6 +88,11 @@ class PreprocessTextFileTask < Task
   end
 
   # Stores the preprocessed content and metadata in the text file object.
+  #
+  # This method updates the text file object with the preprocessed content and extracted
+  # metadata. It uses the `update` method on the text file object to store the
+  # preprocessed content and metadata. It also logs debug information about the stored
+  # content and metadata.
   #
   # @param content [String] The preprocessed content of the text file.
   # @param metadata [Hash] The extracted metadata.

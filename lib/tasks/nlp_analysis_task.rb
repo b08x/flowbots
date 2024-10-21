@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# This task performs natural language processing (NLP) analysis on the segments of a text file.
 class NlpAnalysisTask < Task
   # Includes the InputRetrieval module for retrieving data from Redis.
   include InputRetrieval

@@ -98,8 +98,6 @@
 
   <section class="description">
     
-<p>This task performs natural language processing (NLP) analysis on the segments of a text file.</p>
-
   </section>
 
   <section id="5Buntitled-5D" class="documentation-section">
@@ -130,7 +128,7 @@
 <p>@return [void]</p>
 
           <div class="method-source-code" id="execute-source">
-            <pre><span class="ruby-comment"># File lib/tasks/nlp_analysis_task.rb, line 15</span>
+            <pre><span class="ruby-comment"># File lib/tasks/nlp_analysis_task.rb, line 14</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">execute</span>
   <span class="ruby-comment"># Log the start of the task.</span>
   <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-string">&quot;Starting NlpAnalysisTask&quot;</span>
@@ -189,7 +187,7 @@
 <p>@return [void]</p>
 
           <div class="method-source-code" id="add_lemmas_to_textfile-source">
-            <pre><span class="ruby-comment"># File lib/tasks/nlp_analysis_task.rb, line 109</span>
+            <pre><span class="ruby-comment"># File lib/tasks/nlp_analysis_task.rb, line 108</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">add_lemmas_to_textfile</span>(<span class="ruby-identifier">textfile</span>, <span class="ruby-identifier">lemma_counts</span>)
   <span class="ruby-comment"># Map the lemma counts hash to an array of lemma data.</span>
   <span class="ruby-identifier">lemmas_data</span> = <span class="ruby-identifier">lemma_counts</span>.<span class="ruby-identifier">map</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span>(<span class="ruby-identifier">lemma</span>, <span class="ruby-identifier">pos</span>), <span class="ruby-identifier">count</span><span class="ruby-operator">|</span>
@@ -223,7 +221,7 @@
 <p>@return [void]</p>
 
           <div class="method-source-code" id="add_words_to_segment-source">
-            <pre><span class="ruby-comment"># File lib/tasks/nlp_analysis_task.rb, line 92</span>
+            <pre><span class="ruby-comment"># File lib/tasks/nlp_analysis_task.rb, line 91</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">add_words_to_segment</span>(<span class="ruby-identifier">segment</span>, <span class="ruby-identifier">processed_tokens</span>)
   <span class="ruby-comment"># Map the processed tokens to an array of word data.</span>
   <span class="ruby-identifier">words</span> = <span class="ruby-identifier">processed_tokens</span>.<span class="ruby-identifier">map</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">token</span><span class="ruby-operator">|</span>
@@ -253,7 +251,7 @@
 <p>@return [FileObject] The current <a href="FileObject.html"><code>FileObject</code></a>.</p>
 
           <div class="method-source-code" id="retrieve_input-source">
-            <pre><span class="ruby-comment"># File lib/tasks/nlp_analysis_task.rb, line 47</span>
+            <pre><span class="ruby-comment"># File lib/tasks/nlp_analysis_task.rb, line 46</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">retrieve_input</span>
   <span class="ruby-identifier">retrieve_file_object</span>
 <span class="ruby-keyword">end</span></pre>
@@ -282,7 +280,7 @@
 <p>@return [void]</p>
 
           <div class="method-source-code" id="update_segment_with_nlp_data-source">
-            <pre><span class="ruby-comment"># File lib/tasks/nlp_analysis_task.rb, line 61</span>
+            <pre><span class="ruby-comment"># File lib/tasks/nlp_analysis_task.rb, line 60</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">update_segment_with_nlp_data</span>(<span class="ruby-identifier">segment</span>, <span class="ruby-identifier">processed_tokens</span>, <span class="ruby-identifier">lemma_counts</span>)
   <span class="ruby-comment"># Initialize a hash to store tagged data.</span>
   <span class="ruby-identifier">tagged</span> = { <span class="ruby-value">pos:</span> {}, <span class="ruby-value">dep:</span> {}, <span class="ruby-value">ner:</span> {}, <span class="ruby-value">tag:</span> {} }

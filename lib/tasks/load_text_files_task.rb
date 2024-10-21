@@ -8,8 +8,23 @@ class LoadTextFilesTask < Task
 
   # Executes the task to load a text file using the Flowbots::FileLoader.
   #
-  # Retrieves the file path from Redis, loads the file using Flowbots::FileLoader,
-  # stores the Textfile ID in Redis if successful, and logs the progress or errors.
+  # This method retrieves the file path from Redis, loads the file using the
+  # `Flowbots::FileLoader`, stores the `Textfile` ID in Redis if successful, and logs
+  # the progress or errors.
+  #
+  # The loading process involves:
+  #
+  # 1. **Retrieving the file path:** The `retrieve_input` method is called to retrieve the
+  #    file path from Redis.
+  # 2. **Loading the file:** A new `Flowbots::FileLoader` instance is created with the
+  #    retrieved file path. The `file_data` method of the `FileLoader` is called to load
+  #    the file data. The loaded data is stored in the `textfile` variable.
+  # 3. **Storing the Textfile ID:** If the file was loaded successfully and the `textfile`
+  #    variable contains a valid `Textfile` object, the `store_textfile_id` method is
+  #    called to store the `Textfile` ID in Redis.
+  # 4. **Logging information:** The `logger` object is used to log relevant information
+  #    about the loading process, including success messages, error messages, and debug
+  #    information.
   #
   # @return [void]
   def execute
@@ -51,12 +66,18 @@ class LoadTextFilesTask < Task
 
   # Retrieves the input file path from Redis.
   #
+  # This method retrieves the input file path from Redis using the `retrieve_file_path`
+  # method from the `InputRetrieval` module.
+  #
   # @return [String] The input file path.
   def retrieve_input
     retrieve_file_path
   end
 
   # Stores the Textfile ID in Redis.
+  #
+  # This method stores the `Textfile` ID in Redis using the `RedisKeys` class. It sets
+  # the value of the `RedisKeys::CURRENT_TEXTFILE_ID` key to the provided `id`.
   #
   # @param id [Integer] The ID of the Textfile.
   #

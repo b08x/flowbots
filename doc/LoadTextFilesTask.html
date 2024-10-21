@@ -123,12 +123,23 @@
         <div class="method-description">
           <p>Executes the task to load a text file using the <a href="Flowbots/FileLoader.html"><code>Flowbots::FileLoader</code></a>.</p>
 
-<p>Retrieves the file path from Redis, loads the file using <a href="Flowbots/FileLoader.html"><code>Flowbots::FileLoader</code></a>, stores the Textfile ID in Redis if successful, and logs the progress or errors.</p>
+<p>This method retrieves the file path from Redis, loads the file using the <code>Flowbots::FileLoader</code>, stores the <code>Textfile</code> ID in Redis if successful, and logs the progress or errors.</p>
+
+<p>The loading process involves:</p>
+<ol><li>
+<p><strong>Retrieving the file path:</strong> The <code>retrieve_input</code> method is called to retrieve the file path from Redis.</p>
+</li><li>
+<p><strong>Loading the file:</strong> A new <code>Flowbots::FileLoader</code> instance is created with the retrieved file path. The <code>file_data</code> method of the <code>FileLoader</code> is called to load the file data. The loaded data is stored in the <code>textfile</code> variable.</p>
+</li><li>
+<p><strong>Storing the Textfile ID:</strong> If the file was loaded successfully and the <code>textfile</code> variable contains a valid <code>Textfile</code> object, the <code>store_textfile_id</code> method is called to store the <code>Textfile</code> ID in Redis.</p>
+</li><li>
+<p><strong>Logging information:</strong> The <code>logger</code> object is used to log relevant information about the loading process, including success messages, error messages, and debug information.</p>
+</li></ol>
 
 <p>@return [void]</p>
 
           <div class="method-source-code" id="execute-source">
-            <pre><span class="ruby-comment"># File lib/tasks/load_text_files_task.rb, line 15</span>
+            <pre><span class="ruby-comment"># File lib/tasks/load_text_files_task.rb, line 30</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">execute</span>
   <span class="ruby-comment"># Log the start of the task.</span>
   <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-string">&quot;Starting LoadTextFilesTask&quot;</span>
@@ -188,10 +199,12 @@
         <div class="method-description">
           <p>Retrieves the input file path from Redis.</p>
 
+<p>This method retrieves the input file path from Redis using the <code>retrieve_file_path</code> method from the <code>InputRetrieval</code> module.</p>
+
 <p>@return [String] The input file path.</p>
 
           <div class="method-source-code" id="retrieve_input-source">
-            <pre><span class="ruby-comment"># File lib/tasks/load_text_files_task.rb, line 55</span>
+            <pre><span class="ruby-comment"># File lib/tasks/load_text_files_task.rb, line 73</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">retrieve_input</span>
   <span class="ruby-identifier">retrieve_file_path</span>
 <span class="ruby-keyword">end</span></pre>
@@ -213,12 +226,14 @@
         <div class="method-description">
           <p>Stores the Textfile ID in Redis.</p>
 
+<p>This method stores the <code>Textfile</code> ID in Redis using the <code>RedisKeys</code> class. It sets the value of the <code>RedisKeys::CURRENT_TEXTFILE_ID</code> key to the provided <code>id</code>.</p>
+
 <p>@param id [Integer] The ID of the Textfile.</p>
 
 <p>@return [void]</p>
 
           <div class="method-source-code" id="store_textfile_id-source">
-            <pre><span class="ruby-comment"># File lib/tasks/load_text_files_task.rb, line 64</span>
+            <pre><span class="ruby-comment"># File lib/tasks/load_text_files_task.rb, line 85</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">store_textfile_id</span>(<span class="ruby-identifier">id</span>)
   <span class="ruby-constant">RedisKeys</span>.<span class="ruby-identifier">set</span>(<span class="ruby-constant">RedisKeys</span><span class="ruby-operator">::</span><span class="ruby-constant">CURRENT_TEXTFILE_ID</span>, <span class="ruby-identifier">id</span>)
 <span class="ruby-keyword">end</span></pre>
