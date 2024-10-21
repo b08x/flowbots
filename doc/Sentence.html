@@ -4,7 +4,7 @@
     <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>
-  Class: Topic
+  Class: Sentence
   
     &mdash; Documentation by YARD 0.9.37
   
@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="css/common.css" type="text/css" />
 
 <script type="text/javascript">
-  pathId = "Topic";
+  pathId = "Sentence";
   relpath = '';
 </script>
 
@@ -36,10 +36,10 @@
       <div id="header">
         <div id="menu">
   
-    <a href="_index.html">Index (T)</a> &raquo;
+    <a href="_index.html">Index (S)</a> &raquo;
     
     
-    <span class="title">Topic</span>
+    <span class="title">Sentence</span>
   
 </div>
 
@@ -59,7 +59,7 @@
         <div class="clear"></div>
       </div>
 
-      <div id="content"><h1>Class: Topic
+      <div id="content"><h1>Class: Sentence
   
   
   
@@ -74,7 +74,7 @@
         <ul class="fullTree">
           <li>Object</li>
           
-            <li class="next">Topic</li>
+            <li class="next">Sentence</li>
           
         </ul>
         <a href="#" class="inheritanceTree">show all</a>
@@ -160,20 +160,26 @@
       <pre class="lines">
 
 
-79
-80
-81
-82
-83
-84</pre>
+44
+45
+46
+47
+48
+49
+50
+51
+52</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/components/OhmModelsV2.rb', line 79</span>
+      <pre class="code"><span class="info file"># File 'lib/components/OhmModelsV2.rb', line 44</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_to_json'>to_json</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
   <span class='lbrace'>{</span>
     <span class='label'>id:</span><span class='comma'>,</span>
-    <span class='label'>name:</span>
+    <span class='label'>text:</span><span class='comma'>,</span>
+    <span class='label'>phrases:</span> <span class='id identifier rubyid_phrases'>phrases</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:to_json</span><span class='rparen'>)</span><span class='comma'>,</span>
+    <span class='label'>words:</span> <span class='id identifier rubyid_words'>words</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:to_json</span><span class='rparen'>)</span><span class='comma'>,</span>
+    <span class='label'>topic:</span> <span class='id identifier rubyid_topic'>topic</span><span class='op'>&amp;.</span><span class='id identifier rubyid_to_json'>to_json</span>
   <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>

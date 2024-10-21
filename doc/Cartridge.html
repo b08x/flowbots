@@ -96,7 +96,7 @@
 
   <section class="description">
     
-<p>Defines the <a href="Cartridge.html"><code>Cartridge</code></a> model.</p>
+<p>The <a href="Cartridge.html"><code>Cartridge</code></a> model represents a cartridge in the <a href="Flowbots.html"><code>Flowbots</code></a> system. It stores information about the cartridge, such as its name, path, and content.</p>
 
   </section>
 
@@ -128,7 +128,7 @@
 <p>@return [String] The result of the evaluation.</p>
 
           <div class="method-source-code" id="evaluate-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 202</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 272</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">evaluate</span>(<span class="ruby-identifier">input</span>)
   <span class="ruby-comment"># Access settings from the loaded YAML hash</span>
   <span class="ruby-identifier">provider</span> = <span class="ruby-identifier">content</span>[<span class="ruby-string">&#39;provider&#39;</span>]
@@ -171,7 +171,7 @@
 <p>@return [Hash] The loaded cartridge content as a hash.</p>
 
           <div class="method-source-code" id="load_content-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 193</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 263</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">load_content</span>
   <span class="ruby-constant">YAML</span>.<span class="ruby-identifier">safe_load</span>(<span class="ruby-constant">File</span>.<span class="ruby-identifier">read</span>(<span class="ruby-identifier">path</span>)) <span class="ruby-comment"># Use YAML.safe_load for secure parsing</span>
 <span class="ruby-keyword">end</span></pre>

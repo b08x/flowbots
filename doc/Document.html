@@ -4,7 +4,7 @@
     <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>
-  Class: Topic
+  Class: Document
   
     &mdash; Documentation by YARD 0.9.37
   
@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="css/common.css" type="text/css" />
 
 <script type="text/javascript">
-  pathId = "Topic";
+  pathId = "Document";
   relpath = '';
 </script>
 
@@ -36,10 +36,10 @@
       <div id="header">
         <div id="menu">
   
-    <a href="_index.html">Index (T)</a> &raquo;
+    <a href="_index.html">Index (D)</a> &raquo;
     
     
-    <span class="title">Topic</span>
+    <span class="title">Document</span>
   
 </div>
 
@@ -59,7 +59,7 @@
         <div class="clear"></div>
       </div>
 
-      <div id="content"><h1>Class: Topic
+      <div id="content"><h1>Class: Document
   
   
   
@@ -69,12 +69,14 @@
   <dl>
     <dt>Inherits:</dt>
     <dd>
-      <span class="inheritName">Object</span>
+      <span class="inheritName">Ohm::Model</span>
       
         <ul class="fullTree">
           <li>Object</li>
           
-            <li class="next">Topic</li>
+            <li class="next">Ohm::Model</li>
+          
+            <li class="next">Document</li>
           
         </ul>
         <a href="#" class="inheritanceTree">show all</a>
@@ -87,6 +89,11 @@
   
   
   
+  <dl>
+      <dt>Includes:</dt>
+      <dd>Ohm::DataTypes</dd>
+  </dl>
+  
   
 
   
@@ -94,7 +101,9 @@
   
   <dl>
     <dt>Defined in:</dt>
-    <dd>lib/components/OhmModelsV2.rb</dd>
+    <dd>lib/components/OhmModelsV2.rb<span class="defines">,<br />
+  lib/ohm/DocumentProcessing.rb</span>
+</dd>
   </dl>
   
 </div>
@@ -140,6 +149,8 @@
   
 
 
+  
+  
 
   <div id="instance_method_details" class="method_details_list">
     <h2>Instance Method Details</h2>
@@ -160,20 +171,32 @@
       <pre class="lines">
 
 
-79
-80
-81
-82
-83
-84</pre>
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/components/OhmModelsV2.rb', line 79</span>
+      <pre class="code"><span class="info file"># File 'lib/components/OhmModelsV2.rb', line 18</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_to_json'>to_json</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
   <span class='lbrace'>{</span>
     <span class='label'>id:</span><span class='comma'>,</span>
-    <span class='label'>name:</span>
+    <span class='label'>content:</span><span class='comma'>,</span>
+    <span class='label'>main_topics:</span><span class='comma'>,</span>
+    <span class='label'>tagged:</span><span class='comma'>,</span>
+    <span class='label'>speech_acts:</span><span class='comma'>,</span>
+    <span class='label'>transitivity:</span><span class='comma'>,</span>
+    <span class='label'>llm_analysis:</span><span class='comma'>,</span>
+    <span class='label'>paragraphs:</span> <span class='id identifier rubyid_paragraphs'>paragraphs</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:to_json</span><span class='rparen'>)</span>
   <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>

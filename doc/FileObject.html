@@ -81,19 +81,14 @@
   <h3>Methods</h3>
 
   <ul class="link-list" role="directory">
-    <li ><a href="#method-c-current_batch">::current_batch</a>
     <li ><a href="#method-c-find_or_create_by_path">::find_or_create_by_path</a>
-    <li ><a href="#method-c-latest">::latest</a>
     <li ><a href="#method-i-add_lemma">#add_lemma</a>
     <li ><a href="#method-i-add_lemmas">#add_lemmas</a>
     <li ><a href="#method-i-add_segment">#add_segment</a>
     <li ><a href="#method-i-add_segments">#add_segments</a>
     <li ><a href="#method-i-add_topics">#add_topics</a>
-    <li ><a href="#method-i-after_delete">#after_delete</a>
-    <li ><a href="#method-i-after_save">#after_save</a>
     <li ><a href="#method-i-retrieve_segment_texts">#retrieve_segment_texts</a>
     <li ><a href="#method-i-retrieve_segments">#retrieve_segments</a>
-    <li ><a href="#method-i-retrieve_word_texts">#retrieve_word_texts</a>
     <li ><a href="#method-i-retrieve_words">#retrieve_words</a>
   </ul>
 </div>
@@ -108,7 +103,7 @@
 
   <section class="description">
     
-<p>Defines the <a href="FileObject.html"><code>FileObject</code></a> model.</p>
+<p>The <a href="FileObject.html"><code>FileObject</code></a> model represents a file object in the <a href="Flowbots.html"><code>Flowbots</code></a> system. It stores information about the file, such as its name, path, extension, content, preprocessed content, metadata, batch, tags, main topics, speech acts, transitivity, LLM analysis, topics, segments, and lemmas.</p>
 
   </section>
 
@@ -122,32 +117,6 @@
        <header>
          <h3>Public Class Methods</h3>
        </header>
-
-      <div id="method-c-current_batch" class="method-detail ">
-        <div class="method-header">
-          <div class="method-heading">
-            <span class="method-name">current_batch</span><span
-              class="method-args">()</span>
-            <span class="method-click-advice">click to toggle source</span>
-          </div>
-        </div>
-
-        <div class="method-description">
-          <p>Retrieves all FileObjects from the current batch.</p>
-
-<p>@return [Array&lt;FileObject&gt;] An array of FileObjects from the current batch.</p>
-
-          <div class="method-source-code" id="current_batch-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 395</span>
-<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">current_batch</span>
-  <span class="ruby-identifier">batch_id</span> = <span class="ruby-identifier">redis</span>.<span class="ruby-identifier">call</span>(<span class="ruby-string">&quot;GET&quot;</span>, <span class="ruby-string">&quot;current_batch_id&quot;</span>)
-  <span class="ruby-identifier">find</span>(<span class="ruby-value">batch:</span> <span class="ruby-identifier">batch_id</span>)
-<span class="ruby-keyword">end</span></pre>
-          </div>
-        </div>
-
-
-      </div>
 
       <div id="method-c-find_or_create_by_path" class="method-detail ">
         <div class="method-header">
@@ -165,8 +134,10 @@
 
 <p>@return [FileObject] The found or created <a href="FileObject.html"><code>FileObject</code></a> instance.</p>
 
+<p>@raise [ArgumentError] If <code>file_path</code> is not a string. @raise [FileNotFoundError] If the file is not found at the given path. @raise [FileObjectError] If there is an error creating the <a href="FileObject.html"><code>FileObject</code></a>.</p>
+
           <div class="method-source-code" id="find_or_create_by_path-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 261</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 386</span>
 <span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">find_or_create_by_path</span>(<span class="ruby-identifier">file_path</span>, <span class="ruby-identifier">attributes</span> = {})
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-node">&quot;file_path must be a String, got #{file_path.class}&quot;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">file_path</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">String</span>)
 
@@ -188,40 +159,6 @@
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">FileNotFoundError</span>, <span class="ruby-node">&quot;File not found: #{file_path}&quot;</span>
 <span class="ruby-keyword">rescue</span> <span class="ruby-constant">StandardError</span> <span class="ruby-operator">=&gt;</span> <span class="ruby-identifier">e</span>
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">FileObjectError</span>, <span class="ruby-node">&quot;Error creating FileObject: #{e.message}&quot;</span>
-<span class="ruby-keyword">end</span></pre>
-          </div>
-        </div>
-
-
-      </div>
-
-      <div id="method-c-latest" class="method-detail ">
-        <div class="method-header">
-          <div class="method-heading">
-            <span class="method-name">latest</span><span
-              class="method-args">(limit = nil)</span>
-            <span class="method-click-advice">click to toggle source</span>
-          </div>
-        </div>
-
-        <div class="method-description">
-          <p>Retrieves the <a href="FileObject.html#method-c-latest"><code>latest</code></a> <a href="FileObject.html"><code>FileObject</code></a> from Redis.</p>
-
-<p>@param limit [Integer] The maximum number of FileObjects to retrieve.</p>
-
-<p>@return [FileObject, Array&lt;FileObject&gt;] The <a href="FileObject.html#method-c-latest"><code>latest</code></a> <a href="FileObject.html"><code>FileObject</code></a> or an array of FileObjects.</p>
-
-          <div class="method-source-code" id="latest-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 381</span>
-<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">latest</span>(<span class="ruby-identifier">limit</span> = <span class="ruby-keyword">nil</span>)
-  <span class="ruby-keyword">if</span> <span class="ruby-identifier">limit</span>.<span class="ruby-identifier">nil?</span>
-    <span class="ruby-identifier">ids</span> = <span class="ruby-identifier">redis</span>.<span class="ruby-identifier">call</span>(<span class="ruby-string">&quot;ZREVRANGE&quot;</span>, <span class="ruby-identifier">key</span>[<span class="ruby-value">:latest</span>], <span class="ruby-value">0</span>, <span class="ruby-value">0</span>)
-    <span class="ruby-identifier">result</span> = <span class="ruby-identifier">fetch</span>(<span class="ruby-identifier">ids</span>)
-    <span class="ruby-identifier">result</span>.<span class="ruby-identifier">empty?</span> <span class="ruby-operator">?</span> <span class="ruby-keyword">nil</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">result</span>.<span class="ruby-identifier">first</span>
-  <span class="ruby-keyword">else</span>
-    <span class="ruby-identifier">ids</span> = <span class="ruby-identifier">redis</span>.<span class="ruby-identifier">call</span>(<span class="ruby-string">&quot;ZREVRANGE&quot;</span>, <span class="ruby-identifier">key</span>[<span class="ruby-value">:latest</span>], <span class="ruby-value">0</span>, <span class="ruby-identifier">limit</span> <span class="ruby-operator">-</span> <span class="ruby-value">1</span>)
-    <span class="ruby-identifier">fetch</span>(<span class="ruby-identifier">ids</span>)
-  <span class="ruby-keyword">end</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
         </div>
@@ -253,7 +190,7 @@
 <p>@return [Lemma] The created lemma.</p>
 
           <div class="method-source-code" id="add_lemma-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 312</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 437</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">add_lemma</span>(<span class="ruby-identifier">lemma_data</span>)
   <span class="ruby-identifier">lemma</span> = <span class="ruby-constant">Lemma</span>.<span class="ruby-identifier">create</span>(<span class="ruby-identifier">lemma_data</span>.<span class="ruby-identifier">merge</span>(<span class="ruby-value">file_object:</span> <span class="ruby-keyword">self</span>))
   <span class="ruby-identifier">lemmas</span>.<span class="ruby-identifier">push</span>(<span class="ruby-identifier">lemma</span>)
@@ -283,7 +220,7 @@
 <p>@return [Array&lt;Lemma&gt;] An array of created lemmas.</p>
 
           <div class="method-source-code" id="add_lemmas-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 324</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 449</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">add_lemmas</span>(<span class="ruby-identifier">lemmas_data</span>)
   <span class="ruby-identifier">new_lemmas</span> = <span class="ruby-identifier">lemmas_data</span>.<span class="ruby-identifier">map</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">lemma_data</span><span class="ruby-operator">|</span>
     <span class="ruby-identifier">lemma</span> = <span class="ruby-constant">Lemma</span>.<span class="ruby-identifier">create</span>(<span class="ruby-identifier">lemma_data</span>.<span class="ruby-identifier">merge</span>(<span class="ruby-value">file_object:</span> <span class="ruby-keyword">self</span>))
@@ -316,7 +253,7 @@
 <p>@return [Segment] The created segment.</p>
 
           <div class="method-source-code" id="add_segment-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 289</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 414</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">add_segment</span>(<span class="ruby-identifier">text</span>)
   <span class="ruby-identifier">segment</span> = <span class="ruby-constant">Segment</span>.<span class="ruby-identifier">create</span>(<span class="ruby-value">text:</span>, <span class="ruby-value">file_object:</span> <span class="ruby-keyword">self</span>)
   <span class="ruby-identifier">segments</span>.<span class="ruby-identifier">push</span>(<span class="ruby-identifier">segment</span>)
@@ -346,7 +283,7 @@
 <p>@return [void]</p>
 
           <div class="method-source-code" id="add_segments-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 301</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 426</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">add_segments</span>(<span class="ruby-identifier">new_segments</span>)
   <span class="ruby-identifier">new_segments</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">segment_text</span><span class="ruby-operator">|</span>
     <span class="ruby-identifier">add_segment</span>(<span class="ruby-identifier">segment_text</span>)
@@ -375,7 +312,7 @@
 <p>@return [void]</p>
 
           <div class="method-source-code" id="add_topics-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 339</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 464</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">add_topics</span>(<span class="ruby-identifier">new_topics</span>)
   <span class="ruby-identifier">new_topics</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">word</span><span class="ruby-operator">|</span>
     <span class="ruby-identifier">topics</span>.<span class="ruby-identifier">add</span>(<span class="ruby-constant">Topic</span>.<span class="ruby-identifier">create</span>(<span class="ruby-value">name:</span> <span class="ruby-identifier">word</span>))
@@ -405,7 +342,7 @@
 <p>@return [Array&lt;String&gt;] An array of segment texts.</p>
 
           <div class="method-source-code" id="retrieve_segment_texts-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 358</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 483</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">retrieve_segment_texts</span>
   <span class="ruby-identifier">retrieve_segments</span>.<span class="ruby-identifier">map</span>(<span class="ruby-operator">&amp;</span><span class="ruby-value">:text</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -430,34 +367,9 @@
 <p>@return [Array&lt;Segment&gt;] An array of segments.</p>
 
           <div class="method-source-code" id="retrieve_segments-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 351</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 476</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">retrieve_segments</span>
   <span class="ruby-identifier">segments</span>.<span class="ruby-identifier">to_a</span>
-<span class="ruby-keyword">end</span></pre>
-          </div>
-        </div>
-
-
-      </div>
-
-      <div id="method-i-retrieve_word_texts" class="method-detail ">
-        <div class="method-header">
-          <div class="method-heading">
-            <span class="method-name">retrieve_word_texts</span><span
-              class="method-args">()</span>
-            <span class="method-click-advice">click to toggle source</span>
-          </div>
-        </div>
-
-        <div class="method-description">
-          <p>Retrieves the text of all words associated with the <a href="FileObject.html"><code>FileObject</code></a>.</p>
-
-<p>@return [Array&lt;String&gt;] An array of word texts.</p>
-
-          <div class="method-source-code" id="retrieve_word_texts-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 372</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">retrieve_word_texts</span>
-  <span class="ruby-identifier">retrieve_words</span>.<span class="ruby-identifier">map</span>(<span class="ruby-operator">&amp;</span><span class="ruby-value">:word</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
         </div>
@@ -480,66 +392,9 @@
 <p>@return [Array&lt;Word&gt;] An array of words.</p>
 
           <div class="method-source-code" id="retrieve_words-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 365</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 490</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">retrieve_words</span>
   <span class="ruby-identifier">segments</span>.<span class="ruby-identifier">to_a</span>.<span class="ruby-identifier">flat_map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">segment</span><span class="ruby-operator">|</span> <span class="ruby-identifier">segment</span>.<span class="ruby-identifier">words</span>.<span class="ruby-identifier">to_a</span> }
-<span class="ruby-keyword">end</span></pre>
-          </div>
-        </div>
-
-
-      </div>
-
-    </section>
-
-     <section id="protected-instance-5Buntitled-5D-method-details" class="method-section">
-       <header>
-         <h3>Protected Instance Methods</h3>
-       </header>
-
-      <div id="method-i-after_delete" class="method-detail ">
-        <div class="method-header">
-          <div class="method-heading">
-            <span class="method-name">after_delete</span><span
-              class="method-args">()</span>
-            <span class="method-click-advice">click to toggle source</span>
-          </div>
-        </div>
-
-        <div class="method-description">
-          <p>Removes the <a href="FileObject.html"><code>FileObject</code></a>‘s ID from the Redis set for <a href="FileObject.html#method-c-latest"><code>latest</code></a> FileObjects.</p>
-
-<p>@return [void]</p>
-
-          <div class="method-source-code" id="after_delete-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 412</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">after_delete</span>
-  <span class="ruby-identifier">redis</span>.<span class="ruby-identifier">call</span>(<span class="ruby-string">&quot;ZREM&quot;</span>, <span class="ruby-identifier">model</span>.<span class="ruby-identifier">key</span>[<span class="ruby-value">:latest</span>], <span class="ruby-identifier">id</span>)
-<span class="ruby-keyword">end</span></pre>
-          </div>
-        </div>
-
-
-      </div>
-
-      <div id="method-i-after_save" class="method-detail ">
-        <div class="method-header">
-          <div class="method-heading">
-            <span class="method-name">after_save</span><span
-              class="method-args">()</span>
-            <span class="method-click-advice">click to toggle source</span>
-          </div>
-        </div>
-
-        <div class="method-description">
-          <p>Adds the <a href="FileObject.html"><code>FileObject</code></a>‘s ID to the Redis set for <a href="FileObject.html#method-c-latest"><code>latest</code></a> FileObjects.</p>
-
-<p>@return [void]</p>
-
-          <div class="method-source-code" id="after_save-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 405</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">after_save</span>
-  <span class="ruby-identifier">redis</span>.<span class="ruby-identifier">call</span>(<span class="ruby-string">&quot;ZADD&quot;</span>, <span class="ruby-identifier">model</span>.<span class="ruby-identifier">key</span>[<span class="ruby-value">:latest</span>], <span class="ruby-constant">Time</span>.<span class="ruby-identifier">now</span>.<span class="ruby-identifier">to_f</span>, <span class="ruby-identifier">id</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
         </div>

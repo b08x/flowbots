@@ -98,7 +98,7 @@
 
   <section class="description">
     
-<p>This file defines the Ohm models used in the <a href="Flowbots.html"><code>Flowbots</code></a> application.</p>
+<p>The <a href="Agent.html"><code>Agent</code></a> model represents an agent in the <a href="Flowbots.html"><code>Flowbots</code></a> system. It stores information about the agent, such as its name, role, state, and collections of messages, episodic memories, semantic memories, and reflections.</p>
 
   </section>
 
@@ -130,7 +130,7 @@
 <p>@return [Reflection] The created reflection.</p>
 
           <div class="method-source-code" id="reflect-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 44</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 72</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">reflect</span>(<span class="ruby-identifier">content</span>)
   <span class="ruby-constant">Reflection</span>.<span class="ruby-identifier">create</span>(<span class="ruby-value">agent:</span> <span class="ruby-keyword">self</span>, <span class="ruby-value">content:</span> <span class="ruby-identifier">content</span>, <span class="ruby-value">timestamp:</span> <span class="ruby-constant">Time</span>.<span class="ruby-identifier">now</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -157,7 +157,7 @@
 <p>@return [Object] The retrieved memory object, or nil if no match is found.</p>
 
           <div class="method-source-code" id="retrieve_memories-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 54</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 82</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">retrieve_memories</span>(<span class="ruby-identifier">type</span>, <span class="ruby-identifier">query</span>)
   <span class="ruby-keyword">case</span> <span class="ruby-identifier">type</span>
   <span class="ruby-keyword">when</span> <span class="ruby-value">:episodic</span>
@@ -191,7 +191,7 @@
 <p>@return [EpisodicMemory] The created episodic memory.</p>
 
           <div class="method-source-code" id="store_episodic_memory-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 26</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 54</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">store_episodic_memory</span>(<span class="ruby-identifier">content</span>)
   <span class="ruby-constant">EpisodicMemory</span>.<span class="ruby-identifier">create</span>(<span class="ruby-value">agent:</span> <span class="ruby-keyword">self</span>, <span class="ruby-value">content:</span> <span class="ruby-identifier">content</span>, <span class="ruby-value">timestamp:</span> <span class="ruby-constant">Time</span>.<span class="ruby-identifier">now</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -218,7 +218,7 @@
 <p>@return [SemanticMemory] The created semantic memory.</p>
 
           <div class="method-source-code" id="update_semantic_memory-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 35</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 63</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">update_semantic_memory</span>(<span class="ruby-identifier">content</span>)
   <span class="ruby-constant">SemanticMemory</span>.<span class="ruby-identifier">create</span>(<span class="ruby-value">agent:</span> <span class="ruby-keyword">self</span>, <span class="ruby-value">content:</span> <span class="ruby-identifier">content</span>, <span class="ruby-value">timestamp:</span> <span class="ruby-constant">Time</span>.<span class="ruby-identifier">now</span>)
 <span class="ruby-keyword">end</span></pre>

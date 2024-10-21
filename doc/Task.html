@@ -105,7 +105,7 @@
 
   <section class="description">
     
-<p>Defines the <a href="Task.html"><code>Task</code></a> model.</p>
+<p>The <a href="Task.html"><code>Task</code></a> model represents a task in the <a href="Flowbots.html"><code>Flowbots</code></a> system. It stores information about the task, such as its name, status, result, start and end times, predecessors, agent role, and cartridge file.</p>
 
   </section>
 
@@ -135,7 +135,7 @@
 <p>@return [Array&lt;Task&gt;] An array of <a href="Task.html#method-c-completed"><code>completed</code></a> tasks.</p>
 
           <div class="method-source-code" id="completed-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 158</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 215</span>
 <span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">completed</span>
   <span class="ruby-identifier">find</span>(<span class="ruby-value">status:</span> <span class="ruby-string">&quot;completed&quot;</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -162,7 +162,7 @@
 <p>@return [Task] The created <a href="Task.html"><code>Task</code></a> instance.</p>
 
           <div class="method-source-code" id="create_with_timestamp-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 95</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 152</span>
 <span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">create_with_timestamp</span>(<span class="ruby-identifier">attributes</span> = {})
   <span class="ruby-identifier">new_task</span> = <span class="ruby-identifier">create</span>(<span class="ruby-identifier">attributes</span>.<span class="ruby-identifier">merge</span>(<span class="ruby-value">start_time:</span> <span class="ruby-constant">Time</span>.<span class="ruby-identifier">now</span>.<span class="ruby-identifier">to_s</span>))
   <span class="ruby-identifier">new_task</span>.<span class="ruby-identifier">save</span>
@@ -189,7 +189,7 @@
 <p>@return [Array&lt;Task&gt;] An array of <a href="Task.html#method-c-failed"><code>failed</code></a> tasks.</p>
 
           <div class="method-source-code" id="failed-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 165</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 222</span>
 <span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">failed</span>
   <span class="ruby-identifier">find</span>(<span class="ruby-value">status:</span> <span class="ruby-string">&quot;failed&quot;</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -214,7 +214,7 @@
 <p>@return [Array&lt;Task&gt;] An array of tasks in progress.</p>
 
           <div class="method-source-code" id="in_progress-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 172</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 229</span>
 <span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">in_progress</span>
   <span class="ruby-identifier">find</span>(<span class="ruby-value">status:</span> <span class="ruby-string">&quot;in_progress&quot;</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -239,7 +239,7 @@
 <p>@return [Array&lt;Task&gt;] An array of <a href="Task.html#method-c-pending"><code>pending</code></a> tasks.</p>
 
           <div class="method-source-code" id="pending-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 151</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 208</span>
 <span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">pending</span>
   <span class="ruby-identifier">find</span>(<span class="ruby-value">status:</span> <span class="ruby-string">&quot;pending&quot;</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -273,7 +273,7 @@
 <p>@return [void]</p>
 
           <div class="method-source-code" id="complete-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 106</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 163</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">complete</span>(<span class="ruby-identifier">result</span> = <span class="ruby-keyword">nil</span>)
   <span class="ruby-identifier">update</span>(<span class="ruby-value">status:</span> <span class="ruby-string">&quot;completed&quot;</span>, <span class="ruby-value">result:</span>, <span class="ruby-value">end_time:</span> <span class="ruby-constant">Time</span>.<span class="ruby-identifier">now</span>.<span class="ruby-identifier">to_s</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -298,7 +298,7 @@
 <p>@return [Integer] The <a href="Task.html#method-i-duration"><code>duration</code></a> of the task in seconds, or nil if start_time or end_time is nil.</p>
 
           <div class="method-source-code" id="duration-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 122</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 179</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">duration</span>
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">nil</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">start_time</span>.<span class="ruby-identifier">nil?</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">end_time</span>.<span class="ruby-identifier">nil?</span>
 
@@ -329,7 +329,7 @@
 <p>@return [void]</p>
 
           <div class="method-source-code" id="execute-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 136</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 193</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">execute</span>
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">NotImplementedError</span>, <span class="ruby-node">&quot;#{self.class.name}#execute must be implemented in subclass&quot;</span>
 <span class="ruby-keyword">end</span></pre>
@@ -356,7 +356,7 @@
 <p>@return [void]</p>
 
           <div class="method-source-code" id="fail-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 115</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 172</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">fail</span>(<span class="ruby-identifier">error_message</span>)
   <span class="ruby-identifier">update</span>(<span class="ruby-value">status:</span> <span class="ruby-string">&quot;failed&quot;</span>, <span class="ruby-value">result:</span> <span class="ruby-identifier">error_message</span>, <span class="ruby-value">end_time:</span> <span class="ruby-constant">Time</span>.<span class="ruby-identifier">now</span>.<span class="ruby-identifier">to_s</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -381,7 +381,7 @@
 <p>@return [FileObject] The retrieved file object.</p>
 
           <div class="method-source-code" id="retrieve_input-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 143</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 200</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">retrieve_input</span>
   <span class="ruby-identifier">file_object_id</span> = <span class="ruby-constant">RedisKeys</span>.<span class="ruby-identifier">get</span>(<span class="ruby-constant">RedisKeys</span><span class="ruby-operator">::</span><span class="ruby-constant">CURRENT_FILE_OBJECT_ID</span>)
   <span class="ruby-constant">FileObject</span>[<span class="ruby-identifier">file_object_id</span>]
