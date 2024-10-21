@@ -97,6 +97,8 @@
 
   <section class="description">
     
+<p>This task preprocesses a text file, extracting metadata and cleaning the content.</p>
+
   </section>
 
   <section id="5Buntitled-5D" class="documentation-section">
@@ -120,10 +122,14 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Executes the text file preprocessing task.</p>
+
+<p>Retrieves the text file object, parses it using a custom grammar, extracts metadata, updates the text file with preprocessed content and metadata, and logs relevant information.</p>
+
+<p>@return [String] A success message if the preprocessing is successful, otherwise an error message.</p>
 
           <div class="method-source-code" id="execute-source">
-            <pre><span class="ruby-comment"># File lib/tasks/preprocess_text_file_task.rb, line 7</span>
+            <pre><span class="ruby-comment"># File lib/tasks/preprocess_text_file_task.rb, line 15</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">execute</span>
   <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-string">&quot;Starting PreprocessTextFileTask&quot;</span>
 
@@ -174,10 +180,14 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Extracts metadata from the YAML front matter of the parsed text file.</p>
+
+<p>@param yaml_front_matter [String] The YAML front matter extracted from the text file.</p>
+
+<p>@return [Hash] A hash containing the extracted metadata.</p>
 
           <div class="method-source-code" id="extract_metadata-source">
-            <pre><span class="ruby-comment"># File lib/tasks/preprocess_text_file_task.rb, line 41</span>
+            <pre><span class="ruby-comment"># File lib/tasks/preprocess_text_file_task.rb, line 57</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">extract_metadata</span>(<span class="ruby-identifier">yaml_front_matter</span>)
   <span class="ruby-keyword">return</span> {} <span class="ruby-keyword">if</span> <span class="ruby-identifier">yaml_front_matter</span>.<span class="ruby-identifier">empty?</span>
 
@@ -202,10 +212,12 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Retrieves the input text file object.</p>
+
+<p>@return [Textfile] The retrieved text file object.</p>
 
           <div class="method-source-code" id="retrieve_input-source">
-            <pre><span class="ruby-comment"># File lib/tasks/preprocess_text_file_task.rb, line 37</span>
+            <pre><span class="ruby-comment"># File lib/tasks/preprocess_text_file_task.rb, line 48</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">retrieve_input</span>
   <span class="ruby-identifier">retrieve_textfile</span>
 <span class="ruby-keyword">end</span></pre>
@@ -225,10 +237,14 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Stores the preprocessed content and metadata in the text file object.</p>
+
+<p>@param content [String] The preprocessed content of the text file. @param metadata [Hash] The extracted metadata.</p>
+
+<p>@return [void]</p>
 
           <div class="method-source-code" id="store_preprocessed_data-source">
-            <pre><span class="ruby-comment"># File lib/tasks/preprocess_text_file_task.rb, line 50</span>
+            <pre><span class="ruby-comment"># File lib/tasks/preprocess_text_file_task.rb, line 72</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">store_preprocessed_data</span>(<span class="ruby-identifier">content</span>, <span class="ruby-identifier">metadata</span>)
   <span class="ruby-ivar">@textfile</span>.<span class="ruby-identifier">update</span>(<span class="ruby-value">preprocessed_content:</span> <span class="ruby-identifier">content</span>, <span class="ruby-value">metadata:</span>)
   <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;Stored preprocessed content (first 100 chars): #{content[0..100]}&quot;</span>

@@ -1,5 +1,5 @@
 source "https://rubygems.org"
-# gemspec
+gemspec
 
 gem "algorithms"
 gem "ansi_palette"
@@ -69,3 +69,5 @@ gem "wordnet-defaultdb"
 gem "wordnet"
 gem "yaml"
 gem "zip", "~> 2.0"
+
+gem "solargraph", "~> 0.48.0"

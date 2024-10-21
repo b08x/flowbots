@@ -98,6 +98,8 @@
 
   <section class="description">
     
+<p>Defines the <a href="Segment.html"><code>Segment</code></a> model.</p>
+
   </section>
 
   <section id="5Buntitled-5D" class="documentation-section">
@@ -121,10 +123,14 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Adds a new word to the <a href="Segment.html"><code>Segment</code></a>.</p>
+
+<p>@param word_data [Hash] A hash containing word data.</p>
+
+<p>@return [Word] The created word.</p>
 
           <div class="method-source-code" id="add_word-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 212</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 438</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">add_word</span>(<span class="ruby-identifier">word_data</span>)
   <span class="ruby-identifier">word</span> = <span class="ruby-constant">Word</span>.<span class="ruby-identifier">create</span>(<span class="ruby-identifier">word_data</span>.<span class="ruby-identifier">merge</span>(<span class="ruby-value">segment:</span> <span class="ruby-keyword">self</span>))
   <span class="ruby-identifier">words</span>.<span class="ruby-identifier">push</span>(<span class="ruby-identifier">word</span>)
@@ -147,10 +153,14 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Adds multiple words to the <a href="Segment.html"><code>Segment</code></a>.</p>
+
+<p>@param new_words [Array&lt;Hash&gt;] An array of word data hashes.</p>
+
+<p>@return [void]</p>
 
           <div class="method-source-code" id="add_words-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 219</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 450</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">add_words</span>(<span class="ruby-identifier">new_words</span>)
   <span class="ruby-identifier">new_words</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">word_data</span><span class="ruby-operator">|</span>
     <span class="ruby-identifier">word</span> = <span class="ruby-constant">Word</span>.<span class="ruby-identifier">create</span>(<span class="ruby-identifier">word_data</span>.<span class="ruby-identifier">merge</span>(<span class="ruby-value">segment:</span> <span class="ruby-keyword">self</span>))
@@ -174,10 +184,12 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Retrieves the text of all words associated with the <a href="Segment.html"><code>Segment</code></a>.</p>
+
+<p>@return [Array&lt;String&gt;] An array of word texts.</p>
 
           <div class="method-source-code" id="retrieve_word_texts-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 231</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 468</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">retrieve_word_texts</span>
   <span class="ruby-identifier">retrieve_words</span>.<span class="ruby-identifier">map</span>(<span class="ruby-operator">&amp;</span><span class="ruby-value">:word</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -197,10 +209,12 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Retrieves all words associated with the <a href="Segment.html"><code>Segment</code></a>.</p>
+
+<p>@return [Array&lt;Word&gt;] An array of words.</p>
 
           <div class="method-source-code" id="retrieve_words-source">
-            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 227</span>
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 461</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">retrieve_words</span>
   <span class="ruby-identifier">words</span>.<span class="ruby-identifier">to_a</span>
 <span class="ruby-keyword">end</span></pre>

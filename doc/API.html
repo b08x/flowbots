@@ -86,7 +86,9 @@
 
   <section class="description">
     
-<p>… (Ohm model definitions from OhmModels.rb) …</p>
+<p>This class defines the <a href="API.html"><code>API</code></a> for the <a href="Flowbots.html"><code>Flowbots</code></a> application.</p>
+
+<p>It provides endpoints for accessing and manipulating data stored in the Ohm models.</p>
 
   </section>
 
@@ -111,10 +113,14 @@
         </div>
 
         <div class="method-description">
-          <p>… (Add routes for other object buckets and their attributes) …</p>
+          <p>Sorts splat values from the request URL and organizes them into a hash.</p>
+
+<p>@param splat_vals [Array] The splat values from the request URL.</p>
+
+<p>@return [Hash] A hash containing sorted splat values.</p>
 
           <div class="method-source-code" id="splat_sort-source">
-            <pre><span class="ruby-comment"># File lib/api.rb, line 105</span>
+            <pre><span class="ruby-comment"># File lib/api.rb, line 182</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">splat_sort</span>(<span class="ruby-identifier">splat_vals</span>)
   <span class="ruby-ivar">@output</span> = {}
   <span class="ruby-ivar">@output</span>[<span class="ruby-value">:object</span>] = <span class="ruby-ivar">@object</span>

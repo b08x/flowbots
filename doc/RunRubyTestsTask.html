@@ -116,7 +116,7 @@
 <p>@return [void] @raises [StandardError] If an error occurs during the task execution.</p>
 
           <div class="method-source-code" id="execute-source">
-            <pre><span class="ruby-comment"># File lib/example.rb, line 172</span>
+            <pre><span class="ruby-comment"># File lib/example.rb, line 173</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">execute</span>
   <span class="ruby-comment"># Retrieve the test code from Redis.</span>
   <span class="ruby-identifier">test_code</span> = <span class="ruby-constant">JSON</span>.<span class="ruby-identifier">parse</span>(<span class="ruby-identifier">@@redis</span>.<span class="ruby-identifier">get</span>(<span class="ruby-string">&quot;testdesign&quot;</span>))

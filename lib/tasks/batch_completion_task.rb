@@ -1,7 +1,15 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+# This task handles the completion of a batch or single file workflow.
 class BatchCompletionTask < Jongleur::WorkerTask
+  # Executes the batch completion task.
+  #
+  # Retrieves the current workflow from Redis and determines whether it's a batch
+  # workflow or a single file workflow. Calls the appropriate completion method
+  # based on the workflow type.
+  #
+  # @return [void]
   def execute
     workflow_id = Ohm.redis.get("current_workflow_id")
     workflow = Workflow[workflow_id]
@@ -15,6 +23,15 @@ class BatchCompletionTask < Jongleur::WorkerTask
 
   private
 
+  # Completes a batch in a batch workflow.
+  #
+  # Updates the status of the current batch to "completed" and increments the
+  # current batch number if there are more batches to process. If all batches
+  # are completed, updates the workflow status to "completed" and sets the end time.
+  #
+  # @param workflow [Workflow] The workflow object.
+  #
+  # @return [void]
   def complete_batch(workflow)
     current_batch = workflow.batches.find(number: workflow.current_batch_number).first
     current_batch.update(status: "completed")
@@ -28,6 +45,13 @@ class BatchCompletionTask < Jongleur::WorkerTask
     end
   end
 
+  # Completes a single file workflow.
+  #
+  # Updates the workflow status to "completed" and sets the end time.
+  #
+  # @param workflow [Workflow] The workflow object.
+  #
+  # @return [void]
   def complete_single_file_workflow(workflow)
     workflow.update(status: "completed", end_time: Time.now.to_s)
     logger.info "Single file workflow completed. File: #{workflow.sourcefiles.first.path}"

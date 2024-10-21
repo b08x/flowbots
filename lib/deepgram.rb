@@ -4,15 +4,28 @@
 require "json"
 require "pathname"
 
+# This module provides functionality for parsing Deepgram JSON output.
 module DeepGramParsing
+  # Parses a Deepgram JSON file.
+  #
+  # @param file [String] The path to the Deepgram JSON file.
+  #
+  # @return [void]
+  #
+  # @raise [NotImplementedError] If the method is not implemented in a subclass.
   def parse_json(file)
     raise NotImplementedError
   end
 end
 
+# This class provides methods for parsing and extracting information from Deepgram JSON output.
 class Deepgram
+  # Includes the DeepGramParsing module.
   include DeepGramParsing
 
+  # Initializes a new Deepgram instance.
+  #
+  # @param file [String] The path to the Deepgram JSON file.
   def initialize(file)
     @json_data = JSON.parse(File.read(file))
     @paragraphs = []
@@ -21,6 +34,9 @@ class Deepgram
     parse_json
   end
 
+  # Parses the Deepgram JSON data.
+  #
+  # @return [void]
   def parse_json
     transcript
     paragraphs
@@ -28,10 +44,16 @@ class Deepgram
     intents
   end
 
+  # Extracts the transcript from the JSON data.
+  #
+  # @return [String] The transcript.
   def transcript
     @transcript = @json_data["results"]["channels"][0]["alternatives"][0]["transcript"]
   end
 
+  # Extracts paragraphs from the JSON data.
+  #
+  # @return [Array<Hash>] An array of paragraphs, each represented as a hash with text, start time, and end time.
   def paragraphs
     @json_data["results"]["channels"][0]["alternatives"][0]["paragraphs"]["paragraphs"].each do |paragraph|
       sentences = paragraph["sentences"].map { |sentence| sentence["text"] }
@@ -41,6 +63,9 @@ class Deepgram
     end
   end
 
+  # Extracts topics from the JSON data.
+  #
+  # @return [Array<Hash>] An array of topics, each represented as a hash with the topic name.
   def topics
     @json_data["results"]["topics"]["segments"].each do |seg|
       @topics << { topic: seg["topics"][0]["topic"] }
@@ -48,6 +73,9 @@ class Deepgram
     @topics.uniq!
   end
 
+  # Extracts intents from the JSON data.
+  #
+  # @return [Array<Hash>] An array of intents, each represented as a hash with the intent name, start time, and end time.
   def intents
     @json_data["results"]["intents"]["segments"].each do |seg|
       start_time = format_timestamp(seg["start"])
@@ -59,8 +87,12 @@ class Deepgram
 
   private
 
+  # Formats a timestamp from seconds to HH:MM:SS.
+  #
+  # @param seconds [Float] The timestamp in seconds.
+  #
+  # @return [String] The formatted timestamp.
   def format_timestamp(seconds)
-    puts seconds
     hours = (seconds / 3600).to_i unless seconds.nil?
     minutes = ((seconds % 3600) / 60).to_i unless seconds.nil?
     seconds = (seconds % 60).to_i unless seconds.nil?

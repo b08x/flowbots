@@ -87,6 +87,8 @@
 
   <section class="description">
     
+<p>A custom prompt class with enhanced features.</p>
+
   </section>
 
   <section id="5Buntitled-5D" class="documentation-section">
@@ -105,7 +107,9 @@
         </div>
 
         <div class="method-description">
-        
+        <p>The <a href="PromptX.html#attribute-i-prefix"><code>prefix</code></a> used for the prompt.</p>
+
+<p>@return [String] The prompt <a href="PromptX.html#attribute-i-prefix"><code>prefix</code></a>.</p>
         </div>
       </div>
     </section>
@@ -126,15 +130,18 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Initializes a <a href="PromptX.html#method-c-new"><code>new</code></a> <a href="PromptX.html"><code>PromptX</code></a> instance.</p>
+
+<p>@param active_color [Symbol] The color for the active prompt. @param <a href="PromptX.html#attribute-i-prefix"><code>prefix</code></a> [String] The <a href="PromptX.html#attribute-i-prefix"><code>prefix</code></a> for the prompt. @param history [Boolean] Whether to enable history for the prompt.</p>
             <div class="method-calls-super">
               Calls superclass method
               
             </div>
 
           <div class="method-source-code" id="new-source">
-            <pre><span class="ruby-comment"># File lib/helper.rb, line 31</span>
+            <pre><span class="ruby-comment"># File lib/helper.rb, line 47</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">initialize</span>(<span class="ruby-value">active_color:</span>, <span class="ruby-value">prefix:</span>, <span class="ruby-value">history:</span> <span class="ruby-keyword">true</span>)
+  <span class="ruby-comment"># Define an interrupt handler to handle Ctrl+C.</span>
   <span class="ruby-ivar">@interrupt</span> = <span class="ruby-identifier">lambda</span> <span class="ruby-keyword">do</span>
     <span class="ruby-identifier">print</span> <span class="ruby-constant">TTY</span><span class="ruby-operator">::</span><span class="ruby-constant">Cursor</span>.<span class="ruby-identifier">clear_screen_down</span>
     <span class="ruby-identifier">print</span> <span class="ruby-string">&quot;\e[2J\e[f&quot;</span>
@@ -142,6 +149,7 @@
     <span class="ruby-identifier">exit</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">res</span>
   <span class="ruby-keyword">end</span>
 
+  <span class="ruby-comment"># Initialize the superclass with the provided options.</span>
   <span class="ruby-keyword">super</span>(<span class="ruby-value">active_color:</span> <span class="ruby-identifier">active_color</span>, <span class="ruby-value">prefix:</span> <span class="ruby-identifier">prefix</span>, <span class="ruby-value">interrupt:</span> <span class="ruby-ivar">@interrupt</span>)
   <span class="ruby-ivar">@history</span> = <span class="ruby-identifier">history</span>
   <span class="ruby-ivar">@prefix</span> = <span class="ruby-identifier">prefix</span>
@@ -169,10 +177,14 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Reads a line of input from the user.</p>
+
+<p>@param text [String] The text to display before the input field.</p>
+
+<p>@return [String] The input string entered by the user.</p>
 
           <div class="method-source-code" id="readline-source">
-            <pre><span class="ruby-comment"># File lib/helper.rb, line 44</span>
+            <pre><span class="ruby-comment"># File lib/helper.rb, line 67</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">readline</span>(<span class="ruby-identifier">text</span> = <span class="ruby-string">&quot;&quot;</span>)
   <span class="ruby-identifier">puts</span> <span class="ruby-ivar">@prefix</span>
   <span class="ruby-keyword">begin</span>

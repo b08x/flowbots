@@ -1,9 +1,17 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+# This task initializes a workflow based on the specified workflow type.
 class WorkflowInitializerTask < Jongleur::WorkerTask
+  # The batch size for processing files in a batch workflow.
   BATCH_SIZE = 10
 
+  # Executes the workflow initialization task.
+  #
+  # Determines the workflow type from Redis and initializes either a batch workflow
+  # or a single file workflow accordingly.
+  #
+  # @return [void]
   def execute
     workflow_type = Ohm.redis.get("workflow_type")
 
@@ -16,6 +24,12 @@ class WorkflowInitializerTask < Jongleur::WorkerTask
 
   private
 
+  # Initializes a batch workflow for topic model training.
+  #
+  # Retrieves the input folder path from Redis, creates a new workflow,
+  # and creates batches of source files based on the specified batch size.
+  #
+  # @return [void]
   def initialize_batch_workflow
     input_folder = Ohm.redis.get("input_folder_path")
     all_file_paths = Dir.glob(File.join(input_folder, "**{,/*/**}/*.{md,markdown}")).sort
@@ -34,6 +48,12 @@ class WorkflowInitializerTask < Jongleur::WorkerTask
     logger.info "Initialized Batch Workflow with ID: #{workflow.id}, Total Batches: #{workflow.batches.count}"
   end
 
+  # Initializes a single file workflow for text processing.
+  #
+  # Retrieves the input file path from Redis, creates a new workflow,
+  # and associates the input file with the workflow.
+  #
+  # @return [void]
   def initialize_single_file_workflow
     input_file_path = Ohm.redis.get("input_file_path")
 
@@ -52,6 +72,16 @@ class WorkflowInitializerTask < Jongleur::WorkerTask
     logger.info "Initialized Single File Workflow with ID: #{workflow.id}, File: #{sourcefile.path}"
   end
 
+  # Creates batches of source files for a batch workflow.
+  #
+  # Iterates through the file paths in batches and creates a new batch
+  # for each slice of files. Each source file is associated with its
+  # corresponding batch and workflow.
+  #
+  # @param workflow [Workflow] The workflow to associate the batches with.
+  # @param file_paths [Array<String>] The list of file paths to create batches from.
+  #
+  # @return [void]
   def create_batches(workflow, file_paths)
     file_paths.each_slice(BATCH_SIZE).with_index(1) do |batch_files, batch_number|
       batch = Batch.create(number: batch_number, status: "pending", workflow: workflow)

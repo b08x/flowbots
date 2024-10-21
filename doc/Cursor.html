@@ -86,6 +86,8 @@
 
   <section class="description">
     
+<p>Provides helper methods for cursor positioning and terminal interaction.</p>
+
   </section>
 
   <section id="5Buntitled-5D" class="documentation-section">
@@ -109,10 +111,12 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Returns the current cursor position.</p>
+
+<p>@return [Hash] A hash containing the row and column of the cursor.</p>
 
           <div class="method-source-code" id="pos-source">
-            <pre><span class="ruby-comment"># File lib/helper.rb, line 12</span>
+            <pre><span class="ruby-comment"># File lib/helper.rb, line 18</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">pos</span>
   <span class="ruby-identifier">res</span> = <span class="ruby-string">+&quot;&quot;</span>
   <span class="ruby-identifier">$stdin</span>.<span class="ruby-identifier">raw</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">stdin</span><span class="ruby-operator">|</span>

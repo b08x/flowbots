@@ -1,6 +1,8 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+# lib/ui.rb
+
 require "highline/import"
 require "natty-ui"
 require "os"
@@ -16,7 +18,13 @@ require_relative "ui/base"
 require_relative "ui/box"
 require_relative "ui/scrollable_box"
 
+# Provides user interface functionality for the Flowbots application.
 module UI
+  # Starts the main UI loop.
+  #
+  # Displays the main menu and handles user interactions.
+  #
+  # @return [void]
   def self.start
     loop do
       header
@@ -34,6 +42,11 @@ module UI
     end
   end
 
+  # Starts the workflow selection process.
+  #
+  # Displays a menu of available workflows and handles user selection.
+  #
+  # @return [void]
   def self.start_workflow
     workflow_choices = [
       { name: "Text Processing Workflow", value: :text_processing },
@@ -56,6 +69,13 @@ module UI
     end
   end
 
+  # Runs a workflow with a given name.
+  #
+  # Displays a spinner indicating workflow execution and simulates completion.
+  #
+  # @param workflow_name [String] The name of the workflow to run.
+  #
+  # @return [void]
   def self.run_workflow(workflow_name)
     spinner = TTY::Spinner.new("[:spinner] Running #{workflow_name} Workflow...", format: :dots)
     spinner.auto_spin
@@ -66,6 +86,11 @@ module UI
     spinner.success("(#{workflow_name} Workflow completed successfully!)")
   end
 
+  # Creates a custom workflow.
+  #
+  # Prompts the user for a workflow name and tasks, and displays the created workflow.
+  #
+  # @return [void]
   def self.custom_workflow
     say(:info, "Custom Workflow Creator")
     workflow_name = prompt.ask("Enter a name for your custom workflow:")
@@ -82,6 +107,11 @@ module UI
     end
   end
 
+  # Opens the settings menu.
+  #
+  # Displays a menu of settings categories and handles user selection.
+  #
+  # @return [void]
   def self.open_settings
     settings_choices = [
       { name: "General Settings", value: :general },
@@ -106,24 +136,45 @@ module UI
     end
   end
 
+  # Edits general settings.
+  #
+  # Displays a placeholder message indicating the general settings editor.
+  #
+  # @return [void]
   def self.edit_general_settings
     # Implement general settings editor
     say(:info, "Editing General Settings")
     # Add more specific setting options here
   end
 
+  # Edits workflow settings.
+  #
+  # Displays a placeholder message indicating the workflow settings editor.
+  #
+  # @return [void]
   def self.edit_workflow_settings
     # Implement workflow settings editor
     say(:info, "Editing Workflow Settings")
     # Add more specific setting options here
   end
 
+  # Edits API settings.
+  #
+  # Displays a placeholder message indicating the API settings editor.
+  #
+  # @return [void]
   def self.edit_api_settings
     # Implement API settings editor
     say(:info, "Editing API Settings")
     # Add more specific setting options here
   end
 
+  # Views the application logs.
+  #
+  # Attempts to read the log file and display it in a scrollable box.
+  # Handles potential errors during file reading.
+  #
+  # @return [void]
   def self.view_logs
     log_file = File.join(LOG_DIR, "flowbots-#{current_date}.log")
     begin

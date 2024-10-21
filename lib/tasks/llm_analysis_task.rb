@@ -13,7 +13,6 @@ class LlmAnalysisTask < Jongleur::WorkerTask
     UI.info "Starting LLMAnalysisTask"
 
     begin
-      # Create a new WorkflowAgent instance for the "ironically_literal" agent.
       agent = WorkflowAgent.new(
         "ironically_literal",
         File.join(CARTRIDGE_DIR, "@b08x", "cartridges", "assistants/antisteve.yml")
@@ -21,28 +20,23 @@ class LlmAnalysisTask < Jongleur::WorkerTask
 
       logger.debug "Created WorkflowAgent instance"
 
-      # Load the agent's state from Redis.
       agent.load_state
       logger.debug "Loaded agent state"
 
-      # Retrieve the Textfile object, its content, metadata, and NLP results.
       textfile = retrieve_input
       content = textfile.preprocessed_content
       metadata = textfile.metadata || {}
       nlp_result = retrieve_nlp_result(textfile)
 
-      # Generate a prompt for the agent based on the retrieved information.
       prompt = generate_analysis_prompt(textfile, content, metadata, nlp_result)
 
       analysis_result = agent.process(prompt)
 
       logger.debug "Agent processing completed"
 
-      # Save the agent's state to Redis.
       agent.save_state
       logger.debug "Saved agent state"
 
-      # Store the analysis result in the Textfile.
       store_analysis_result(textfile, analysis_result)
 
       write_markdown_report(analysis_result)
@@ -51,7 +45,6 @@ class LlmAnalysisTask < Jongleur::WorkerTask
 
       logger.info "LLMAnalysisTask completed"
     rescue StandardError => e
-      # Log an error message if an exception occurs during the task execution.
       logger.error "Error in LLMAnalysisTask: #{e.message}"
       logger.error e.backtrace.join("\n")
       raise

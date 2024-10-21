@@ -88,6 +88,8 @@
 
   <section class="description">
     
+<p>Provides user interface functionality for the <a href="Flowbots.html"><code>Flowbots</code></a> application.</p>
+
   </section>
 
   <section id="5Buntitled-5D" class="documentation-section">
@@ -111,10 +113,14 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Creates a custom workflow.</p>
+
+<p>Prompts the user for a workflow name and tasks, and displays the created workflow.</p>
+
+<p>@return [void]</p>
 
           <div class="method-source-code" id="custom_workflow-source">
-            <pre><span class="ruby-comment"># File lib/ui.rb, line 69</span>
+            <pre><span class="ruby-comment"># File lib/ui.rb, line 94</span>
 <span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">custom_workflow</span>
   <span class="ruby-identifier">say</span>(<span class="ruby-value">:info</span>, <span class="ruby-string">&quot;Custom Workflow Creator&quot;</span>)
   <span class="ruby-identifier">workflow_name</span> = <span class="ruby-identifier">prompt</span>.<span class="ruby-identifier">ask</span>(<span class="ruby-string">&quot;Enter a name for your custom workflow:&quot;</span>)
@@ -146,10 +152,14 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Edits <a href="API.html"><code>API</code></a> settings.</p>
+
+<p>Displays a placeholder message indicating the <a href="API.html"><code>API</code></a> settings editor.</p>
+
+<p>@return [void]</p>
 
           <div class="method-source-code" id="edit_api_settings-source">
-            <pre><span class="ruby-comment"># File lib/ui.rb, line 121</span>
+            <pre><span class="ruby-comment"># File lib/ui.rb, line 166</span>
 <span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">edit_api_settings</span>
   <span class="ruby-comment"># Implement API settings editor</span>
   <span class="ruby-identifier">say</span>(<span class="ruby-value">:info</span>, <span class="ruby-string">&quot;Editing API Settings&quot;</span>)
@@ -171,10 +181,14 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Edits general settings.</p>
+
+<p>Displays a placeholder message indicating the general settings editor.</p>
+
+<p>@return [void]</p>
 
           <div class="method-source-code" id="edit_general_settings-source">
-            <pre><span class="ruby-comment"># File lib/ui.rb, line 109</span>
+            <pre><span class="ruby-comment"># File lib/ui.rb, line 144</span>
 <span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">edit_general_settings</span>
   <span class="ruby-comment"># Implement general settings editor</span>
   <span class="ruby-identifier">say</span>(<span class="ruby-value">:info</span>, <span class="ruby-string">&quot;Editing General Settings&quot;</span>)
@@ -196,10 +210,14 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Edits workflow settings.</p>
+
+<p>Displays a placeholder message indicating the workflow settings editor.</p>
+
+<p>@return [void]</p>
 
           <div class="method-source-code" id="edit_workflow_settings-source">
-            <pre><span class="ruby-comment"># File lib/ui.rb, line 115</span>
+            <pre><span class="ruby-comment"># File lib/ui.rb, line 155</span>
 <span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">edit_workflow_settings</span>
   <span class="ruby-comment"># Implement workflow settings editor</span>
   <span class="ruby-identifier">say</span>(<span class="ruby-value">:info</span>, <span class="ruby-string">&quot;Editing Workflow Settings&quot;</span>)
@@ -221,10 +239,14 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Opens the settings menu.</p>
+
+<p>Displays a menu of settings categories and handles user selection.</p>
+
+<p>@return [void]</p>
 
           <div class="method-source-code" id="open_settings-source">
-            <pre><span class="ruby-comment"># File lib/ui.rb, line 85</span>
+            <pre><span class="ruby-comment"># File lib/ui.rb, line 115</span>
 <span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">open_settings</span>
   <span class="ruby-identifier">settings_choices</span> = [
     { <span class="ruby-value">name:</span> <span class="ruby-string">&quot;General Settings&quot;</span>, <span class="ruby-value">value:</span> <span class="ruby-value">:general</span> },
@@ -264,10 +286,16 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Runs a workflow with a given name.</p>
+
+<p>Displays a spinner indicating workflow execution and simulates completion.</p>
+
+<p>@param workflow_name [String] The name of the workflow to run.</p>
+
+<p>@return [void]</p>
 
           <div class="method-source-code" id="run_workflow-source">
-            <pre><span class="ruby-comment"># File lib/ui.rb, line 59</span>
+            <pre><span class="ruby-comment"># File lib/ui.rb, line 79</span>
 <span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">run_workflow</span>(<span class="ruby-identifier">workflow_name</span>)
   <span class="ruby-identifier">spinner</span> = <span class="ruby-constant">TTY</span><span class="ruby-operator">::</span><span class="ruby-constant">Spinner</span>.<span class="ruby-identifier">new</span>(<span class="ruby-node">&quot;[:spinner] Running #{workflow_name} Workflow...&quot;</span>, <span class="ruby-value">format:</span> <span class="ruby-value">:dots</span>)
   <span class="ruby-identifier">spinner</span>.<span class="ruby-identifier">auto_spin</span>
@@ -293,10 +321,14 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Starts the main <a href="UI.html"><code>UI</code></a> loop.</p>
+
+<p>Displays the main menu and handles user interactions.</p>
+
+<p>@return [void]</p>
 
           <div class="method-source-code" id="start-source">
-            <pre><span class="ruby-comment"># File lib/ui.rb, line 20</span>
+            <pre><span class="ruby-comment"># File lib/ui.rb, line 28</span>
 <span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">start</span>
   <span class="ruby-identifier">loop</span> <span class="ruby-keyword">do</span>
     <span class="ruby-identifier">header</span>
@@ -329,10 +361,14 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Starts the workflow selection process.</p>
+
+<p>Displays a menu of available workflows and handles user selection.</p>
+
+<p>@return [void]</p>
 
           <div class="method-source-code" id="start_workflow-source">
-            <pre><span class="ruby-comment"># File lib/ui.rb, line 37</span>
+            <pre><span class="ruby-comment"># File lib/ui.rb, line 50</span>
 <span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">start_workflow</span>
   <span class="ruby-identifier">workflow_choices</span> = [
     { <span class="ruby-value">name:</span> <span class="ruby-string">&quot;Text Processing Workflow&quot;</span>, <span class="ruby-value">value:</span> <span class="ruby-value">:text_processing</span> },
@@ -370,10 +406,14 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Views the application logs.</p>
+
+<p>Attempts to read the log file and display it in a scrollable box. Handles potential errors during file reading.</p>
+
+<p>@return [void]</p>
 
           <div class="method-source-code" id="view_logs-source">
-            <pre><span class="ruby-comment"># File lib/ui.rb, line 127</span>
+            <pre><span class="ruby-comment"># File lib/ui.rb, line 178</span>
 <span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">view_logs</span>
   <span class="ruby-identifier">log_file</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-constant">LOG_DIR</span>, <span class="ruby-node">&quot;flowbots-#{current_date}.log&quot;</span>)
   <span class="ruby-keyword">begin</span>
