@@ -9,16 +9,17 @@ which overcommit > /dev/null 2>&1 && overcommit --install
 
 # paru -S chaotic-aur/python39 --noconfirm --needed
 
-python3.10 -m venv .venv
+# python3.10 -m venv .venv
+python -m venv .venv
 source .venv/bin/activate
 
 export RUSTFLAGS="-A invalid_reference_casting"
 export PATH="$HOME/.cargo/bin:$PATH"
 
 pip3 install -U setuptools wheel
-pip3 install -U spacy transformers booknlp dotenv
+# pip3 install -U spacy transformers booknlp python-dotenv
 
-# pip3 install -r requirements.txt
+pip3 install -r requirements.txt
 
 # Function to check if a spaCy model is installed
 check_model_installed() {

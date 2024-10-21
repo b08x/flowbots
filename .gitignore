@@ -29,4 +29,5 @@ flowbots.json
 *.text.json
 .gh_pages
 claude_chats/
-claude_chatsB/
+claude_chatsC/
+*.zip
