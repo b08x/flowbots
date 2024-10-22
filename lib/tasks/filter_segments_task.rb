@@ -62,11 +62,17 @@ class FilterSegmentsTask < Jongleur::WorkerTask
       return nil
     end
 
-    relevant_pos = %w[NOUN ADJ VERB]
+    relevant_pos = %w[PROPN NOUN]
+    relevant_dep = %w[nsubj compound nsubjpass]
+    relevant_ner = %w[PERSON ORGANIZATION]
 
     words = tagged["pos"].keys
 
-    filtered_words = words.select { |word| relevant_pos.include?(tagged["pos"][word]) }
+    filtered_words = words.select do |word|
+      relevant_pos.include?(tagged["pos"][word]) ||
+        relevant_dep.include?(tagged["dep"][word]) ||
+        relevant_ner.include?(tagged["ner"][word])
+    end
 
     logger.debug "Filtered #{filtered_words.length} words from segment #{segment.id}"
 

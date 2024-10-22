@@ -2,48 +2,20 @@
 # frozen_string_literal: true
 
 # This file defines the Ohm models used in the Flowbots application.
-
-# The Agent model represents an agent in the Flowbots system.
-# It stores information about the agent, such as its name, role, state,
-# and collections of messages, episodic memories, semantic memories,
-# and reflections.
 class Agent < Ohm::Model
   # Includes the Ohm::DataTypes and Ohm::Callbacks modules.
   include Ohm::DataTypes
   include Ohm::Callbacks
 
-  # @!attribute name
-  #   @return [String] The name of the agent.
+  # Defines attributes for the Agent model.
   attribute :name
-
-  # @!attribute role
-  #   @return [String] The role of the agent.
   attribute :role
-
-  # @!attribute state
-  #   @return [Hash] The state of the agent, stored as a hash.
   attribute :state, Type::Hash
-
-  # @!attribute messages
-  #   @return [Ohm::Collection<Message>] A collection of messages associated with the agent.
   collection :messages, :Message
-
-  # @!attribute episodic_memories
-  #   @return [Ohm::Collection<EpisodicMemory>] A collection of episodic memories associated with the agent.
   collection :episodic_memories, :EpisodicMemory
-
-  # @!attribute semantic_memories
-  #   @return [Ohm::Collection<SemanticMemory>] A collection of semantic memories associated with the agent.
   collection :semantic_memories, :SemanticMemory
-
-  # @!attribute reflections
-  #   @return [Ohm::Collection<Reflection>] A collection of reflections associated with the agent.
   collection :reflections, :Reflection
-
-  # Index on the `name` attribute.
   index :name
-
-  # Index on the `role` attribute.
   index :role
 
   # Store an episodic memory for the agent.
@@ -91,57 +63,28 @@ class Agent < Ohm::Model
   end
 end
 
-# The Task model represents a task in the Flowbots system.
-# It stores information about the task, such as its name, status, result,
-# start and end times, predecessors, agent role, and cartridge file.
+# Defines the Task model.
 class Task < Ohm::Model
   # Includes the Ohm::DataTypes, Ohm::Callbacks, and InputRetrieval modules.
   include Ohm::DataTypes
   include Ohm::Callbacks
   include InputRetrieval
 
-  # @!attribute name
-  #   @return [String] The name of the task.
+  # Defines attributes for the Task model.
   attribute :name
-
-  # @!attribute status
-  #   @return [String] The status of the task.
   attribute :status
-
-  # @!attribute result
-  #   @return [Object] The result of the task execution.
   attribute :result
-
-  # @!attribute start_time
-  #   @return [String] The start time of the task, as a string.
   attribute :start_time
-
-  # @!attribute end_time
-  #   @return [String] The end time of the task, as a string.
   attribute :end_time
-
-  # @!attribute predecessors
-  #   @return [Array] An array of predecessor tasks.
   attribute :predecessors, Type::Array
 
-  # @!attribute agent_role
-  #   @return [String] The role of the agent that will execute the task.
   attribute :agent_role
-
-  # @!attribute cartridge_file
-  #   @return [String] The path to the cartridge file associated with the task.
   attribute :cartridge_file
 
-  # Index on the `agent_role` attribute.
   index :agent_role
-
-  # Index on the `cartridge_file` attribute.
   index :cartridge_file
 
-  # Index on the `name` attribute.
   index :name
-
-  # Index on the `status` attribute.
   index :status
 
   # Creates a new Task instance with a timestamp.
@@ -231,30 +174,17 @@ class Task < Ohm::Model
   end
 end
 
-# The Cartridge model represents a cartridge in the Flowbots system.
-# It stores information about the cartridge, such as its name, path,
-# and content.
+# Defines the Cartridge model.
 class Cartridge < Ohm::Model
   # Includes the Ohm::DataTypes and Ohm::Callbacks modules.
   include Ohm::DataTypes
   include Ohm::Callbacks
 
-  # @!attribute name
-  #   @return [String] The name of the cartridge.
+  # Defines attributes for the Cartridge model.
   attribute :name
-
-  # @!attribute path
-  #   @return [String] The path to the cartridge file.
   attribute :path
-
-  # @!attribute content
-  #   @return [Hash] The content of the cartridge, stored as a hash.
   attribute :content, Type::Hash # Store content as a hash to represent YAML structure
-
-  # Index on the `name` attribute.
   index :name
-
-  # Index on the `path` attribute.
   index :path
 
   # Load the cartridge content from the file.
@@ -292,85 +222,34 @@ class Cartridge < Ohm::Model
   end
 end
 
-# The FileObject model represents a file object in the Flowbots system.
-# It stores information about the file, such as its name, path, extension,
-# content, preprocessed content, metadata, batch, tags, main topics,
-# speech acts, transitivity, LLM analysis, topics, segments, and lemmas.
+# Defines the FileObject model.
 class FileObject < Ohm::Model
   # Includes the Ohm::DataTypes and Ohm::Callbacks modules.
   include Ohm::DataTypes
   include Ohm::Callbacks
 
-  # @!attribute name
-  #   @return [String] The name of the file.
+  # Defines attributes for the FileObject model.
   attribute :name
-
-  # @!attribute path
-  #   @return [String] The path to the file.
   attribute :path
-
-  # @!attribute extension
-  #   @return [String] The file extension.
   attribute :extension
-
-  # @!attribute content
-  #   @return [String] The content of the file.
   attribute :content
-
-  # @!attribute preprocessed_content
-  #   @return [String] The preprocessed content of the file.
   attribute :preprocessed_content
-
-  # @!attribute metadata
-  #   @return [Hash] Metadata associated with the file, stored as a hash.
   attribute :metadata, Type::Hash
-
-  # @!attribute batch
-  #   @return [String] The batch the file belongs to.
   attribute :batch
-
-  # @!attribute tagged
-  #   @return [Hash] Tags associated with the file, stored as a hash.
   attribute :tagged, Type::Hash
-
-  # @!attribute main_topics
-  #   @return [Array] An array of main topics extracted from the file.
   attribute :main_topics, Type::Array
-
-  # @!attribute speech_acts
-  #   @return [Array] An array of speech acts identified in the file.
   attribute :speech_acts, Type::Array
-
-  # @!attribute transitivity
-  #   @return [Array] An array of transitivity analysis results for the file.
   attribute :transitivity, Type::Array
-
-  # @!attribute llm_analysis
-  #   @return [String] The results of LLM analysis performed on the file.
   attribute :llm_analysis
 
-  # @!attribute topics
-  #   @return [Ohm::Set<Topic>] A set of topics associated with the file.
   set :topics, :Topic
-
-  # @!attribute segments
-  #   @return [Ohm::List<Segment>] A list of segments in the file.
   list :segments, :Segment
-
-  # @!attribute lemmas
-  #   @return [Ohm::List<Lemma>] A list of lemmas extracted from the file.
   list :lemmas, :Lemma
 
-  # Unique constraint on the `path` attribute.
   unique :path
 
-  # Index on the `name` attribute.
   index :name
-
-  # Index on the `path` attribute.
   index :path
-
-  # Index on the `batch` attribute.
   index :batch
 
   # Finds or creates a new FileObject instance based on the file path.
@@ -379,10 +258,6 @@ class FileObject < Ohm::Model
   # @param attributes [Hash] A hash of attributes for the new FileObject.
   #
   # @return [FileObject] The found or created FileObject instance.
-  #
-  # @raise [ArgumentError] If `file_path` is not a string.
-  # @raise [FileNotFoundError] If the file is not found at the given path.
-  # @raise [FileObjectError] If there is an error creating the FileObject.
   def self.find_or_create_by_path(file_path, attributes = {})
     raise ArgumentError, "file_path must be a String, got #{file_path.class}" unless file_path.is_a?(String)
 
@@ -491,4 +366,159 @@ class FileObject < Ohm::Model
     segments.to_a.flat_map { |segment| segment.words.to_a }
   end
 
-  # Retrieves the text of all words associated
+  # Retrieves the text of all words associated with the FileObject.
+  #
+  # @return [Array<String>] An array of word texts.
+  def retrieve_word_texts
+    retrieve_words.map(&:word)
+  end
+
+  # Retrieves the latest FileObject from Redis.
+  #
+  # @param limit [Integer] The maximum number of FileObjects to retrieve.
+  #
+  # @return [FileObject, Array<FileObject>] The latest FileObject or an array of FileObjects.
+  def self.latest(limit = nil)
+    if limit.nil?
+      ids = redis.call("ZREVRANGE", key[:latest], 0, 0)
+      result = fetch(ids)
+      result.empty? ? nil : result.first
+    else
+      ids = redis.call("ZREVRANGE", key[:latest], 0, limit - 1)
+      fetch(ids)
+    end
+  end
+
+  # Retrieves all FileObjects from the current batch.
+  #
+  # @return [Array<FileObject>] An array of FileObjects from the current batch.
+  def self.current_batch
+    batch_id = redis.call("GET", "current_batch_id")
+    find(batch: batch_id)
+  end
+
+  protected
+
+  # Adds the FileObject's ID to the Redis set for latest FileObjects.
+  #
+  # @return [void]
+  def after_save
+    redis.call("ZADD", model.key[:latest], Time.now.to_f, id)
+  end
+
+  # Removes the FileObject's ID from the Redis set for latest FileObjects.
+  #
+  # @return [void]
+  def after_delete
+    redis.call("ZREM", model.key[:latest], id)
+  end
+end
+
+# Defines the Segment model.
+class Segment < Ohm::Model
+  # Includes the Ohm::DataTypes and Ohm::Callbacks modules.
+  include Ohm::DataTypes
+  include Ohm::Callbacks
+
+  # Defines attributes for the Segment model.
+  attribute :text
+  attribute :tokens, Type::Array
+  attribute :tagged, Type::Hash
+
+  list :words, :Word
+
+  reference :file_object, :FileObject
+  reference :topic, :Topic
+
+  # Adds a new word to the Segment.
+  #
+  # @param word_data [Hash] A hash containing word data.
+  #
+  # @return [Word] The created word.
+  def add_word(word_data)
+    word = Word.create(word_data.merge(segment: self))
+    words.push(word)
+    save
+    word
+  end
+
+  # Adds multiple words to the Segment.
+  #
+  # @param new_words [Array<Hash>] An array of word data hashes.
+  #
+  # @return [void]
+  def add_words(new_words)
+    new_words.each do |word_data|
+      word = Word.create(word_data.merge(segment: self))
+      words.push(word)
+    end
+    save
+  end
+
+  # Retrieves all words associated with the Segment.
+  #
+  # @return [Array<Word>] An array of words.
+  def retrieve_words
+    words.to_a
+  end
+
+  # Retrieves the text of all words associated with the Segment.
+  #
+  # @return [Array<String>] An array of word texts.
+  def retrieve_word_texts
+    retrieve_words.map(&:word)
+  end
+end
+
+# Defines the Word model.
+class Word < Ohm::Model
+  # Includes the Ohm::DataTypes and Ohm::Callbacks modules.
+  include Ohm::DataTypes
+  include Ohm::Callbacks
+
+  # Defines attributes for the Word model.
+  attribute :word
+  attribute :pos
+  attribute :tag
+  attribute :dep
+  attribute :ner
+
+  reference :file_object, :FileObject
+  reference :segment, :Segment
+
+  index :word
+end
+
+# Defines the Lemma model.
+class Lemma < Ohm::Model
+  # Includes the Ohm::DataTypes and Ohm::Callbacks modules.
+  include Ohm::DataTypes
+  include Ohm::Callbacks
+
+  # Defines attributes for the Lemma model.
+  attribute :lemma
+  attribute :pos
+  attribute :count, Type::Integer
+
+  reference :file_object, :FileObject
+
+  index :lemma
+  index :pos
+end
+
+# Defines the Topic model.
+class Topic < Ohm::Model
+  # Includes the Ohm::DataTypes and Ohm::Callbacks modules.
+  include Ohm::DataTypes
+  include Ohm::Callbacks
+
+  # Defines attributes for the Topic model.
+  attribute :name
+  attribute :description
+  attribute :vector
+
+  reference :file_object, :FileObject
+
+  unique :name
+  index :name
+end

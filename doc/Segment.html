@@ -1,527 +1,238 @@
 <!DOCTYPE html>
+
 <html>
-  <head>
-    <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>
-  Class: Segment
-  
-    &mdash; Documentation by YARD 0.9.37
-  
-</title>
+<head>
+<meta charset="UTF-8">
 
-  <link rel="stylesheet" href="css/style.css" type="text/css" />
-
-  <link rel="stylesheet" href="css/common.css" type="text/css" />
+<title>class Segment - flowbots v0.1</title>
 
 <script type="text/javascript">
-  pathId = "Segment";
-  relpath = '';
+  var rdoc_rel_prefix = "./";
+  var index_rel_prefix = "./";
 </script>
 
+<script src="./js/navigation.js" defer></script>
+<script src="./js/search.js" defer></script>
+<script src="./js/search_index.js" defer></script>
+<script src="./js/searcher.js" defer></script>
+<script src="./js/darkfish.js" defer></script>
 
-  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+<link href="./css/fonts.css" rel="stylesheet">
+<link href="./css/rdoc.css" rel="stylesheet">
 
-  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
 
+<body id="top" role="document" class="class">
+<nav role="navigation">
+  <div id="project-navigation">
+    <div id="home-section" role="region" title="Quick navigation" class="nav-section">
+  <h2>
+    <a href="./index.html" rel="home">Home</a>
+  </h2>
 
-  </head>
-  <body>
-    <div class="nav_wrap">
-      <iframe id="nav" src="class_list.html?1"></iframe>
-      <div id="resizer"></div>
+  <div id="table-of-contents-navigation">
+    <a href="./table_of_contents.html#pages">Pages</a>
+    <a href="./table_of_contents.html#classes">Classes</a>
+    <a href="./table_of_contents.html#methods">Methods</a>
+  </div>
+</div>
+
+    <div id="search-section" role="search" class="project-section initially-hidden">
+  <form action="#" method="get" accept-charset="utf-8">
+    <div id="search-field-wrapper">
+      <input id="search-field" role="combobox" aria-label="Search"
+             aria-autocomplete="list" aria-controls="search-results"
+             type="text" name="search" placeholder="Search (/) for a class, method, ..." spellcheck="false"
+             title="Type to search, Up and Down to navigate, Enter to load">
     </div>
 
-    <div id="main" tabindex="-1">
-      <div id="header">
-        <div id="menu">
-  
-    <a href="_index.html">Index (S)</a> &raquo;
-    
-    
-    <span class="title">Segment</span>
-  
+    <ul id="search-results" aria-label="Search Results"
+        aria-busy="false" aria-expanded="false"
+        aria-atomic="false" class="initially-hidden"></ul>
+  </form>
 </div>
 
-        <div id="search">
-  
-    <a class="full_list_link" id="class_list_link"
-        href="class_list.html">
+  </div>
 
-        <svg width="24" height="24">
-          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
-          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
-          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
-        </svg>
-    </a>
   
+
+  <div id="class-metadata">
+    
+    
+<div id="parent-class-section" class="nav-section">
+  <h3>Parent</h3>
+
+  <p class="link">Ohm::Model
 </div>
-        <div class="clear"></div>
+
+    
+<div id="includes-section" class="nav-section">
+  <h3>Included Modules</h3>
+
+  <ul class="link-list">
+    <li><span class="include">Ohm::DataTypes</span>
+    <li><span class="include">Ohm::Callbacks</span>
+  </ul>
+</div>
+
+    
+    
+<!-- Method Quickref -->
+<div id="method-list-section" class="nav-section">
+  <h3>Methods</h3>
+
+  <ul class="link-list" role="directory">
+    <li ><a href="#method-i-add_word">#add_word</a>
+    <li ><a href="#method-i-add_words">#add_words</a>
+    <li ><a href="#method-i-retrieve_word_texts">#retrieve_word_texts</a>
+    <li ><a href="#method-i-retrieve_words">#retrieve_words</a>
+  </ul>
+</div>
+
+  </div>
+</nav>
+
+<main role="main" aria-labelledby="class-Segment">
+  <h1 id="class-Segment" class="class">
+    class Segment
+  </h1>
+
+  <section class="description">
+    
+<p>Defines the <a href="Segment.html"><code>Segment</code></a> model.</p>
+
+  </section>
+
+  <section id="5Buntitled-5D" class="documentation-section">
+
+
+
+
+
+     <section id="public-instance-5Buntitled-5D-method-details" class="method-section">
+       <header>
+         <h3>Public Instance Methods</h3>
+       </header>
+
+      <div id="method-i-add_word" class="method-detail ">
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">add_word</span><span
+              class="method-args">(word_data)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+        </div>
+
+        <div class="method-description">
+          <p>Adds a new word to the <a href="Segment.html"><code>Segment</code></a>.</p>
+
+<p>@param word_data [Hash] A hash containing word data.</p>
+
+<p>@return [Word] The created word.</p>
+
+          <div class="method-source-code" id="add_word-source">
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 438</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">add_word</span>(<span class="ruby-identifier">word_data</span>)
+  <span class="ruby-identifier">word</span> = <span class="ruby-constant">Word</span>.<span class="ruby-identifier">create</span>(<span class="ruby-identifier">word_data</span>.<span class="ruby-identifier">merge</span>(<span class="ruby-value">segment:</span> <span class="ruby-keyword">self</span>))
+  <span class="ruby-identifier">words</span>.<span class="ruby-identifier">push</span>(<span class="ruby-identifier">word</span>)
+  <span class="ruby-identifier">save</span>
+  <span class="ruby-identifier">word</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
       </div>
 
-      <div id="content"><h1>Class: Segment
-  
-  
-  
-</h1>
-<div class="box_info">
-  
-  <dl>
-    <dt>Inherits:</dt>
-    <dd>
-      <span class="inheritName">Ohm::Model</span>
-      
-        <ul class="fullTree">
-          <li>Object</li>
-          
-            <li class="next">Ohm::Model</li>
-          
-            <li class="next">Segment</li>
-          
-        </ul>
-        <a href="#" class="inheritanceTree">show all</a>
-      
-    </dd>
-  </dl>
-  
-
-  
-  
-  
-  
-  <dl>
-      <dt>Includes:</dt>
-      <dd>Ohm::Callbacks, Ohm::DataTypes</dd>
-  </dl>
-  
-  
-
-  
-
-  
-  <dl>
-    <dt>Defined in:</dt>
-    <dd>lib/components/OhmModels.rb</dd>
-  </dl>
-  
-</div>
-
-<h2>Overview</h2><div class="docstring">
-  <div class="discussion">
-    
-<p>Defines the Segment model.</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-
-</div>
-
-
-
-
-
-
-  
-    <h2>
-      Instance Method Summary
-      <small><a href="#" class="summary_toggle">collapse</a></small>
-    </h2>
-
-    <ul class="summary">
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#add_word-instance_method" title="#add_word (instance method)">#<strong>add_word</strong>(word_data)  &#x21d2; Word </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'>
-<p>Adds a new word to the Segment.</p>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#add_words-instance_method" title="#add_words (instance method)">#<strong>add_words</strong>(new_words)  &#x21d2; void </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'>
-<p>Adds multiple words to the Segment.</p>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#retrieve_word_texts-instance_method" title="#retrieve_word_texts (instance method)">#<strong>retrieve_word_texts</strong>  &#x21d2; Array&lt;String&gt; </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'>
-<p>Retrieves the text of all words associated with the Segment.</p>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#retrieve_words-instance_method" title="#retrieve_words (instance method)">#<strong>retrieve_words</strong>  &#x21d2; Array&lt;Word&gt; </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'>
-<p>Retrieves all words associated with the Segment.</p>
-</div></span>
-  
-</li>
-
-      
-    </ul>
-  
-
-
-  
-  
-  
-
-  <div id="instance_method_details" class="method_details_list">
-    <h2>Instance Method Details</h2>
-
-    
-      <div class="method_details first">
-  <h3 class="signature first" id="add_word-instance_method">
-  
-    #<strong>add_word</strong>(word_data)  &#x21d2; <tt><span class='object_link'><a href="Word.html" title="Word (class)">Word</a></span></tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    
-<p>Adds a new word to the Segment.</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  <p class="tag_title">Parameters:</p>
-<ul class="param">
-  
-    <li>
-      
-        <span class='name'>word_data</span>
-      
-      
-        <span class='type'>(<tt>Hash</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'>
-<p>A hash containing word data.</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt><span class='object_link'><a href="Word.html" title="Word (class)">Word</a></span></tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'>
-<p>The created word.</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-438
-439
-440
-441
-442
-443</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/components/OhmModels.rb', line 438</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_add_word'>add_word</span><span class='lparen'>(</span><span class='id identifier rubyid_word_data'>word_data</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_word'>word</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Word.html" title="Word (class)">Word</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'>create</span><span class='lparen'>(</span><span class='id identifier rubyid_word_data'>word_data</span><span class='period'>.</span><span class='id identifier rubyid_merge'>merge</span><span class='lparen'>(</span><span class='label'>segment:</span> <span class='kw'>self</span><span class='rparen'>)</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_words'>words</span><span class='period'>.</span><span class='id identifier rubyid_push'>push</span><span class='lparen'>(</span><span class='id identifier rubyid_word'>word</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_save'>save</span>
-  <span class='id identifier rubyid_word'>word</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="add_words-instance_method">
-  
-    #<strong>add_words</strong>(new_words)  &#x21d2; <tt>void</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p class="note returns_void">This method returns an undefined value.</p>
-<p>Adds multiple words to the Segment.</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  <p class="tag_title">Parameters:</p>
-<ul class="param">
-  
-    <li>
-      
-        <span class='name'>new_words</span>
-      
-      
-        <span class='type'>(<tt>Array&lt;Hash&gt;</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'>
-<p>An array of word data hashes.</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-450
-451
-452
-453
-454
-455
-456</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/components/OhmModels.rb', line 450</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_add_words'>add_words</span><span class='lparen'>(</span><span class='id identifier rubyid_new_words'>new_words</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_new_words'>new_words</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_word_data'>word_data</span><span class='op'>|</span>
-    <span class='id identifier rubyid_word'>word</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Word.html" title="Word (class)">Word</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'>create</span><span class='lparen'>(</span><span class='id identifier rubyid_word_data'>word_data</span><span class='period'>.</span><span class='id identifier rubyid_merge'>merge</span><span class='lparen'>(</span><span class='label'>segment:</span> <span class='kw'>self</span><span class='rparen'>)</span><span class='rparen'>)</span>
-    <span class='id identifier rubyid_words'>words</span><span class='period'>.</span><span class='id identifier rubyid_push'>push</span><span class='lparen'>(</span><span class='id identifier rubyid_word'>word</span><span class='rparen'>)</span>
-  <span class='kw'>end</span>
-  <span class='id identifier rubyid_save'>save</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="retrieve_word_texts-instance_method">
-  
-    #<strong>retrieve_word_texts</strong>  &#x21d2; <tt>Array&lt;String&gt;</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    
-<p>Retrieves the text of all words associated with the Segment.</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Array&lt;String&gt;</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'>
-<p>An array of word texts.</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-468
-469
-470</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/components/OhmModels.rb', line 468</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_retrieve_word_texts'>retrieve_word_texts</span>
-  <span class='id identifier rubyid_retrieve_words'>retrieve_words</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:word</span><span class='rparen'>)</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="retrieve_words-instance_method">
-  
-    #<strong>retrieve_words</strong>  &#x21d2; <tt>Array&lt;<span class='object_link'><a href="Word.html" title="Word (class)">Word</a></span>&gt;</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    
-<p>Retrieves all words associated with the Segment.</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Array&lt;<span class='object_link'><a href="Word.html" title="Word (class)">Word</a></span>&gt;</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'>
-<p>An array of words.</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-461
-462
-463</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/components/OhmModels.rb', line 461</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_retrieve_words'>retrieve_words</span>
-  <span class='id identifier rubyid_words'>words</span><span class='period'>.</span><span class='id identifier rubyid_to_a'>to_a</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-  </div>
-
-</div>
-
-      <div id="footer">
-  Generated on Mon Oct 21 05:05:43 2024 by
-  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.37 (ruby-3.3.5).
-</div>
-
-    </div>
-  </body>
-</html>
+      <div id="method-i-add_words" class="method-detail ">
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">add_words</span><span
+              class="method-args">(new_words)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+        </div>
+
+        <div class="method-description">
+          <p>Adds multiple words to the <a href="Segment.html"><code>Segment</code></a>.</p>
+
+<p>@param new_words [Array&lt;Hash&gt;] An array of word data hashes.</p>
+
+<p>@return [void]</p>
+
+          <div class="method-source-code" id="add_words-source">
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 450</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">add_words</span>(<span class="ruby-identifier">new_words</span>)
+  <span class="ruby-identifier">new_words</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">word_data</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">word</span> = <span class="ruby-constant">Word</span>.<span class="ruby-identifier">create</span>(<span class="ruby-identifier">word_data</span>.<span class="ruby-identifier">merge</span>(<span class="ruby-value">segment:</span> <span class="ruby-keyword">self</span>))
+    <span class="ruby-identifier">words</span>.<span class="ruby-identifier">push</span>(<span class="ruby-identifier">word</span>)
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-identifier">save</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-retrieve_word_texts" class="method-detail ">
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">retrieve_word_texts</span><span
+              class="method-args">()</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+        </div>
+
+        <div class="method-description">
+          <p>Retrieves the text of all words associated with the <a href="Segment.html"><code>Segment</code></a>.</p>
+
+<p>@return [Array&lt;String&gt;] An array of word texts.</p>
+
+          <div class="method-source-code" id="retrieve_word_texts-source">
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 468</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">retrieve_word_texts</span>
+  <span class="ruby-identifier">retrieve_words</span>.<span class="ruby-identifier">map</span>(<span class="ruby-operator">&amp;</span><span class="ruby-value">:word</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-retrieve_words" class="method-detail ">
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">retrieve_words</span><span
+              class="method-args">()</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+        </div>
+
+        <div class="method-description">
+          <p>Retrieves all words associated with the <a href="Segment.html"><code>Segment</code></a>.</p>
+
+<p>@return [Array&lt;Word&gt;] An array of words.</p>
+
+          <div class="method-source-code" id="retrieve_words-source">
+            <pre><span class="ruby-comment"># File lib/components/OhmModels.rb, line 461</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">retrieve_words</span>
+  <span class="ruby-identifier">words</span>.<span class="ruby-identifier">to_a</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+    </section>
+
+  </section>
+</main>
+
+
+<footer id="validator-badges" role="contentinfo">
+  <p><a href="https://validator.w3.org/check/referer">Validate</a>
+  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.6.3.1.
+  <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
+</footer>
+
