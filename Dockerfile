@@ -77,17 +77,65 @@ RUN bundle lock --add-platform x86_64-linux && \
     bundle install
 
 # Stage 2: Python Dependencies
-FROM python:3.9-slim AS python-env
+FROM jupyter/scipy-notebook
 
 ARG USE_TRF=False
 ARG USE_BOOKNLP=False
 
 WORKDIR /app
-COPY --from=build /usr/local/bundle /usr/local/bundle
+
+# Copy Ruby 3.1.4 from rubylang/ruby
+COPY --from=build \
+  /usr/local/bin/bundle \
+  /usr/local/bin/bundler \
+  /usr/local/bin/erb \
+  /usr/local/bin/gem \
+  /usr/local/bin/irb \
+  /usr/local/bin/racc \
+  /usr/local/bin/rake \
+  /usr/local/bin/rdoc \
+  /usr/local/bin/ri \
+  /usr/local/bin/ruby \
+  /usr/local/bin/
+
+COPY --from=build \
+  /usr/local/etc/gemrc \
+  /usr/local/etc/
+
+# NOTE: DO NOT CHANGE the version in the path of include directory
+COPY --from=build \
+  /usr/local/include/ruby-3.3.0/ \
+  /usr/local/include/ruby-3.3.0/
+
+COPY --from=build \
+  /usr/local/lib/libruby.so \
+  /usr/local/lib/libruby.so.* \
+  /usr/local/lib/
+
+COPY --from=build \
+  /usr/local/lib/pkgconfig/ \
+  /usr/local/lib/pkgconfig/
+
+COPY --from=build \
+  /usr/local/lib/ruby/ \
+  /usr/local/lib/ruby/
+
+COPY --from=build \
+  /usr/local/share/man/man1/erb.1 \
+  /usr/local/share/man/man1/irb.1 \
+  /usr/local/share/man/man1/ri.1 \
+  /usr/local/share/man/man1/ruby.1 \
+  /usr/local/share/man/man1/
+
 COPY --from=build /app/Gemfile* /app/
 
-RUN pip install -U setuptools wheel && \
-    pip install -U spacy 'pdfminer.six[image]' && \
+RUN mamba install --yes \
+    'jupyter-ai' 'huggingface_hub' 'ipython' 'ipywidgets' \
+    'nbconvert' 'pillow' 'pydantic' 'pyvis' 'spacy' \
+    'SQLAlchemy' 'txtai' && \
+    mamba clean --all -f -y && fix-permissions "${CONDA_DIR}" && fix-permissions "/home/${NB_USER}" && \
+    pip install 'langchain_anthropic' 'langchain_google_genai' && \
+    python3 -m spacy download en_core_web_trf && \
     python3 -m spacy download en_core_web_lg && \
     python -c "import sys, importlib.util as util; 1 if util.find_spec('nltk') else sys.exit(); import nltk; nltk.download('punkt')"
 
@@ -96,17 +144,8 @@ RUN if [ "${USE_TRF}" = "True" ]; then \
     fi
 
 RUN if [ "${USE_BOOKNLP}" = "True" ]; then \
-        pip3 install -U transformers booknlp; \
+        conda install -c conda-forge -y transformers booknlp; \
     fi
-
-# Stage 3: Final Image
-FROM ruby:3.3-slim
-
-WORKDIR /app
-
-# Copy necessary files and directories from previous stages
-COPY --from=build /usr/local/bundle /usr/local/bundle
-COPY --from=python-env /app/ /app/
 
 # Copy the rest of the application code
 COPY bin/ ./bin/

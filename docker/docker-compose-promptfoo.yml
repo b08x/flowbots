@@ -1,0 +1,25 @@
+services:
+  promptfoo_container:
+    image: ghcr.io/promptfoo/promptfoo:main
+    container_name: promptfoo_container
+    ports:
+      - "3006:3000"
+    volumes:
+      - ./local_promptfoo:/root/.promptfoo
+    # environment:
+    #   VITE_PUBLIC_BASENAME: "/your-basename"  # Define appropriate values
+    #   PROMPTFOO_REMOTE_API_BASE_URL: "https://your-api-url"
+    #   API_PORT: 3000
+    #   HOST: "0.0.0.0"
+    # build:
+    #   context: .
+    #   args:
+    #     VITE_PUBLIC_BASENAME: "/your-basename"
+    #     PROMPTFOO_REMOTE_API_BASE_URL: "https://your-api-url"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    restart: unless-stopped
