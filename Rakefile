@@ -114,7 +114,9 @@ Rake::RDocTask.new do |rdoc|
     "--visibility",
     "nodoc",
     "--markup",
-    "markdown"
+    "markdown",
+    "--template",
+    "rorvswild"
   ]
   rdoc.rdoc_files.include "README.md"
   rdoc.rdoc_files.include "LICENSE"
@@ -194,16 +196,16 @@ end
 
 namespace :docs do
   desc "Convert RDoc HTML to Markdown"
-  task :markdown => :rdoc do
-    require 'nokogiri'
-    require 'fileutils'
-    
-    doc_dir = File.join(APP_ROOT, 'doc')
-    markdown_dir = File.join(doc_dir, 'markdown')
+  task markdown: :rdoc do
+    require "nokogiri"
+    require "fileutils"
+
+    doc_dir = File.join(APP_ROOT, "doc")
+    markdown_dir = File.join(doc_dir, "markdown")
     FileUtils.mkdir_p(markdown_dir)
-    
+
     puts "Converting HTML documentation to Markdown..."
-    
+
     def clean_code_block(code)
       # Remove extra whitespace but preserve indentation
       lines = code.split("\n")
@@ -212,74 +214,75 @@ namespace :docs do
       # Remove common indentation and cleanup
       lines.map { |line| line.empty? ? line : line[min_indent..-1] }.join("\n")
     end
-    
+
     def process_html_file(file, output_dir)
-      basename = File.basename(file, '.html')
+      basename = File.basename(file, ".html")
       output_file = File.join(output_dir, "#{basename}.md")
-      
+
       puts "Processing #{basename}..."
-      
+
       doc = File.open(file) { |f| Nokogiri::HTML(f) }
-      
+
       # Remove navigation elements
-      doc.css('.nav-section, #navigation').remove
-      
+      doc.css(".nav-section, #navigation").remove
+
       # Process code blocks before conversion
-      doc.css('pre code, .source_code').each do |code|
-        lang = code['class']&.split&.find { |c| c.start_with?('language-') }&.sub('language-', '') || 'ruby'
+      doc.css("pre code, .source_code").each do |code|
+        lang = code["class"]&.split&.find { |c| c.start_with?("language-") }&.sub("language-", "") || "ruby"
         cleaned_code = clean_code_block(code.content)
         code.replace("```#{lang}\n#{cleaned_code}\n```")
       end
-      
+
       # Convert to markdown using pandoc
-      markdown = IO.popen(['pandoc', '-f', 'html', '-t', 'gfm', '--wrap=none'], 'w+') do |pipe|
-        pipe.write(doc.at_css('body').inner_html)
+      markdown = IO.popen(["pandoc", "-f", "html", "-t", "gfm", "--wrap=none"], "w+") do |pipe|
+        pipe.write(doc.at_css("body").inner_html)
         pipe.close_write
         pipe.read
       end
-      
+
       # Post-process markdown
-      markdown = markdown.gsub(/\{:.*?\}/, '')                    # Remove RDoc-specific markers
-                        .gsub(/\[([^\]]+)\]\{[^}]+\}/, '[\1]')   # Clean up links
-                        .gsub(/^\s*$\n\s*$\n/, "\n")             # Remove multiple blank lines
-                        .gsub(/\n\n```/, "\n```")                # Fix code block spacing
-      
+      markdown = markdown.gsub(/\{:.*?\}/, "") # Remove RDoc-specific markers
+        .gsub(/\[([^\]]+)\]\{[^}]+\}/, '[\1]')   # Clean up links
+        .gsub(/^\s*$\n\s*$\n/, "\n")             # Remove multiple blank lines
+        .gsub("\n\n```", "\n```")                # Fix code block spacing
+
       File.write(output_file, markdown)
     end
-    
+
     # Process all HTML files
-    Dir[File.join(doc_dir, '**', '*.html')].sort.each do |file|
-      next if file.include?('table_of_contents.html')
-      next if file.include?('index.html')
-      next if file.include?('js/')
+    Dir[File.join(doc_dir, "**", "*.html")].sort.each do |file|
+      next if file.include?("table_of_contents.html")
+      next if file.include?("index.html")
+      next if file.include?("js/")
+
       process_html_file(file, markdown_dir)
     end
-    
+
     puts "Markdown files generated in #{markdown_dir}"
   end
-  
+
   desc "Generate PDF using Asciidoctor"
-  task :pdf => :markdown do
-    require 'fileutils'
-    
-    doc_dir = File.join(APP_ROOT, 'doc')
-    markdown_dir = File.join(doc_dir, 'markdown')
-    temp_dir = File.join(doc_dir, 'temp')
-    output_file = File.join(doc_dir, 'flowbots_documentation.pdf')
-    adoc_file = File.join(temp_dir, 'merged_documentation.adoc')
-    
+  task pdf: :markdown do
+    require "fileutils"
+
+    doc_dir = File.join(APP_ROOT, "doc")
+    markdown_dir = File.join(doc_dir, "markdown")
+    temp_dir = File.join(doc_dir, "temp")
+    output_file = File.join(doc_dir, "flowbots_documentation.pdf")
+    adoc_file = File.join(temp_dir, "merged_documentation.adoc")
+
     FileUtils.mkdir_p(temp_dir)
-    
+
     # Ensure asciidoctor-pdf is installed
-    unless system('which asciidoctor-pdf > /dev/null 2>&1')
+    unless system("which asciidoctor-pdf > /dev/null 2>&1")
       puts "Installing asciidoctor-pdf..."
-      system('gem install asciidoctor-pdf --no-document')
+      system("gem install asciidoctor-pdf --no-document")
     end
-    
+
     puts "Generating PDF documentation..."
-    
+
     # Create the main asciidoc file
-    File.open(adoc_file, 'w') do |output|
+    File.open(adoc_file, "w") do |output|
       # Document header
       output.puts "= Flowbots Documentation"
       output.puts ":doctype: book"
@@ -296,42 +299,47 @@ namespace :docs do
       output.puts ":experimental:"
       output.puts ":source-language: ruby"
       output.puts "\n"
-      
+
       # Process each markdown file
-      Dir[File.join(markdown_dir, '*.md')].sort.each do |md_file|
+      Dir[File.join(markdown_dir, "*.md")].sort.each do |md_file|
         puts "Including #{File.basename(md_file)}..."
-        
+
         content = File.read(md_file)
-        
+
         # Convert markdown to asciidoc
-        adoc_content = IO.popen(['pandoc', '-f', 'gfm', '-t', 'asciidoc', '--wrap=none'], 'w+') do |pipe|
+        adoc_content = IO.popen(["pandoc", "-f", "gfm", "-t", "asciidoc", "--wrap=none"], "w+") do |pipe|
           pipe.write(content)
           pipe.close_write
           pipe.read
         end
-        
+
         # Clean up asciidoc content
         adoc_content.gsub!(/^=+ /) { |m| "=" + m } # Fix heading levels
-        adoc_content.gsub!(/\[source,ruby\]\n----/, "[source,ruby]\n----") # Fix code blocks
-        
-        output.puts "\n== #{File.basename(md_file, '.md').gsub('_', ' ').capitalize}\n"
+        adoc_content.gsub!("[source,ruby]\n----", "[source,ruby]\n----") # Fix code blocks
+
+        output.puts "\n== #{File.basename(md_file, '.md').tr('_', ' ').capitalize}\n"
         output.puts adoc_content
         output.puts "\n'''\n" # Add separator between sections
       end
     end
-    
+
     # Generate PDF
     cmd = [
       "asciidoctor-pdf",
       "--trace",
-      "-a", "allow-uri-read",
-      "-a", "experimental",
-      "-a", "icons=font",
-      "-a", "pdf-fontsdir=#{doc_dir}/fonts",
+      "-a",
+      "allow-uri-read",
+      "-a",
+      "experimental",
+      "-a",
+      "icons=font",
+      "-a",
+      "pdf-fontsdir=#{doc_dir}/fonts",
       adoc_file,
-      "-o", output_file
+      "-o",
+      output_file
     ]
-    
+
     puts "Running asciidoctor-pdf..."
     if system(*cmd)
       puts "PDF generated successfully: #{output_file}"

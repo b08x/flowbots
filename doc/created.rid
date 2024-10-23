@@ -1,4 +1,4 @@
-Mon, 21 Oct 2024 23:45:41 -0400
+Wed, 23 Oct 2024 17:44:14 -0400
 README.md	Sun, 13 Oct 2024 12:54:58 -0400
 LICENSE	Wed, 25 Sep 2024 07:41:51 -0400
 exe/flowbots	Wed, 25 Sep 2024 07:41:51 -0400
@@ -8,7 +8,7 @@ lib/example.rb	Sun, 13 Oct 2024 19:51:15 -0400
 lib/flowbots.rb	Sun, 13 Oct 2024 12:47:55 -0400
 lib/general_task_agent.rb	Sun, 13 Oct 2024 12:47:51 -0400
 lib/helper.rb	Mon, 21 Oct 2024 04:41:02 -0400
-lib/logging.rb	Wed, 25 Sep 2024 08:17:26 -0400
+lib/logging.rb	Wed, 23 Oct 2024 02:11:46 -0400
 lib/tasks.rb	Wed, 25 Sep 2024 08:50:05 -0400
 lib/ui.rb	Mon, 21 Oct 2024 04:40:24 -0400
 lib/workflows.rb	Wed, 25 Sep 2024 08:14:43 -0400
@@ -25,20 +25,20 @@ lib/components/WorkflowOrchestrator.rb	Wed, 25 Sep 2024 08:18:53 -0400
 lib/flowbots/errors.rb	Wed, 25 Sep 2024 08:17:38 -0400
 lib/grammars/markdown_yaml.rb	Wed, 25 Sep 2024 07:41:51 -0400
 lib/integrations/flowise.rb	Wed, 25 Sep 2024 07:41:51 -0400
-lib/pipelines/unified_file_processing.rb	Wed, 25 Sep 2024 08:11:04 -0400
+lib/pipelines/unified_file_processing.rb	Wed, 23 Oct 2024 14:24:22 -0400
 lib/processors/GrammarProcessor.rb	Wed, 25 Sep 2024 07:41:51 -0400
 lib/processors/NLPProcessor.rb	Wed, 25 Sep 2024 07:41:51 -0400
 lib/processors/TextProcessor.rb	Wed, 25 Sep 2024 07:41:51 -0400
 lib/processors/TextSegmentProcessor.rb	Wed, 25 Sep 2024 07:41:51 -0400
 lib/processors/TextTaggerProcessor.rb	Wed, 25 Sep 2024 07:41:51 -0400
-lib/processors/TextTokenizeProcessor.rb	Wed, 25 Sep 2024 07:41:51 -0400
+lib/processors/TextTokenizeProcessor.rb	Wed, 23 Oct 2024 02:12:15 -0400
 lib/processors/TopicModelProcessor.rb	Wed, 25 Sep 2024 07:41:51 -0400
 lib/tasks/accumulate_filtered_segments_task.rb	Wed, 25 Sep 2024 08:17:20 -0400
 lib/tasks/base_task.rb	Mon, 21 Oct 2024 04:36:20 -0400
 lib/tasks/batch_completion_task.rb	Mon, 21 Oct 2024 04:36:02 -0400
 lib/tasks/display_results_task.rb	Wed, 25 Sep 2024 08:17:12 -0400
 lib/tasks/file_loader_task.rb	Wed, 25 Sep 2024 08:17:05 -0400
-lib/tasks/filter_segments_task.rb	Mon, 21 Oct 2024 20:15:21 -0400
+lib/tasks/filter_segments_task.rb	Wed, 23 Oct 2024 02:07:04 -0400
 lib/tasks/llm_analysis_task.rb	Mon, 21 Oct 2024 04:33:49 -0400
 lib/tasks/load_file_object_task.rb	Mon, 21 Oct 2024 05:01:09 -0400
 lib/tasks/load_text_files_task.rb	Mon, 21 Oct 2024 05:00:28 -0400
@@ -46,7 +46,7 @@ lib/tasks/nlp_analysis_task.rb	Mon, 21 Oct 2024 05:01:27 -0400
 lib/tasks/preprocess_file_object_task.rb	Wed, 25 Sep 2024 08:11:04 -0400
 lib/tasks/preprocess_text_file_task.rb	Mon, 21 Oct 2024 04:59:46 -0400
 lib/tasks/text_segment_task.rb	Wed, 25 Sep 2024 08:16:25 -0400
-lib/tasks/text_tagger_task.rb	Wed, 25 Sep 2024 08:16:19 -0400
+lib/tasks/text_tagger_task.rb	Wed, 23 Oct 2024 14:23:30 -0400
 lib/tasks/text_tokenize_task.rb	Wed, 25 Sep 2024 08:16:11 -0400
 lib/tasks/tokenize_segments_task.rb	Wed, 25 Sep 2024 08:16:07 -0400
 lib/tasks/topic_modeling_task.rb	Wed, 25 Sep 2024 08:16:02 -0400
@@ -59,6 +59,6 @@ lib/utils/command.rb	Wed, 25 Sep 2024 08:15:08 -0400
 lib/utils/transcribe.rb	Wed, 25 Sep 2024 07:41:51 -0400
 lib/utils/tts.rb	Wed, 25 Sep 2024 07:41:51 -0400
 lib/utils/writefile.rb	Wed, 25 Sep 2024 07:41:51 -0400
-lib/workflows/text_processing_workflow.rb	Fri, 11 Oct 2024 19:41:12 -0400
+lib/workflows/text_processing_workflow.rb	Wed, 23 Oct 2024 14:10:12 -0400
 lib/workflows/topic_model_trainer_workflow.rb	Wed, 25 Sep 2024 08:14:18 -0400
 lib/workflows/topic_model_trainer_workflowtest.rb	Wed, 25 Sep 2024 08:11:04 -0400

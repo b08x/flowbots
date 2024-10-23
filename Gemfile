@@ -74,3 +74,9 @@ gem "wordnet-defaultdb"
 gem "wordnet"
 gem "yaml"
 gem "zip", "~> 2.0"
+
+gem "fiddle", "~> 1.1"
+
+gem "ostruct", "~> 0.6.0"
+
+gem "rorvswild_theme_rdoc", "~> 0.1"
