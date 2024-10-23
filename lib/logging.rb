@@ -46,7 +46,7 @@ module Logging
     #
     # @return [Integer] The log level.
     def log_level
-      Logger::INFO
+      Logger::DEBUG
     end
 
     # Returns the logger for the specified class and method.

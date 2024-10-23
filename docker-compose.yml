@@ -1,29 +1,29 @@
 ---
 services:
-  # flowbots_service:
-  #   image: b08x/flowbots:latest
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #     args:
-  #       - USE_TRF=False
-  #       - USE_BOOKNLP=False
-  #   container_name: flowbots
-  #   env_file:
-  #     - .env
-  #   environment:
-  #     PUID: 1000
-  #     PGID: 1000
-  #     NANO_BOTS_ENCRYPTION_PASSWORD: UNSAFE
-  #     NANO_BOTS_END_USER: ${USER}
-  #   # ports:
-  #   #   - "3009:3000"
-  #   volumes:
-  #     - ./data/workspace:/app/workspace
-  #   networks:
-  #     - flowbots
-  #   depends_on:
-  #     - redis_service
+  flowbots_service:
+    image: b08x/flowbots:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - USE_TRF=False
+        - USE_BOOKNLP=False
+    container_name: flowbots
+    env_file:
+      - .env
+    environment:
+      PUID: 1000
+      PGID: 1000
+      NANO_BOTS_ENCRYPTION_PASSWORD: UNSAFE
+      NANO_BOTS_END_USER: ${USER}
+    # ports:
+    #   - "3009:3000"
+    volumes:
+      - ./data/workspace:/app/workspace
+    networks:
+      - flowbots
+    depends_on:
+      - redis_service
   flowise_service:
     image: flowiseai/flowise
     container_name: flowbots-flowise

@@ -31,3 +31,5 @@ flowbots.json
 claude_chats/
 claude_chatsC/
 *.zip
+/docker/local_promptfoo/
+/tool/

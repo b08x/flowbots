@@ -75,6 +75,9 @@
     <a href="Agent.html">Agent</a>
   </li>
   <li class="class">
+    <a href="BatchCompletionTask.html">BatchCompletionTask</a>
+  </li>
+  <li class="class">
     <a href="Cartridge.html">Cartridge</a>
   </li>
   <li class="class">
@@ -118,6 +121,9 @@
   </li>
   <li class="class">
     <a href="Flowbots/AgentError.html">Flowbots::AgentError</a>
+  </li>
+  <li class="class">
+    <a href="Flowbots/BaseTask.html">Flowbots::BaseTask</a>
   </li>
   <li class="class">
     <a href="Flowbots/BatchProcessor.html">Flowbots::BatchProcessor</a>
@@ -252,6 +258,9 @@
     <a href="PreprocessFileObjectTask.html">PreprocessFileObjectTask</a>
   </li>
   <li class="class">
+    <a href="PreprocessTextFileTask.html">PreprocessTextFileTask</a>
+  </li>
+  <li class="class">
     <a href="RedisConnection.html">RedisConnection</a>
   </li>
   <li class="module">
@@ -331,6 +340,9 @@
   </li>
   <li class="class">
     <a href="WorkflowAgent.html">WorkflowAgent</a>
+  </li>
+  <li class="class">
+    <a href="WorkflowInitializerTask.html">WorkflowInitializerTask</a>
   </li>
   <li class="class">
     <a href="WorkflowOrchestrator.html">WorkflowOrchestrator</a>
@@ -574,6 +586,11 @@
     <a href="Flowbots/Task.html#method-c-new">::new</a>
     &mdash;
     <span class="container">Flowbots::Task</span>
+
+  <li class="method">
+    <a href="Flowbots/BaseTask.html#method-c-new">::new</a>
+    &mdash;
+    <span class="container">Flowbots::BaseTask</span>
 
   <li class="method">
     <a href="Sublayer/Actions/RunTestCommandAction.html#method-c-new">::new</a>
@@ -826,9 +843,24 @@
     <span class="container">Task</span>
 
   <li class="method">
+    <a href="BatchCompletionTask.html#method-i-complete_batch">#complete_batch</a>
+    &mdash;
+    <span class="container">BatchCompletionTask</span>
+
+  <li class="method">
+    <a href="BatchCompletionTask.html#method-i-complete_single_file_workflow">#complete_single_file_workflow</a>
+    &mdash;
+    <span class="container">BatchCompletionTask</span>
+
+  <li class="method">
     <a href="TTY/Markdown/Converter.html#method-i-convert_p">#convert_p</a>
     &mdash;
     <span class="container">TTY::Markdown::Converter</span>
+
+  <li class="method">
+    <a href="WorkflowInitializerTask.html#method-i-create_batches">#create_batches</a>
+    &mdash;
+    <span class="container">WorkflowInitializerTask</span>
 
   <li class="method">
     <a href="Flowbots/NLPProcessor.html#method-i-create_doc">#create_doc</a>
@@ -956,6 +988,16 @@
     <span class="container">AccumulateFilteredSegmentsTask</span>
 
   <li class="method">
+    <a href="Flowbots/BaseTask.html#method-i-execute">#execute</a>
+    &mdash;
+    <span class="container">Flowbots::BaseTask</span>
+
+  <li class="method">
+    <a href="BatchCompletionTask.html#method-i-execute">#execute</a>
+    &mdash;
+    <span class="container">BatchCompletionTask</span>
+
+  <li class="method">
     <a href="DisplayResultsTask.html#method-i-execute">#execute</a>
     &mdash;
     <span class="container">DisplayResultsTask</span>
@@ -996,6 +1038,11 @@
     <span class="container">PreprocessFileObjectTask</span>
 
   <li class="method">
+    <a href="PreprocessTextFileTask.html#method-i-execute">#execute</a>
+    &mdash;
+    <span class="container">PreprocessTextFileTask</span>
+
+  <li class="method">
     <a href="TextSegmentTask.html#method-i-execute">#execute</a>
     &mdash;
     <span class="container">TextSegmentTask</span>
@@ -1021,6 +1068,11 @@
     <span class="container">TrainTopicModelTask</span>
 
   <li class="method">
+    <a href="WorkflowInitializerTask.html#method-i-execute">#execute</a>
+    &mdash;
+    <span class="container">WorkflowInitializerTask</span>
+
+  <li class="method">
     <a href="Flowbots/TextTaggerProcessor.html#method-i-extract_main_topics">#extract_main_topics</a>
     &mdash;
     <span class="container">Flowbots::TextTaggerProcessor</span>
@@ -1034,6 +1086,11 @@
     <a href="PreprocessFileObjectTask.html#method-i-extract_metadata">#extract_metadata</a>
     &mdash;
     <span class="container">PreprocessFileObjectTask</span>
+
+  <li class="method">
+    <a href="PreprocessTextFileTask.html#method-i-extract_metadata">#extract_metadata</a>
+    &mdash;
+    <span class="container">PreprocessTextFileTask</span>
 
   <li class="method">
     <a href="PreprocessFileObjectTask.html#method-i-extract_pdf_metadata">#extract_pdf_metadata</a>
@@ -1146,11 +1203,6 @@
     <span class="container">LlmAnalysisTask</span>
 
   <li class="method">
-    <a href="Object.html#method-i-format_output">#format_output</a>
-    &mdash;
-    <span class="container">Object</span>
-
-  <li class="method">
     <a href="LlmAnalysisTask.html#method-i-generate_analysis_prompt">#generate_analysis_prompt</a>
     &mdash;
     <span class="container">LlmAnalysisTask</span>
@@ -1169,61 +1221,6 @@
     <a href="MicroAgentTask.html#method-i-get_input_for_analysis">#get_input_for_analysis</a>
     &mdash;
     <span class="container">MicroAgentTask</span>
-
-  <li class="method">
-    <a href="Object.html#method-i-get_object_attributes">#get_object_attributes</a>
-    &mdash;
-    <span class="container">Object</span>
-
-  <li class="method">
-    <a href="Object.html#method-i-get_object_bucket">#get_object_bucket</a>
-    &mdash;
-    <span class="container">Object</span>
-
-  <li class="method">
-    <a href="Object.html#method-i-get_object_by_name">#get_object_by_name</a>
-    &mdash;
-    <span class="container">Object</span>
-
-  <li class="method">
-    <a href="Object.html#method-i-get_object_collections">#get_object_collections</a>
-    &mdash;
-    <span class="container">Object</span>
-
-  <li class="method">
-    <a href="Object.html#method-i-get_object_indexed_attributes">#get_object_indexed_attributes</a>
-    &mdash;
-    <span class="container">Object</span>
-
-  <li class="method">
-    <a href="Object.html#method-i-get_object_references">#get_object_references</a>
-    &mdash;
-    <span class="container">Object</span>
-
-  <li class="method">
-    <a href="Object.html#method-i-get_objects">#get_objects</a>
-    &mdash;
-    <span class="container">Object</span>
-
-  <li class="method">
-    <a href="Object.html#method-i-get_objects_by_collection">#get_objects_by_collection</a>
-    &mdash;
-    <span class="container">Object</span>
-
-  <li class="method">
-    <a href="Object.html#method-i-get_objects_by_query">#get_objects_by_query</a>
-    &mdash;
-    <span class="container">Object</span>
-
-  <li class="method">
-    <a href="Object.html#method-i-get_objects_by_reference">#get_objects_by_reference</a>
-    &mdash;
-    <span class="container">Object</span>
-
-  <li class="method">
-    <a href="Object.html#method-i-get_objects_by_regex">#get_objects_by_regex</a>
-    &mdash;
-    <span class="container">Object</span>
 
   <li class="method">
     <a href="Flowbots/Workflows.html#method-i-get_workflows">#get_workflows</a>
@@ -1259,6 +1256,16 @@
     <a href="UI/Box.html#method-i-info_box">#info_box</a>
     &mdash;
     <span class="container">UI::Box</span>
+
+  <li class="method">
+    <a href="WorkflowInitializerTask.html#method-i-initialize_batch_workflow">#initialize_batch_workflow</a>
+    &mdash;
+    <span class="container">WorkflowInitializerTask</span>
+
+  <li class="method">
+    <a href="WorkflowInitializerTask.html#method-i-initialize_single_file_workflow">#initialize_single_file_workflow</a>
+    &mdash;
+    <span class="container">WorkflowInitializerTask</span>
 
   <li class="method">
     <a href="Flowbots/Workflows.html#method-i-list_and_select">#list_and_select</a>
@@ -1311,11 +1318,6 @@
     <span class="container">Logging</span>
 
   <li class="method">
-    <a href="Object.html#method-i-main">#main</a>
-    &mdash;
-    <span class="container">Object</span>
-
-  <li class="method">
     <a href="UI.html#method-i-main_menu">#main_menu</a>
     &mdash;
     <span class="container">UI</span>
@@ -1349,6 +1351,11 @@
     <a href="Flowbots/FileLoader.html#method-i-parse_pdf">#parse_pdf</a>
     &mdash;
     <span class="container">Flowbots::FileLoader</span>
+
+  <li class="method">
+    <a href="Flowbots/BaseTask.html#method-i-perform">#perform</a>
+    &mdash;
+    <span class="container">Flowbots::BaseTask</span>
 
   <li class="method">
     <a href="Flowbots/TextProcessingWorkflow.html#method-i-perform_additional_tasks">#perform_additional_tasks</a>
@@ -1586,6 +1593,11 @@
     <span class="container">NlpAnalysisTask</span>
 
   <li class="method">
+    <a href="PreprocessTextFileTask.html#method-i-retrieve_input">#retrieve_input</a>
+    &mdash;
+    <span class="container">PreprocessTextFileTask</span>
+
+  <li class="method">
     <a href="TextSegmentTask.html#method-i-retrieve_input">#retrieve_input</a>
     &mdash;
     <span class="container">TextSegmentTask</span>
@@ -1764,6 +1776,11 @@
     <a href="PreprocessFileObjectTask.html#method-i-store_preprocessed_data">#store_preprocessed_data</a>
     &mdash;
     <span class="container">PreprocessFileObjectTask</span>
+
+  <li class="method">
+    <a href="PreprocessTextFileTask.html#method-i-store_preprocessed_data">#store_preprocessed_data</a>
+    &mdash;
+    <span class="container">PreprocessTextFileTask</span>
 
   <li class="method">
     <a href="MicroAgentTask.html#method-i-store_result">#store_result</a>

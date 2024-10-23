@@ -1,8 +1,5 @@
-# Use Ruby 3.3 as the base image
-FROM ruby:3.3-slim
-
-# Create a non-root user to run the app
-RUN useradd -s /bin/bash -m flowbots
+# Stage 1: Build Dependencies
+FROM ruby:3.3-slim AS build
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -70,38 +67,48 @@ RUN apt-get update && apt-get install -y \
     wget \
     zip \
     zlib1g-dev \
+    libsodium-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Set the working directory in the container
 WORKDIR /app
+COPY Gemfile ./
+RUN bundle lock --add-platform x86_64-linux && \
+    bundle config build.redic --with-cxx="clang++" --with-cflags="-std=c++0x" && \
+    bundle install
+
+# Stage 2: Python Dependencies
+FROM python:3.9-slim AS python-env
 
 ARG USE_TRF=False
 ARG USE_BOOKNLP=False
 
-RUN python3 -m venv .venv && \
-    . /app/.venv/bin/activate && \
-    echo "[[ -f /app/.venv ]] && cd /app && . /app/.venv/bin/activate" >> /home/flowbots/.bashrc && \
-    echo "gem: --user-install --no-document" >> /home/flowbots/.gemrc && \
-    pip3 install -U setuptools wheel && \
-    pip3 install -U spacy 'pdfminer.six[image]' && \
+WORKDIR /app
+COPY --from=build /usr/local/bundle /usr/local/bundle
+COPY --from=build /app/Gemfile* /app/
+
+RUN pip install -U setuptools wheel && \
+    pip install -U spacy 'pdfminer.six[image]' && \
     python3 -m spacy download en_core_web_lg && \
     python -c "import sys, importlib.util as util; 1 if util.find_spec('nltk') else sys.exit(); import nltk; nltk.download('punkt')"
 
-RUN if [ "${USE_TRF}" = "True"]; then \
-        . /app/.venv/bin/activate && \
-        python3 -m spacy download en_core_web_trf \
-    ; fi
+RUN if [ "${USE_TRF}" = "True" ]; then \
+        python3 -m spacy download en_core_web_trf; \
+    fi
 
-RUN if [ "${USE_BOOKNLP}" = "True"]; then \
-        . /app/.venv/bin/activate && \
-        pip3 install -U transformers booknlp \
-    ; fi
+RUN if [ "${USE_BOOKNLP}" = "True" ]; then \
+        pip3 install -U transformers booknlp; \
+    fi
 
-# Copy only the Gemfile and requirements.txt
-COPY Gemfile ./
+# Stage 3: Final Image
+FROM ruby:3.3-slim
+
+WORKDIR /app
+
+# Copy necessary files and directories from previous stages
+COPY --from=build /usr/local/bundle /usr/local/bundle
+COPY --from=python-env /app/ /app/
 
 # Copy the rest of the application code
-# Copy only the specified directories and files
 COPY bin/ ./bin/
 COPY examples/ ./examples/
 COPY exe/ ./exe/
@@ -112,20 +119,10 @@ COPY flowbots.json .
 # Set environment variables
 ENV LANG=C.UTF-8 \
     LC_ALL=C.UTF-8
+ENV PATH="/usr/local/bundle/bin:$PATH"
 
 # Create necessary directories
 RUN mkdir -p log models workspace
 
-RUN chown -R flowbots:flowbots /app
-
-USER flowbots
-
-ENV PATH="/home/flowbots/.local/share/gem/ruby/3.3.0/bin:$PATH"
-ENV PATH="/app/.venv/bin:$PATH"
-
-RUN bundle lock --add-platform x86_64-linux && \
-    bundle config build.redic --with-cxx="clang++" --with-cflags="-std=c++0x" && \
-    bundle install
-
 # Set the default command (can be overridden)
-CMD . .venv/bin/activate && exec bash
+CMD ["bash"]

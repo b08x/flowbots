@@ -50,7 +50,6 @@ module Flowbots
       @options = DEFAULT_OPTIONS.merge(opts)
       logger.debug "TextTokenize initialized with options: #{@options}"
 
-      logger.info "Starting text tokenizer"
       logger.debug "Input text type: #{@text.class}"
 
       if @text.instance_of?(Array)

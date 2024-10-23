@@ -1,0 +1,15 @@
+.docs/**
+.gh_pages/**
+.vendor/**
+.venv/**
+.yardoc/**
+/compression_results/
+/data/
+/exception_reports/
+/llm_analysis/
+/log/
+/models/
+/nano-bots/
+/test/
+/tool/
+/vendor/

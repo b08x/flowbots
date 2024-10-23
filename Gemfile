@@ -1,9 +1,11 @@
 source "https://rubygems.org"
-gemspec
+#gemspec
 
 
 gem "algorithms"
 gem "ansi_palette"
+gem "asciidoctor"
+gem "asciidoctor-pdf"
 gem "chroma-db"
 gem "cli-ui"
 gem "color"

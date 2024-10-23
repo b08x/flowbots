@@ -1,540 +1,230 @@
 <!DOCTYPE html>
+
 <html>
-  <head>
-    <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>
-  Class: Flowbots::BaseTask
-  
-    &mdash; Documentation by YARD 0.9.37
-  
-</title>
+<head>
+<meta charset="UTF-8">
 
-  <link rel="stylesheet" href="../css/style.css" type="text/css" />
-
-  <link rel="stylesheet" href="../css/common.css" type="text/css" />
+<title>class Flowbots::BaseTask - flowbots v0.1</title>
 
 <script type="text/javascript">
-  pathId = "Flowbots::BaseTask";
-  relpath = '../';
+  var rdoc_rel_prefix = "../";
+  var index_rel_prefix = "../";
 </script>
 
+<script src="../js/navigation.js" defer></script>
+<script src="../js/search.js" defer></script>
+<script src="../js/search_index.js" defer></script>
+<script src="../js/searcher.js" defer></script>
+<script src="../js/darkfish.js" defer></script>
 
-  <script type="text/javascript" charset="utf-8" src="../js/jquery.js"></script>
+<link href="../css/fonts.css" rel="stylesheet">
+<link href="../css/rdoc.css" rel="stylesheet">
 
-  <script type="text/javascript" charset="utf-8" src="../js/app.js"></script>
 
+<body id="top" role="document" class="class">
+<nav role="navigation">
+  <div id="project-navigation">
+    <div id="home-section" role="region" title="Quick navigation" class="nav-section">
+  <h2>
+    <a href="../index.html" rel="home">Home</a>
+  </h2>
 
-  </head>
-  <body>
-    <div class="nav_wrap">
-      <iframe id="nav" src="../class_list.html?1"></iframe>
-      <div id="resizer"></div>
+  <div id="table-of-contents-navigation">
+    <a href="../table_of_contents.html#pages">Pages</a>
+    <a href="../table_of_contents.html#classes">Classes</a>
+    <a href="../table_of_contents.html#methods">Methods</a>
+  </div>
+</div>
+
+    <div id="search-section" role="search" class="project-section initially-hidden">
+  <form action="#" method="get" accept-charset="utf-8">
+    <div id="search-field-wrapper">
+      <input id="search-field" role="combobox" aria-label="Search"
+             aria-autocomplete="list" aria-controls="search-results"
+             type="text" name="search" placeholder="Search (/) for a class, method, ..." spellcheck="false"
+             title="Type to search, Up and Down to navigate, Enter to load">
     </div>
 
-    <div id="main" tabindex="-1">
-      <div id="header">
-        <div id="menu">
-  
-    <a href="../_index.html">Index (B)</a> &raquo;
-    <span class='title'><span class='object_link'><a href="../Flowbots.html" title="Flowbots (module)">Flowbots</a></span></span>
-     &raquo; 
-    <span class="title">BaseTask</span>
-  
+    <ul id="search-results" aria-label="Search Results"
+        aria-busy="false" aria-expanded="false"
+        aria-atomic="false" class="initially-hidden"></ul>
+  </form>
 </div>
 
-        <div id="search">
-  
-    <a class="full_list_link" id="class_list_link"
-        href="../class_list.html">
-
-        <svg width="24" height="24">
-          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
-          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
-          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
-        </svg>
-    </a>
-  
-</div>
-        <div class="clear"></div>
-      </div>
-
-      <div id="content"><h1>Class: Flowbots::BaseTask
-  
-  
-  
-</h1>
-<div class="box_info">
-  
-  <dl>
-    <dt>Inherits:</dt>
-    <dd>
-      <span class="inheritName">Jongleur::WorkerTask</span>
-      
-        <ul class="fullTree">
-          <li>Object</li>
-          
-            <li class="next">Jongleur::WorkerTask</li>
-          
-            <li class="next">Flowbots::BaseTask</li>
-          
-        </ul>
-        <a href="#" class="inheritanceTree">show all</a>
-      
-    </dd>
-  </dl>
-  
-
-  
-  
-  
-  
-  
+  </div>
 
   
 
-  
-  <dl>
-    <dt>Defined in:</dt>
-    <dd>lib/tasks/base_task.rb</dd>
-  </dl>
-  
-</div>
-
-<h2>Overview</h2><div class="docstring">
-  <div class="discussion">
+  <div id="class-metadata">
     
-<p>The base class for all tasks in the Flowbots workflow.</p>
+    
+<div id="parent-class-section" class="nav-section">
+  <h3>Parent</h3>
+
+  <p class="link"><a href="../Jongleur/WorkerTask.html">Jongleur::WorkerTask</a>
+</div>
+
+    
+    
+    
+<!-- Method Quickref -->
+<div id="method-list-section" class="nav-section">
+  <h3>Methods</h3>
+
+  <ul class="link-list" role="directory">
+    <li ><a href="#method-c-new">::new</a>
+    <li ><a href="#method-i-execute">#execute</a>
+    <li ><a href="#method-i-perform">#perform</a>
+  </ul>
+</div>
+
+  </div>
+</nav>
+
+<main role="main" aria-labelledby="class-Flowbots::BaseTask">
+  <h1 id="class-Flowbots::BaseTask" class="class">
+    class Flowbots::BaseTask
+  </h1>
+
+  <section class="description">
+    
+<p>The base class for all tasks in the <a href="../Flowbots.html"><code>Flowbots</code></a> workflow.</p>
 
 <p>Provides a common framework for task execution, status tracking, and error handling.</p>
 
+  </section>
 
-  </div>
-</div>
-<div class="tags">
-  
-
-</div>
+  <section id="5Buntitled-5D" class="documentation-section">
 
 
 
-  <h2>Instance Attribute Summary <small><a href="#" class="summary_toggle">collapse</a></small></h2>
-  <ul class="summary">
-    
-      <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#ohm_task-instance_method" title="#ohm_task (instance method)">#<strong>ohm_task</strong>  &#x21d2; OhmTask </a>
-    
+    <section class="attribute-method-details" class="method-section">
+      <header>
+        <h3>Attributes</h3>
+      </header>
 
-    
-  </span>
-  
-  
-  
-    
-      <span class="note title readonly">readonly</span>
-    
-    
-  
-  
-  
-  
-  
+      <div id="attribute-i-ohm_task" class="method-detail">
+        <div class="method-heading attribute-method-heading">
+          <span class="method-name">ohm_task</span><span
+            class="attribute-access-type">[R]</span>
+        </div>
 
-  
-    <span class="summary_desc"><div class='inline'>
-<p>The OhmTask object associated with this task.</p>
-</div></span>
-  
-</li>
+        <div class="method-description">
+        <p>The OhmTask object associated with this task.</p>
 
-    
-  </ul>
+<p>@return [OhmTask] The OhmTask object.</p>
+        </div>
+      </div>
+    </section>
 
 
+     <section id="public-class-5Buntitled-5D-method-details" class="method-section">
+       <header>
+         <h3>Public Class Methods</h3>
+       </header>
+
+      <div id="method-c-new" class="method-detail ">
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">new</span><span
+              class="method-args">(workflow, sourcefile)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+        </div>
+
+        <div class="method-description">
+          <p>Initializes a <a href="BaseTask.html#method-c-new"><code>new</code></a> <a href="BaseTask.html"><code>BaseTask</code></a> instance.</p>
+
+<p>@param workflow [Workflow] The workflow object associated with this task. @param sourcefile [Sourcefile] The source file object associated with this task.</p>
+
+          <div class="method-source-code" id="new-source">
+            <pre><span class="ruby-comment"># File lib/tasks/base_task.rb, line 19</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">initialize</span>(<span class="ruby-identifier">workflow</span>, <span class="ruby-identifier">sourcefile</span>)
+  <span class="ruby-ivar">@ohm_task</span> = <span class="ruby-constant">OhmTask</span>.<span class="ruby-identifier">create</span>(<span class="ruby-identifier">workflow</span>, <span class="ruby-identifier">sourcefile</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
 
 
-  
-    <h2>
-      Instance Method Summary
-      <small><a href="#" class="summary_toggle">collapse</a></small>
-    </h2>
+      </div>
 
-    <ul class="summary">
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#execute-instance_method" title="#execute (instance method)">#<strong>execute</strong>  &#x21d2; void </a>
-    
+    </section>
 
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  
+     <section id="public-instance-5Buntitled-5D-method-details" class="method-section">
+       <header>
+         <h3>Public Instance Methods</h3>
+       </header>
 
-  
-    <span class="summary_desc"><div class='inline'>
-<p>Executes the task.</p>
-</div></span>
-  
-</li>
+      <div id="method-i-execute" class="method-detail ">
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">execute</span><span
+              class="method-args">()</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+        </div>
 
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#initialize-instance_method" title="#initialize (instance method)">#<strong>initialize</strong>(workflow, sourcefile)  &#x21d2; BaseTask </a>
-    
-
-    
-  </span>
-  
-  
-    <span class="note title constructor">constructor</span>
-  
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'>
-<p>Initializes a new BaseTask instance.</p>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#perform-instance_method" title="#perform (instance method)">#<strong>perform</strong>  &#x21d2; Object </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'>
-<p>Performs the task logic.</p>
-</div></span>
-  
-</li>
-
-      
-    </ul>
-  
-
-
-  <div id="constructor_details" class="method_details_list">
-  <h2>Constructor Details</h2>
-  
-    <div class="method_details first">
-  <h3 class="signature first" id="initialize-instance_method">
-  
-    #<strong>initialize</strong>(workflow, sourcefile)  &#x21d2; <tt><span class='object_link'><a href="" title="Flowbots::BaseTask (class)">BaseTask</a></span></tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    
-<p>Initializes a new BaseTask instance.</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  <p class="tag_title">Parameters:</p>
-<ul class="param">
-  
-    <li>
-      
-        <span class='name'>workflow</span>
-      
-      
-        <span class='type'>(<tt>Workflow</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'>
-<p>The workflow object associated with this task.</p>
-</div>
-      
-    </li>
-  
-    <li>
-      
-        <span class='name'>sourcefile</span>
-      
-      
-        <span class='type'>(<tt>Sourcefile</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'>
-<p>The source file object associated with this task.</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-19
-20
-21</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/tasks/base_task.rb', line 19</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_workflow'>workflow</span><span class='comma'>,</span> <span class='id identifier rubyid_sourcefile'>sourcefile</span><span class='rparen'>)</span>
-  <span class='ivar'>@ohm_task</span> <span class='op'>=</span> <span class='const'>OhmTask</span><span class='period'>.</span><span class='id identifier rubyid_create'>create</span><span class='lparen'>(</span><span class='id identifier rubyid_workflow'>workflow</span><span class='comma'>,</span> <span class='id identifier rubyid_sourcefile'>sourcefile</span><span class='rparen'>)</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-  
-</div>
-
-  <div id="instance_attr_details" class="attr_details">
-    <h2>Instance Attribute Details</h2>
-    
-      
-      <span id=""></span>
-      <div class="method_details first">
-  <h3 class="signature first" id="ohm_task-instance_method">
-  
-    #<strong>ohm_task</strong>  &#x21d2; <tt>OhmTask</tt>  <span class="extras">(readonly)</span>
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    
-<p>The OhmTask object associated with this task.</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>OhmTask</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'>
-<p>The OhmTask object.</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-13
-14
-15</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/tasks/base_task.rb', line 13</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_ohm_task'>ohm_task</span>
-  <span class='ivar'>@ohm_task</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-  </div>
-
-
-  <div id="instance_method_details" class="method_details_list">
-    <h2>Instance Method Details</h2>
-
-    
-      <div class="method_details first">
-  <h3 class="signature first" id="execute-instance_method">
-  
-    #<strong>execute</strong>  &#x21d2; <tt>void</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p class="note returns_void">This method returns an undefined value.</p>
-<p>Executes the task.</p>
+        <div class="method-description">
+          <p>Executes the task.</p>
 
 <p>Updates the task status to “running”, performs the task logic, updates the task status based on the result, and handles any errors.</p>
 
+<p>@return [void]</p>
 
-  </div>
-</div>
-<div class="tags">
-  
+          <div class="method-source-code" id="execute-source">
+            <pre><span class="ruby-comment"># File lib/tasks/base_task.rb, line 29</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">execute</span>
+  <span class="ruby-ivar">@ohm_task</span>.<span class="ruby-identifier">update_status</span>(<span class="ruby-string">&quot;running&quot;</span>)
+  <span class="ruby-keyword">begin</span>
+    <span class="ruby-identifier">result</span> = <span class="ruby-identifier">perform</span>
+    <span class="ruby-ivar">@ohm_task</span>.<span class="ruby-identifier">update_status</span>(<span class="ruby-string">&quot;completed&quot;</span>, <span class="ruby-identifier">result</span>)
+  <span class="ruby-keyword">rescue</span> <span class="ruby-constant">StandardError</span> <span class="ruby-operator">=&gt;</span> <span class="ruby-identifier">e</span>
+    <span class="ruby-ivar">@ohm_task</span>.<span class="ruby-identifier">update_status</span>(<span class="ruby-string">&quot;failed&quot;</span>, <span class="ruby-identifier">e</span>.<span class="ruby-identifier">message</span>)
+    <span class="ruby-identifier">raise</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
 
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
 
+      </div>
 
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/tasks/base_task.rb', line 29</span>
+      <div id="method-i-perform" class="method-detail ">
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">perform</span><span
+              class="method-args">()</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+        </div>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_execute'>execute</span>
-  <span class='ivar'>@ohm_task</span><span class='period'>.</span><span class='id identifier rubyid_update_status'>update_status</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>running</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-  <span class='kw'>begin</span>
-    <span class='id identifier rubyid_result'>result</span> <span class='op'>=</span> <span class='id identifier rubyid_perform'>perform</span>
-    <span class='ivar'>@ohm_task</span><span class='period'>.</span><span class='id identifier rubyid_update_status'>update_status</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>completed</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_result'>result</span><span class='rparen'>)</span>
-  <span class='kw'>rescue</span> <span class='const'>StandardError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
-    <span class='ivar'>@ohm_task</span><span class='period'>.</span><span class='id identifier rubyid_update_status'>update_status</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>failed</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='rparen'>)</span>
-    <span class='id identifier rubyid_raise'>raise</span>
-  <span class='kw'>end</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="perform-instance_method">
-  
-    #<strong>perform</strong>  &#x21d2; <tt>Object</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    
-<p>Performs the task logic.</p>
+        <div class="method-description">
+          <p>Performs the task logic.</p>
 
 <p>This method must be implemented in subclasses to define the specific actions performed by the task.</p>
 
+<p>@return [Object] The result of the task execution.</p>
 
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Object</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'>
-<p>The result of the task execution.</p>
-</div>
-      
-    </li>
-  
-</ul>
-<p class="tag_title">Raises:</p>
-<ul class="raise">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>NotImplementedError</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
+          <div class="method-source-code" id="perform-source">
+            <pre><span class="ruby-comment"># File lib/tasks/base_task.rb, line 46</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">perform</span>
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">NotImplementedError</span>, <span class="ruby-node">&quot;#{self.class.name}#perform must be implemented in subclass&quot;</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
 
 
-46
-47
-48</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/tasks/base_task.rb', line 46</span>
+      </div>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_perform'>perform</span>
-  <span class='id identifier rubyid_raise'>raise</span> <span class='const'>NotImplementedError</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'>#perform must be implemented in subclass</span><span class='tstring_end'>&quot;</span></span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-  </div>
+    </section>
 
-</div>
+  </section>
+</main>
 
-      <div id="footer">
-  Generated on Mon Oct 21 05:12:43 2024 by
-  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.37 (ruby-3.3.5).
-</div>
 
-    </div>
-  </body>
-</html>
+<footer id="validator-badges" role="contentinfo">
+  <p><a href="https://validator.w3.org/check/referer">Validate</a>
+  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.6.3.1.
+  <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
+</footer>
+
